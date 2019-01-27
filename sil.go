@@ -279,5 +279,5 @@ func julianNow() string {
 
 func julianTime() string {
 	n := time.Now()
-	return fmt.Sprintf("%v %0d:%0d:%0d", julianNow(), n.Hour(), n.Minute(), n.Second())
+	return fmt.Sprintf("%v %02d:%02d:%02d", julianNow(), n.Hour(), n.Minute(), n.Second())
 }
