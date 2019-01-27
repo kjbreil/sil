@@ -3,7 +3,9 @@ package sil
 import (
 	"fmt"
 	"io/ioutil"
+	"strconv"
 	"strings"
+	"time"
 )
 
 // SIL is the structure of a SIL file
@@ -54,7 +56,7 @@ type Column struct {
 // View holds the data
 type View struct {
 	Name string
-	Data [][]string
+	Data []CLK
 }
 
 // New returns a new SIL
@@ -101,11 +103,13 @@ func (s *SIL) Create() []byte {
 	var f [][]byte
 	f = append(f, []byte("INSERT INTO HEADER_DCT VALUES"))
 	f = append(f, s.TableHeader.bytes())
-	f = append(f, s.table())
+	f = append(f, s.tableHeader())
 	f = append(f, []byte("INSERT INTO HEADER_DCT VALUES"))
 	f = append(f, s.ViewHeader.bytes())
-	f = append(f, s.view())
+	f = append(f, s.viewHeader())
 	f = append(f, []byte("INSERT INTO CLK_CHG VALUES"))
+	f = append(f, s.view())
+	f = append(f, []byte("\n\n@EXEC(SQL=PCC_ACTIVATE_CLK);\n\n@EXEC(SQL=DEPLOY_CHG);"))
 
 	var fwn []byte
 	for _, eba := range f {
@@ -134,8 +138,14 @@ func (h *Header) bytes() []byte {
 			txt = text(h.F903)
 		case 3:
 			txt = text(h.F904)
+		case 6:
+			txt = julianNow()
+		case 7:
+			txt = "0000"
 		case 8:
-			txt = h.F909
+			txt = julianNow()
+		case 9:
+			txt = "0000"
 		case 11:
 			txt = text(h.F912)
 		case 12:
@@ -166,7 +176,7 @@ func (s *SIL) bytes() []byte {
 	return []byte("(" + o + ");\n")
 }
 
-func (s *SIL) table() []byte {
+func (s *SIL) tableHeader() []byte {
 	var itms []string
 	for _, col := range s.Table.Columns {
 		var txt string
@@ -180,7 +190,7 @@ func (s *SIL) table() []byte {
 	return []byte("CREATE TABLE " + s.Table.Name + "_DCT(" + o + ");\n")
 }
 
-func (s *SIL) view() []byte {
+func (s *SIL) viewHeader() []byte {
 	var itms []string
 	for _, col := range s.Table.Columns {
 		var txt string
@@ -192,4 +202,82 @@ func (s *SIL) view() []byte {
 	o := strings.Join(itms, ",")
 
 	return []byte("CREATE VIEW " + s.Table.Name + "_CHG AS SELECT " + o + " FROM " + s.Table.Name + "_DCT;\n")
+}
+
+func itoa(i int) string {
+	return strconv.Itoa(i)
+}
+
+func (s *SIL) view() []byte {
+	var lns []string
+	for _, clk := range s.View.Data {
+		var itms []string
+
+		for i := range s.Table.Columns {
+			var txt string
+
+			switch i {
+			case 0:
+				txt = itoa(clk.F1185)
+			case 1:
+				txt = itoa(clk.F1001)
+			case 2:
+				txt = itoa(clk.F1126)
+			case 6:
+				txt = text(clk.F253)
+			case 7:
+				txt = text(clk.F902)
+			case 10:
+				txt = text(clk.F1000)
+			case 12:
+				txt = text(clk.F1127)
+			case 14:
+				txt = itoa(clk.F1142)
+			// case 47:
+			// 	txt = text(clk.F1964)
+			default:
+				txt = ""
+			}
+
+			itms = append(itms, txt)
+		}
+		lns = append(lns, "("+strings.Join(itms, ",")+")")
+
+	}
+	cmb := strings.Join(lns, ",\n")
+	cmb = cmb + ";\n"
+
+	return []byte(cmb)
+
+}
+
+func (v *View) addCLK(c CLK) {
+	v.Data = append(v.Data, c)
+	return
+}
+
+func (v *View) addUser(u User) {
+	var l CLK
+	l.F1185 = u.Number
+	l.F1126 = u.Number
+	l.F1127 = u.Short
+	l.F1142 = u.Level
+
+	// constants
+	l.F253 = julianTime()
+	l.F1001 = 1
+	l.F902 = "MANUAL"
+	l.F1000 = "PAL"
+	l.F1964 = "999"
+
+	v.Data = append(v.Data, l)
+}
+
+func julianNow() string {
+	return fmt.Sprintf("%04d%03d", time.Now().Year(), time.Now().YearDay())
+}
+
+func julianTime() string {
+	n := time.Now()
+	return fmt.Sprintf("%v %0d:%0d:%0d", julianNow(), n.Hour(), n.Minute(), n.Second())
 }
