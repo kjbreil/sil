@@ -4,124 +4,244 @@ func (s *SIL) TableCLK() {
 	s.Table.Name = "CLK"
 	s.Table.Columns = []Column{
 		{
-			Name: "F1185 INTEGER",
-			Type: "F1001 INTEGER",
+			Name: "F1185",
+			Type: "INTEGER",
 		},
 		{
-			Name: "F1126 INTEGER",
-			Type: "F1571 CHAR(60)",
+			Name: "F1001",
+			Type: "INTEGER",
 		},
 		{
-			Name: "F27 CHAR(14)",
-			Type: "F170 INTEGER",
+			Name: "F1126",
+			Type: "INTEGER",
 		},
 		{
-			Name: "F253 DATE(7)",
-			Type: "F902 CHAR(8)",
+			Name: "F1571",
+			Type: "CHAR(60)",
 		},
 		{
-			Name: "F940 INTEGER",
-			Type: "F941 INTEGER",
+			Name: "F27",
+			Type: "CHAR(14)",
 		},
 		{
-			Name: "F1000 CHAR(5)",
-			Type: "F1056 CHAR(4)",
+			Name: "F170",
+			Type: "INTEGER",
 		},
 		{
-			Name: "F1127 CHAR(30)",
-			Type: "F1141 CHAR(200)",
+			Name: "F253",
+			Type: "DATE(7)",
 		},
 		{
-			Name: "F1142 INTEGER",
-			Type: "F1143 CHAR(30)",
+			Name: "F902",
+			Type: "CHAR(8)",
 		},
 		{
-			Name: "F1144 CHAR(30)",
-			Type: "F1145 DATE(7)",
+			Name: "F940",
+			Type: "INTEGER",
 		},
 		{
-			Name: "F1146 CHAR(10)",
-			Type: "F1148 CHAR(14)",
+			Name: "F941",
+			Type: "INTEGER",
 		},
 		{
-			Name: "F1176 CHAR(3)",
-			Type: "F1264 DATE(7)",
+			Name: "F1000",
+			Type: "CHAR(5)",
 		},
 		{
-			Name: "F1552 CHAR(4)",
-			Type: "F1553 DATE(7)",
+			Name: "F1056",
+			Type: "CHAR(4)",
 		},
 		{
-			Name: "F1554 DATE(7)",
-			Type: "F1555 DATE(7)",
+			Name: "F1127",
+			Type: "CHAR(30)",
 		},
 		{
-			Name: "F1556 INTEGER",
-			Type: "F1557 CHAR(40)",
+			Name: "F1141",
+			Type: "CHAR(200)",
 		},
 		{
-			Name: "F1558 CHAR(40)",
-			Type: "F1559 CHAR(40)",
+			Name: "F1142",
+			Type: "INTEGER",
 		},
 		{
-			Name: "F1560 CHAR(20)",
-			Type: "F1561 CHAR(20)",
+			Name: "F1143",
+			Type: "CHAR(30)",
 		},
 		{
-			Name: "F1562 CHAR(15)",
-			Type: "F1563 CHAR(20)",
+			Name: "F1144",
+			Type: "CHAR(30)",
 		},
 		{
-			Name: "F1564 CHAR(20)",
-			Type: "F1565 CHAR(20)",
+			Name: "F1145",
+			Type: "DATE(7)",
 		},
 		{
-			Name: "F1566 NUMBER(10,0)",
-			Type: "F1567 INTEGER",
+			Name: "F1146",
+			Type: "CHAR(10)",
 		},
 		{
-			Name: "F1568 INTEGER",
-			Type: "F1569 INTEGER",
+			Name: "F1148",
+			Type: "CHAR(14)",
 		},
 		{
-			Name: "F1570 NUMBER(10,0)",
-			Type: "F1585 CHAR(20)",
+			Name: "F1176",
+			Type: "CHAR(3)",
 		},
 		{
-			Name: "F1586 CHAR(4)",
-			Type: "F1587 CHAR(20)",
+			Name: "F1264",
+			Type: "DATE(7)",
 		},
 		{
-			Name: "F1588 CHAR(4)",
-			Type: "F1589 CHAR(15)",
+			Name: "F1552",
+			Type: "CHAR(4)",
 		},
 		{
-			Name: "F1590 CHAR(200)",
-			Type: "F1964 CHAR(4)",
+			Name: "F1553",
+			Type: "DATE(7)",
 		},
 		{
-			Name: "F2587 DATE(7)",
-			Type: "F2597 CHAR(20)",
+			Name: "F1554",
+			Type: "DATE(7)",
 		},
 		{
-			Name: "F2692 CHAR(1)",
-			Type: "F2806 CHAR(40)",
+			Name: "F1555",
+			Type: "DATE(7)",
 		},
 		{
-			Name: "F2827 CHAR(10)",
-			Type: "F2828 NUMBER(8,4)",
+			Name: "F1556",
+			Type: "INTEGER",
 		},
 		{
-			Name: "F2829 NUMBER(8,4)",
-			Type: "F2830 NUMBER(8,4)",
+			Name: "F1557",
+			Type: "CHAR(40)",
 		},
 		{
-			Name: "F2831 NUMBER(8,4)",
-			Type: "F2832 CHAR(20)",
+			Name: "F1558",
+			Type: "CHAR(40)",
 		},
 		{
-			Name: "F2833 INTEGER",
-			Type: "F2844 CHAR(200)",
+			Name: "F1559",
+			Type: "CHAR(40)",
+		},
+		{
+			Name: "F1560",
+			Type: "CHAR(20)",
+		},
+		{
+			Name: "F1561",
+			Type: "CHAR(20)",
+		},
+		{
+			Name: "F1562",
+			Type: "CHAR(15)",
+		},
+		{
+			Name: "F1563",
+			Type: "CHAR(20)",
+		},
+		{
+			Name: "F1564",
+			Type: "CHAR(20)",
+		},
+		{
+			Name: "F1565",
+			Type: "CHAR(20)",
+		},
+		{
+			Name: "F1566",
+			Type: "NUMBER(10,0)",
+		},
+		{
+			Name: "F1567",
+			Type: "INTEGER",
+		},
+		{
+			Name: "F1568",
+			Type: "INTEGER",
+		},
+		{
+			Name: "F1569",
+			Type: "INTEGER",
+		},
+		{
+			Name: "F1570",
+			Type: "NUMBER(10,0)",
+		},
+		{
+			Name: "F1585",
+			Type: "CHAR(20)",
+		},
+		{
+			Name: "F1586",
+			Type: "CHAR(4)",
+		},
+		{
+			Name: "F1587",
+			Type: "CHAR(20)",
+		},
+		{
+			Name: "F1588",
+			Type: "CHAR(4)",
+		},
+		{
+			Name: "F1589",
+			Type: "CHAR(15)",
+		},
+		{
+			Name: "F1590",
+			Type: "CHAR(200)",
+		},
+		{
+			Name: "F1964",
+			Type: "CHAR(4)",
+		},
+		{
+			Name: "F2587",
+			Type: "DATE(7)",
+		},
+		{
+			Name: "F2597",
+			Type: "CHAR(20)",
+		},
+		{
+			Name: "F2692",
+			Type: "CHAR(1)",
+		},
+		{
+			Name: "F2806",
+			Type: "CHAR(40)",
+		},
+		{
+			Name: "F2827",
+			Type: "CHAR(10)",
+		},
+		{
+			Name: "F2828",
+			Type: "NUMBER(8,4)",
+		},
+		{
+			Name: "F2829",
+			Type: "NUMBER(8,4)",
+		},
+		{
+			Name: "F2830",
+			Type: "NUMBER(8,4)",
+		},
+		{
+			Name: "F2831",
+			Type: "NUMBER(8,4)",
+		},
+		{
+			Name: "F2832",
+			Type: "CHAR(20)",
+		},
+		{
+			Name: "F2833",
+			Type: "INTEGER",
+		},
+		{
+			Name: "F2844",
+			Type: "CHAR(200)",
 		},
 	}
 }
