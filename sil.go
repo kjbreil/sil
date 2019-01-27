@@ -77,14 +77,14 @@ func (s *SIL) CreateDCT() {
 
 // AddRplDCT Creates and returns the DCT information
 func (s *SIL) AddRplDCT() {
-	s.TableHeader.F902 = "00001345" // Batch identifier
-	s.TableHeader.F903 = "001901"   // Batch creator
-	s.TableHeader.F901 = "HM"       // Batch type
-	s.TableHeader.F904 = "PAL"      // Batch destination
-	s.TableHeader.F909 = "000000"
-	s.TableHeader.F910 = "0000"
-	s.TableHeader.F912 = "ADDRPL"
-	s.TableHeader.F913 = "ADDRPL CHANGED OPERATORS"
+	s.ViewHeader.F902 = "00001345" // Batch identifier
+	s.ViewHeader.F903 = "001901"   // Batch creator
+	s.ViewHeader.F901 = "HM"       // Batch type
+	s.ViewHeader.F910 = "0000"
+	s.ViewHeader.F904 = "PAL" // Batch destination
+	s.ViewHeader.F909 = "000000"
+	s.ViewHeader.F912 = "ADDRPL"
+	s.ViewHeader.F913 = "ADDRPL CHANGED OPERATORS"
 }
 
 func (s *SIL) Write(filename string) {
