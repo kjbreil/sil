@@ -4,11 +4,8 @@ import "testing"
 
 func TestMakeSIL(t *testing.T) {
 
-	s := New()
+	s := MakeCLK()
 
-	s.CreateDCT()
-	s.AddRplDCT()
-	s.TableCLK()
 	u := User{
 		Number: 40,
 		First:  "",
@@ -16,7 +13,7 @@ func TestMakeSIL(t *testing.T) {
 		Short:  "Some Person",
 		Level:  2,
 	}
-	s.View.addUser(u)
+	s.View.AddUser(u)
 	u = User{
 		Number: 41,
 		First:  "",
@@ -24,7 +21,7 @@ func TestMakeSIL(t *testing.T) {
 		Short:  "Some Person",
 		Level:  2,
 	}
-	s.View.addUser(u)
+	s.View.AddUser(u)
 	u = User{
 		Number: 42,
 		First:  "",
@@ -32,7 +29,7 @@ func TestMakeSIL(t *testing.T) {
 		Short:  "Some Person",
 		Level:  2,
 	}
-	s.View.addUser(u)
+	s.View.AddUser(u)
 	u = User{
 		Number: 43,
 		First:  "",
@@ -40,7 +37,7 @@ func TestMakeSIL(t *testing.T) {
 		Short:  "Some Person",
 		Level:  2,
 	}
-	s.View.addUser(u)
+	s.View.AddUser(u)
 
 	s.Write("./out.sil")
 

@@ -65,6 +65,13 @@ func New() SIL {
 	return s
 }
 
+func MakeCLK() (s SIL) {
+	s.CreateDCT()
+	s.AddRplDCT()
+	s.TableCLK()
+	return s
+}
+
 // CreateDCT Creates and returns the DCT information
 func (s *SIL) CreateDCT() {
 	s.TableHeader.F902 = "00001345" // Batch identifier
@@ -256,7 +263,8 @@ func (v *View) addCLK(c CLK) {
 	return
 }
 
-func (v *View) addUser(u User) {
+// AddUser adds a user to the CLK
+func (v *View) AddUser(u User) {
 	var l CLK
 	l.F1185 = u.Number
 	l.F1126 = u.Number
