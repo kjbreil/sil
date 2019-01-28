@@ -8,32 +8,32 @@ func TestMakeSIL(t *testing.T) {
 
 	u := User{
 		Number: 40,
-		First:  "",
-		Last:   "",
+		First:  "S1",
+		Last:   "S2",
 		Short:  "Some Person",
 		Level:  2,
 	}
 	s.View.AddUser(u)
 	u = User{
 		Number: 41,
-		First:  "",
-		Last:   "",
+		First:  "S1",
+		Last:   "S2",
 		Short:  "Some Person",
 		Level:  2,
 	}
 	s.View.AddUser(u)
 	u = User{
 		Number: 42,
-		First:  "",
-		Last:   "",
+		First:  "S1",
+		Last:   "S2",
 		Short:  "Some Person",
 		Level:  2,
 	}
 	s.View.AddUser(u)
 	u = User{
 		Number: 43,
-		First:  "",
-		Last:   "",
+		First:  "S1",
+		Last:   "S2",
 		Short:  "Some Person",
 		Level:  2,
 	}

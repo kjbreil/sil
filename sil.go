@@ -127,10 +127,6 @@ func (s *SIL) Create() []byte {
 	return fwn
 }
 
-func text(t string) string {
-	return "'" + t + "'"
-}
-
 func (h *Header) bytes() []byte {
 	var itms []string
 	len := 30
@@ -138,13 +134,13 @@ func (h *Header) bytes() []byte {
 		var txt string
 		switch i {
 		case 0:
-			txt = text(h.F901)
+			txt = text(&h.F901)
 		case 1:
-			txt = text(h.F902)
+			txt = text(&h.F902)
 		case 2:
-			txt = text(h.F903)
+			txt = text(&h.F903)
 		case 3:
-			txt = text(h.F904)
+			txt = text(&h.F904)
 		case 6:
 			txt = julianNow()
 		case 7:
@@ -154,9 +150,9 @@ func (h *Header) bytes() []byte {
 		case 9:
 			txt = "0000"
 		case 11:
-			txt = text(h.F912)
+			txt = text(&h.F912)
 		case 12:
-			txt = text(h.F913)
+			txt = text(&h.F913)
 		default:
 			txt = ""
 		}
@@ -211,8 +207,18 @@ func (s *SIL) viewHeader() []byte {
 	return []byte("CREATE VIEW " + s.Table.Name + "_CHG AS SELECT " + o + " FROM " + s.Table.Name + "_DCT;\n")
 }
 
-func itoa(i int) string {
-	return strconv.Itoa(i)
+func itoa(i *int) string {
+	if i != nil {
+		return strconv.Itoa(*i)
+	}
+	return ""
+}
+
+func text(t *string) string {
+	if t != nil {
+		return "'" + *t + "'"
+	}
+	return ""
 }
 
 func (s *SIL) view() []byte {
@@ -225,21 +231,27 @@ func (s *SIL) view() []byte {
 
 			switch i {
 			case 0:
-				txt = itoa(clk.F1185)
+				txt = itoa(&clk.F1185)
 			case 1:
-				txt = itoa(clk.F1001)
+				txt = itoa(&clk.F1001)
 			case 2:
-				txt = itoa(clk.F1126)
+				txt = itoa(&clk.F1126)
 			case 6:
-				txt = text(clk.F253)
+				txt = text(&clk.F253)
 			case 7:
-				txt = text(clk.F902)
+				txt = text(&clk.F902)
 			case 10:
-				txt = text(clk.F1000)
+				txt = text(&clk.F1000)
 			case 12:
-				txt = text(clk.F1127)
+				txt = text(&clk.F1127)
 			case 14:
-				txt = itoa(clk.F1142)
+				txt = itoa(&clk.F1142)
+			case 15:
+				txt = text(clk.F1143)
+			case 16:
+				txt = text(clk.F1144)
+			case 17:
+				txt = text(clk.F1145)
 			// case 47:
 			// 	txt = text(clk.F1964)
 			default:
@@ -270,6 +282,8 @@ func (v *View) AddUser(u User) {
 	l.F1126 = u.Number
 	l.F1127 = u.Short
 	l.F1142 = u.Level
+	l.F1143 = &u.First
+	l.F1144 = &u.Last
 
 	// constants
 	l.F253 = julianTime()
