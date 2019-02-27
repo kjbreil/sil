@@ -240,17 +240,17 @@ func (s *SIL) view() []byte {
 				txt = text(&clk.F253)
 			case 7:
 				txt = text(&clk.F902)
-			case 10:
+			case 8:
 				txt = text(&clk.F1000)
-			case 12:
+			case 10:
 				txt = text(&clk.F1127)
-			case 13:
+			case 11:
 				txt = itoa(&clk.F1142)
-			case 14:
+			case 12:
 				txt = text(clk.F1143)
-			case 15:
+			case 13:
 				txt = text(clk.F1144)
-			case 16:
+			case 14:
 				txt = text(clk.F1145)
 			// case 47:
 			// 	txt = text(clk.F1964)
