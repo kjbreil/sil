@@ -19,10 +19,8 @@ type CLK struct {
 	F1571 *string // User Email address
 	F27   *string
 	F170  *string
-	F253  string // Last change date
-	F902  string // Batch identifier
-	F940  *string
-	F941  *string
+	F253  string  // Last change date
+	F902  string  // Batch identifier
 	F1000 string  // Target Identifier
 	F1056 *string // Terminal store
 	F1127 string  // User short name

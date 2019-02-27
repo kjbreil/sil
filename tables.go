@@ -36,14 +36,6 @@ func (s *SIL) TableCLK() {
 			Type: "CHAR(8)",
 		},
 		{
-			Name: "F940",
-			Type: "INTEGER",
-		},
-		{
-			Name: "F941",
-			Type: "INTEGER",
-		},
-		{
 			Name: "F1000",
 			Type: "CHAR(5)",
 		},
