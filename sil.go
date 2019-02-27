@@ -244,13 +244,13 @@ func (s *SIL) view() []byte {
 				txt = text(&clk.F1000)
 			case 12:
 				txt = text(&clk.F1127)
-			case 14:
+			case 13:
 				txt = itoa(&clk.F1142)
-			case 15:
+			case 14:
 				txt = text(clk.F1143)
-			case 16:
+			case 15:
 				txt = text(clk.F1144)
-			case 17:
+			case 16:
 				txt = text(clk.F1145)
 			// case 47:
 			// 	txt = text(clk.F1964)
@@ -277,6 +277,9 @@ func (v *View) addCLK(c CLK) {
 
 // AddUser adds a user to the CLK
 func (v *View) AddUser(u User) {
+	if u.Level == 0 {
+		return
+	}
 	var l CLK
 	l.F1185 = u.Number
 	l.F1126 = u.Number
@@ -284,6 +287,7 @@ func (v *View) AddUser(u User) {
 	l.F1142 = u.Level
 	l.F1143 = &u.First
 	l.F1144 = &u.Last
+	l.F1145 = &u.Birthdate
 
 	// constants
 	l.F253 = julianTime()
@@ -295,8 +299,12 @@ func (v *View) AddUser(u User) {
 	v.Data = append(v.Data, l)
 }
 
+func JulianDate(t time.Time) string {
+	return fmt.Sprintf("%04d%03d", t.Year(), t.YearDay())
+}
+
 func julianNow() string {
-	return fmt.Sprintf("%04d%03d", time.Now().Year(), time.Now().YearDay())
+	return JulianDate(time.Now())
 }
 
 func julianTime() string {

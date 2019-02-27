@@ -2,11 +2,12 @@ package sil
 
 // User is easy to fill CLK struct
 type User struct {
-	Number int
-	First  string
-	Last   string
-	Short  string
-	Level  int
+	Number    int
+	First     string
+	Last      string
+	Short     string
+	Level     int
+	Birthdate string
 }
 
 // CLK is the structure of a CLK insert
@@ -25,11 +26,11 @@ type CLK struct {
 	F1000 string  // Target Identifier
 	F1056 *string // Terminal store
 	F1127 string  // User short name
-	F1141 *string
+	// F1141 *string // User PAssword - remove for now
 	F1142 int // User restriction level
 	F1143 *string
 	F1144 *string
-	F1145 *string
+	F1145 *string // Operator Birthdate
 	F1146 *string
 	F1148 *string
 	F1176 *string

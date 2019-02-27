@@ -55,10 +55,10 @@ func (s *SIL) TableCLK() {
 			Name: "F1127",
 			Type: "CHAR(30)",
 		},
-		{
-			Name: "F1141",
-			Type: "CHAR(200)",
-		},
+		// {
+		// 	Name: "F1141",
+		// 	Type: "CHAR(200)",
+		// },
 		{
 			Name: "F1142",
 			Type: "INTEGER",
