@@ -11,16 +11,18 @@ type User struct {
 }
 
 // CLK is the structure of a CLK insert
-// required fields are regular variables, optional are pointers
+// All fields are required - this is because we need to fill in every
+// column in a SIL file so pointers will eventually cause errors
+// right now they will just cause pain
 type CLK struct {
-	F1185 int    // User order number
-	F1001 int    // Record status
-	F1126 int    // User number
+	F1185 int    `sil:"INTEGER"`  // User order number
+	F1001 int    `sil:"INTEGER"`  // Record status
+	F1126 int    `sil:"INTEGER"`  // User number
 	F253  string `sil:"DATE(7)"`  // Last change date
 	F902  string `sil:"CHAR(8)"`  // Batch identifier
 	F1000 string `sil:"CHAR(5)"`  // Target Identifier
 	F1127 string `sil:"CHAR(30)"` // User short name
-	F1142 int    // User restriction level
+	F1142 int    `sil:"INTEGER"`  // User restriction level
 	F1143 string `sil:"CHAR(30)"`
 	F1144 string `sil:"CHAR(30)"`
 	F1145 string `sil:"DATE(7)"` // Operator Birthdate
