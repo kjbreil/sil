@@ -77,6 +77,15 @@ func MakeCLK() (s SIL) {
 	return s
 }
 
+// Make makes a sil file of the definiton passed
+func Make(name string, definition interface{}) (s SIL) {
+	s.CreateDCT()
+	s.AddRplDCT()
+	// s.TableCLK()
+	s.MakeTable(name, definition)
+	return s
+}
+
 // CreateDCT Creates and returns the DCT information
 func (s *SIL) CreateDCT() {
 	s.TableHeader.F902 = "00001345" // Batch identifier
