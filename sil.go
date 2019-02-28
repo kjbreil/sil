@@ -3,6 +3,7 @@ package sil
 import (
 	"fmt"
 	"io/ioutil"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -14,6 +15,7 @@ type SIL struct {
 	Table       Table
 	ViewHeader  Header
 	View        View
+	TableType   interface{}
 }
 
 // Header tells the system what the SIL file is doing - an audit of sorts
@@ -48,6 +50,7 @@ type Table struct {
 	Columns []Column
 }
 
+// Column is each column in a SIL file containing both the name and the type contained
 type Column struct {
 	Name string
 	Type string
@@ -65,10 +68,12 @@ func New() SIL {
 	return s
 }
 
+// MakeCLK makes a CLK formatted SIL file
 func MakeCLK() (s SIL) {
 	s.CreateDCT()
 	s.AddRplDCT()
-	s.TableCLK()
+	// s.TableCLK()
+	s.MakeTable("CLK", CLK{})
 	return s
 }
 
@@ -98,6 +103,7 @@ func (s *SIL) AddRplDCT() {
 
 func (s *SIL) Write(filename string) {
 	mydata := s.Create()
+
 	err := ioutil.WriteFile(filename, mydata, 0777)
 	// handle this error
 	if err != nil {
@@ -106,6 +112,7 @@ func (s *SIL) Write(filename string) {
 	}
 }
 
+// Create creates the SIL structure from the information in the SIL type
 func (s *SIL) Create() []byte {
 	var f [][]byte
 	f = append(f, []byte("INSERT INTO HEADER_DCT VALUES"))
@@ -225,37 +232,16 @@ func (s *SIL) view() []byte {
 	var lns []string
 	for _, clk := range s.View.Data {
 		var itms []string
+		values := reflect.ValueOf(clk)
 
 		for i := range s.Table.Columns {
+			value := values.Field(i)
 			var txt string
+			if s.Table.Columns[i].Type == "INTEGER" {
+				txt = fmt.Sprintf("%v", value)
+			} else {
+				txt = fmt.Sprintf("'%v'", value)
 
-			switch i {
-			case 0:
-				txt = itoa(&clk.F1185)
-			case 1:
-				txt = itoa(&clk.F1001)
-			case 2:
-				txt = itoa(&clk.F1126)
-			case 6:
-				txt = text(&clk.F253)
-			case 7:
-				txt = text(&clk.F902)
-			case 8:
-				txt = text(&clk.F1000)
-			case 10:
-				txt = text(&clk.F1127)
-			case 11:
-				txt = itoa(&clk.F1142)
-			case 12:
-				txt = text(clk.F1143)
-			case 13:
-				txt = text(clk.F1144)
-			case 14:
-				txt = text(clk.F1145)
-			// case 47:
-			// 	txt = text(clk.F1964)
-			default:
-				txt = ""
 			}
 
 			itms = append(itms, txt)
@@ -285,9 +271,9 @@ func (v *View) AddUser(u User) {
 	l.F1126 = u.Number
 	l.F1127 = u.Short
 	l.F1142 = u.Level
-	l.F1143 = &u.First
-	l.F1144 = &u.Last
-	l.F1145 = &u.Birthdate
+	l.F1143 = u.First
+	l.F1144 = u.Last
+	l.F1145 = u.Birthdate
 
 	// constants
 	l.F253 = julianTime()
@@ -299,10 +285,12 @@ func (v *View) AddUser(u User) {
 	v.Data = append(v.Data, l)
 }
 
+// JulianDate takes a time.Time and turns it into a julien date - just formatting
 func JulianDate(t time.Time) string {
 	return fmt.Sprintf("%04d%03d", t.Year(), t.YearDay())
 }
 
+// julianNow returns the julian date for right now
 func julianNow() string {
 	return JulianDate(time.Now())
 }
