@@ -77,7 +77,7 @@ func MakeCLK() (s SIL) {
 	return s
 }
 
-// Make makes a sil file of the definiton passed
+// Make makes a sil file of the definiton (as struct) passed
 func Make(name string, definition interface{}) (s SIL) {
 	s.CreateDCT()
 	s.AddRplDCT()
