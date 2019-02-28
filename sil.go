@@ -68,15 +68,6 @@ func New() SIL {
 	return s
 }
 
-// MakeCLK makes a CLK formatted SIL file
-func MakeCLK() (s SIL) {
-	s.CreateDCT()
-	s.AddRplDCT()
-	// s.TableCLK()
-	s.MakeTable("CLK", CLK{})
-	return s
-}
-
 // Make makes a sil file of the definiton (as struct) passed
 func Make(name string, definition interface{}) (s SIL) {
 	s.CreateDCT()
@@ -86,26 +77,37 @@ func Make(name string, definition interface{}) (s SIL) {
 	return s
 }
 
+const (
+	f902 = "00000001"
+	f903 = "MANUAL"
+	// f901 = "HC"
+	f904 = "PAL"
+	f909 = "000000"
+	f910 = "0000"
+	// f912 = "LOAD"
+	// f913 = "CREATE DCT"
+)
+
 // CreateDCT Creates and returns the DCT information
 func (s *SIL) CreateDCT() {
-	s.TableHeader.F902 = "00000001" // Batch identifier
-	s.TableHeader.F903 = "MANUAL"   // Batch creator
-	s.TableHeader.F901 = "HC"       // Batch type
-	s.TableHeader.F904 = "PAL"      // Batch destination
-	s.TableHeader.F909 = "000000"
-	s.TableHeader.F910 = "0000"
+	s.TableHeader.F902 = f902 // Batch identifier
+	s.TableHeader.F903 = f903 // Batch creator
+	s.TableHeader.F901 = "HC" // Batch type
+	s.TableHeader.F904 = f904 // Batch destination
+	s.TableHeader.F909 = f909
+	s.TableHeader.F910 = f910
 	s.TableHeader.F912 = "LOAD"
 	s.TableHeader.F913 = "CREATE DCT"
 }
 
 // AddRplDCT Creates and returns the DCT information
 func (s *SIL) AddRplDCT() {
-	s.ViewHeader.F902 = "00000001" // Batch identifier
-	s.ViewHeader.F903 = "MANUAL"   // Batch creator
-	s.ViewHeader.F901 = "HM"       // Batch type
-	s.ViewHeader.F910 = "0000"
-	s.ViewHeader.F904 = "PAL" // Batch destination
-	s.ViewHeader.F909 = "000000"
+	s.ViewHeader.F902 = f902 // Batch identifier
+	s.ViewHeader.F903 = f903 // Batch creator
+	s.ViewHeader.F901 = "HM" // Batch type
+	s.ViewHeader.F910 = f910
+	s.ViewHeader.F904 = f904 // Batch destination
+	s.ViewHeader.F909 = f909
 	s.ViewHeader.F912 = "ADDRPL"
 	s.ViewHeader.F913 = "ADDRPL CHANGED OPERATORS"
 }
@@ -143,6 +145,8 @@ func (s *SIL) Create() []byte {
 	return fwn
 }
 
+// gocyclo lint problem
+// needs to follow structure of the view creation where its driven by the type
 func (h *Header) bytes() []byte {
 	var itms []string
 	len := 30
