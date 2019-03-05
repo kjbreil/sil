@@ -4,7 +4,7 @@ import "testing"
 
 func TestMakeSIL(t *testing.T) {
 
-	s := MakeCLK()
+	s := Make("CLK", CLK{})
 
 	u := User{
 		Number: 40,
