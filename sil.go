@@ -15,6 +15,7 @@ type SIL struct {
 	Table       Table
 	ViewHeader  Header
 	View        View
+	Footer      []string
 	TableType   interface{}
 }
 
@@ -134,7 +135,18 @@ func (s *SIL) Create() []byte {
 	f = append(f, s.viewHeader())
 	f = append(f, []byte("INSERT INTO CLK_CHG VALUES"))
 	f = append(f, s.view())
-	f = append(f, []byte("\n\n@EXEC(SQL=PCC_ACTIVATE_CLK);\n\n@EXEC(SQL=DEPLOY_CHG);"))
+	// f = append(f, []byte("\n\n@EXEC(SQL=PCC_ACTIVATE_CLK);\n\n@EXEC(SQL=DEPLOY_CHG);"))
+
+	s.Append("@EXEC(SQL=PCC_ACTIVATE_CLK);")
+	s.Append("@EXEC(SQL=DEPLOY_CHG);")
+
+	if len(s.Footer) > 0 {
+		f = append(f, []byte("\n\n"))
+		for _, es := range s.Footer {
+			f = append(f, []byte(es))
+		}
+		f = append(f, []byte("\n"))
+	}
 
 	var fwn []byte
 	for _, eba := range f {
@@ -143,6 +155,12 @@ func (s *SIL) Create() []byte {
 	}
 
 	return fwn
+}
+
+// Append adds a line to the bottom of the SIL file
+func (s *SIL) Append(str string) {
+	s.Footer = append(s.Footer, str)
+	return
 }
 
 // gocyclo lint problem
