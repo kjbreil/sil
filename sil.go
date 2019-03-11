@@ -137,9 +137,6 @@ func (s *SIL) Create() []byte {
 	f = append(f, s.view())
 	// f = append(f, []byte("\n\n@EXEC(SQL=PCC_ACTIVATE_CLK);\n\n@EXEC(SQL=DEPLOY_CHG);"))
 
-	s.Append("@EXEC(SQL=PCC_ACTIVATE_CLK);")
-	s.Append("@EXEC(SQL=DEPLOY_CHG);")
-
 	if len(s.Footer) > 0 {
 		f = append(f, []byte("\n\n"))
 		for _, es := range s.Footer {
