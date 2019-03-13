@@ -293,7 +293,7 @@ func (v *View) AddUser(u User) {
 	l.F1001 = 1
 	l.F902 = "MANUAL"
 	l.F1000 = "PAL"
-	l.F1964 = "999"
+	// l.F1964 = "999"
 
 	v.Data = append(v.Data, l)
 }

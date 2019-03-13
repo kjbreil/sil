@@ -26,5 +26,5 @@ type CLK struct {
 	F1143 string `sil:"CHAR(30)"`
 	F1144 string `sil:"CHAR(30)"`
 	F1145 string `sil:"DATE(7)"` // Operator Birthdate
-	F1964 string `sil:"CHAR(4)"` // Store responsible
+	// F1964 string `sil:"CHAR(4)"` // Store responsible
 }
