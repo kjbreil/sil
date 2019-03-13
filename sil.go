@@ -123,17 +123,17 @@ func (s *SIL) Create() []byte {
 	f = append(f, s.view())
 
 	if len(s.Footer) > 0 {
-		f = append(f, []byte("\n\n"))
+		f = append(f, []byte("\r\n\r\n"))
 		for _, es := range s.Footer {
 			f = append(f, []byte(es))
 		}
-		f = append(f, []byte("\n"))
+		f = append(f, []byte("\r\n"))
 	}
 
 	var fwn []byte
 	for _, eba := range f {
 		fwn = append(fwn, eba...)
-		fwn = append(fwn, []byte("\n")...)
+		fwn = append(fwn, []byte("\r\n")...)
 	}
 
 	return fwn
@@ -180,7 +180,7 @@ func (h *Header) bytes() []byte {
 	}
 	o := strings.Join(itms, ",")
 
-	return []byte("(" + o + ");\n")
+	return []byte("(" + o + ");\r\n")
 }
 
 func (s *SIL) bytes() []byte {
@@ -196,7 +196,7 @@ func (s *SIL) bytes() []byte {
 	}
 	o := strings.Join(itms, ",")
 
-	return []byte("(" + o + ");\n")
+	return []byte("(" + o + ");\r\n")
 }
 
 func (s *SIL) tableHeader() []byte {
@@ -210,7 +210,7 @@ func (s *SIL) tableHeader() []byte {
 	}
 	o := strings.Join(itms, ",")
 
-	return []byte("CREATE TABLE " + s.Table.Name + "_DCT(" + o + ");\n")
+	return []byte("CREATE TABLE " + s.Table.Name + "_DCT(" + o + ");\r\n")
 }
 
 func (s *SIL) viewHeader() []byte {
@@ -224,7 +224,7 @@ func (s *SIL) viewHeader() []byte {
 	}
 	o := strings.Join(itms, ",")
 
-	return []byte("CREATE VIEW " + s.Table.Name + "_CHG AS SELECT " + o + " FROM " + s.Table.Name + "_DCT;\n")
+	return []byte("CREATE VIEW " + s.Table.Name + "_CHG AS SELECT " + o + " FROM " + s.Table.Name + "_DCT;\r\n")
 }
 
 func itoa(i *int) string {
@@ -262,8 +262,8 @@ func (s *SIL) view() []byte {
 		lns = append(lns, "("+strings.Join(itms, ",")+")")
 
 	}
-	cmb := strings.Join(lns, ",\n")
-	cmb = cmb + ";\n"
+	cmb := strings.Join(lns, ",\r\n")
+	cmb = cmb + ";\r\n"
 
 	return []byte(cmb)
 
