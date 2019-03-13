@@ -10,9 +10,7 @@ import (
 // the type passed is valid to be passed into this interface (i.e. confirm that
 // the fields all follow the correct naming convention for SIL)
 // this first looks to a sil tag on the type to assign the SQL type otherwise tries to predict
-func (s *SIL) MakeTable(name string, tableType interface{}) {
-	s.Table.Name = name
-
+func (s *SIL) MakeTable(tableType interface{}) {
 	// reflect the tableType to get the fields
 	fields := reflect.TypeOf(tableType)
 

@@ -72,8 +72,10 @@ func New() SIL {
 
 // Make makes a sil file of the definiton (as struct) passed
 func Make(name string, definition interface{}) (s SIL) {
+	// AddRpl header information - needs to be dynamic so deletes are possible
 	s.AddRplDCT()
-	s.MakeTable(name, definition)
+	s.Table.Name = name
+	s.MakeTable(definition)
 	return s
 }
 
