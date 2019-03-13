@@ -11,7 +11,6 @@ import (
 
 // SIL is the structure of a SIL file
 type SIL struct {
-	TableHeader    Header
 	Table          Table
 	ViewHeader     Header
 	View           View
@@ -73,9 +72,7 @@ func New() SIL {
 
 // Make makes a sil file of the definiton (as struct) passed
 func Make(name string, definition interface{}) (s SIL) {
-	s.CreateDCT()
 	s.AddRplDCT()
-	// s.TableCLK()
 	s.MakeTable(name, definition)
 	return s
 }
@@ -90,18 +87,6 @@ const (
 	// f912 = "LOAD"
 	// f913 = "CREATE DCT"
 )
-
-// CreateDCT Creates and returns the DCT information
-func (s *SIL) CreateDCT() {
-	s.TableHeader.F902 = f902 // Batch identifier
-	s.TableHeader.F903 = f903 // Batch creator
-	s.TableHeader.F901 = "HC" // Batch type
-	s.TableHeader.F904 = f904 // Batch destination
-	s.TableHeader.F909 = f909
-	s.TableHeader.F910 = f910
-	s.TableHeader.F912 = "LOAD"
-	s.TableHeader.F913 = "CREATE DCT"
-}
 
 // AddRplDCT Creates and returns the DCT information
 func (s *SIL) AddRplDCT() {
