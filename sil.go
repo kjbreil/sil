@@ -61,7 +61,7 @@ type Column struct {
 // View holds the data
 type View struct {
 	Name string
-	Data []CLK
+	Data []interface{}
 }
 
 // New returns a new SIL
