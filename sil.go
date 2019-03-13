@@ -162,11 +162,11 @@ func (h *Header) bytes() []byte {
 		case 3:
 			txt = text(&h.F904)
 		case 6:
-			txt = julianNow()
+			txt = JulianNow()
 		case 7:
 			txt = "0000"
 		case 8:
-			txt = julianNow()
+			txt = JulianNow()
 		case 9:
 			txt = "0000"
 		case 11:
@@ -289,7 +289,7 @@ func (v *View) AddUser(u User) {
 	l.F1145 = u.Birthdate
 
 	// constants
-	l.F253 = julianTime()
+	l.F253 = JulianTime()
 	l.F1001 = 1
 	l.F902 = "MANUAL"
 	l.F1000 = "PAL"
@@ -303,12 +303,13 @@ func JulianDate(t time.Time) string {
 	return fmt.Sprintf("%04d%03d", t.Year(), t.YearDay())
 }
 
-// julianNow returns the julian date for right now
-func julianNow() string {
+// JulianNow returns the julian date for right now
+func JulianNow() string {
 	return JulianDate(time.Now())
 }
 
-func julianTime() string {
+// JulianTime is the julien date with a time formatted after
+func JulianTime() string {
 	n := time.Now()
-	return fmt.Sprintf("%v %02d:%02d:%02d", julianNow(), n.Hour(), n.Minute(), n.Second())
+	return fmt.Sprintf("%v %02d:%02d:%02d", JulianNow(), n.Hour(), n.Minute(), n.Second())
 }
