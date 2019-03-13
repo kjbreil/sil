@@ -63,7 +63,7 @@ func TestHeader(t *testing.T) {
 
 	s := MakeRow(h)
 
-	if "('HM','00000001','MANUAL','PAL',,,2019072,0000,2019072,0000,,'ADDRPL','ADDRPL CHANGED OPERATORS',,,,,,,,,)" != s {
+	if s != "('HM','00000001','MANUAL','PAL',,,2019072,0000,2019072,0000,,'ADDRPL','ADDRPL CHANGED OPERATORS',,,,,,,,,)" {
 		t.Fail()
 
 	}
