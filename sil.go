@@ -11,12 +11,14 @@ import (
 
 // SIL is the structure of a SIL file
 type SIL struct {
-	TableHeader Header
-	Table       Table
-	ViewHeader  Header
-	View        View
-	Footer      []string
-	TableType   interface{}
+	TableHeader    Header
+	Table          Table
+	ViewHeader     Header
+	View           View
+	Footer         []string
+	TableType      interface{}
+	SILType        string
+	SILDescription string
 }
 
 // Header tells the system what the SIL file is doing - an audit of sorts
@@ -128,14 +130,10 @@ func (s *SIL) Write(filename string) {
 func (s *SIL) Create() []byte {
 	var f [][]byte
 	f = append(f, []byte("INSERT INTO HEADER_DCT VALUES"))
-	f = append(f, s.TableHeader.bytes())
-	f = append(f, s.tableHeader())
-	f = append(f, []byte("INSERT INTO HEADER_DCT VALUES"))
 	f = append(f, s.ViewHeader.bytes())
 	f = append(f, s.viewHeader())
 	f = append(f, []byte("INSERT INTO CLK_CHG VALUES"))
 	f = append(f, s.view())
-	// f = append(f, []byte("\n\n@EXEC(SQL=PCC_ACTIVATE_CLK);\n\n@EXEC(SQL=DEPLOY_CHG);"))
 
 	if len(s.Footer) > 0 {
 		f = append(f, []byte("\n\n"))
