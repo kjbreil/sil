@@ -20,30 +20,30 @@ type SIL struct {
 	SILDescription string
 }
 
-// Header tells the system what the SIL file is doing - an audit of sorts
+// Header tells the system what the SIL file is doing
 type Header struct {
-	F902 string // Batch identifier
-	F903 string // Batch creator
-	F901 string // Batch type
-	F904 string // Batch destination
-	F905 string // Batch audit file
-	F906 string // Batch response file
-	F907 string // Batch ending date
-	F908 string // Batch ending time
-	F909 string // Batch active date
-	F910 string // Batch active time
-	F911 string // Batch purge date
-	F912 string // Batch action type
-	F913 string // Batch description
-	F914 string // Batch user 1 (state)
-	F918 string // Batch maximum error count
-	F919 string // Batch file version
-	F920 string // Batch creator version
-	F921 string // Batch primary key
-	F922 string // Batch specific command
-	F930 string // Shelf tag type
-	F931 string // Batch execution priority
-	F932 string // Batch long description
+	F901 string `sil:"CHAR(30)"` // Batch type
+	F902 string `sil:"CHAR(30)"` // Batch identifier
+	F903 string `sil:"CHAR(30)"` // Batch creator
+	F904 string `sil:"CHAR(30)"` // Batch destination
+	F905 string `sil:"CHAR(30)"` // Batch audit file
+	F906 string `sil:"CHAR(30)"` // Batch response file
+	F907 string `sil:"INTEGER"`  // Batch ending date
+	F908 string `sil:"INTEGER"`  // Batch ending time
+	F909 string `sil:"INTEGER"`  // Batch active date
+	F910 string `sil:"INTEGER"`  // Batch active time
+	F911 string `sil:"CHAR(30)"` // Batch purge date
+	F912 string `sil:"CHAR(30)"` // Batch action type
+	F913 string `sil:"CHAR(30)"` // Batch description
+	F914 string `sil:"CHAR(30)"` // Batch user 1 (state)
+	F918 string `sil:"CHAR(30)"` // Batch maximum error count
+	F919 string `sil:"CHAR(30)"` // Batch file version
+	F920 string `sil:"CHAR(30)"` // Batch creator version
+	F921 string `sil:"CHAR(30)"` // Batch primary key
+	F922 string `sil:"CHAR(30)"` // Batch specific command
+	F930 string `sil:"CHAR(30)"` // Shelf tag type
+	F931 string `sil:"CHAR(30)"` // Batch execution priority
+	F932 string `sil:"CHAR(30)"` // Batch long description
 }
 
 // Table contains the definition of the columns to be inserted
@@ -70,16 +70,8 @@ func New() SIL {
 	return s
 }
 
-// Make makes a sil file of the definiton (as struct) passed
-func Make(name string, definition interface{}) (s SIL) {
-	// AddRpl header information - needs to be dynamic so deletes are possible
-	s.AddRplDCT()
-	s.Table.Name = name
-	s.MakeTable(definition)
-	return s
-}
-
 const (
+	crlf = "\r\n"
 	f902 = "00000001"
 	f903 = "MANUAL"
 	// f901 = "HC"
@@ -90,19 +82,18 @@ const (
 	// f913 = "CREATE DCT"
 )
 
-// AddRplDCT Creates and returns the DCT information
-func (s *SIL) AddRplDCT() {
-	s.ViewHeader.F902 = f902 // Batch identifier
-	s.ViewHeader.F903 = f903 // Batch creator
-	s.ViewHeader.F901 = "HM" // Batch type
-	s.ViewHeader.F910 = f910
-	s.ViewHeader.F904 = f904 // Batch destination
-	s.ViewHeader.F909 = f909
-	s.ViewHeader.F912 = "ADDRPL"
-	s.ViewHeader.F913 = "ADDRPL CHANGED OPERATORS"
+// Make makes a sil file of the definiton (as struct) passed
+func Make(name string, definition interface{}) (s SIL) {
+	// AddRpl header information - needs to be dynamic so deletes are possible
+	s.AddRplDCT()
+	s.Table.Name = name
+	s.MakeTable(definition)
+	return s
 }
 
+// Write writes a SIL to a file
 func (s *SIL) Write(filename string) {
+	// create the bytes of the SIL file
 	mydata := s.Create()
 
 	err := ioutil.WriteFile(filename, mydata, 0777)
@@ -116,10 +107,13 @@ func (s *SIL) Write(filename string) {
 // Create creates the SIL structure from the information in the SIL type
 func (s *SIL) Create() []byte {
 	var f [][]byte
+	// Header Insert
 	f = append(f, []byte("INSERT INTO HEADER_DCT VALUES"))
+	// Values to insert into header
 	f = append(f, s.ViewHeader.bytes())
+	// Create View for Data
 	f = append(f, s.viewHeader())
-	f = append(f, []byte("INSERT INTO CLK_CHG VALUES"))
+	f = append(f, []byte("INSERT INTO "+s.Table.Name+"_CHG VALUES"))
 	f = append(f, s.view())
 
 	if len(s.Footer) > 0 {
@@ -145,42 +139,9 @@ func (s *SIL) Append(str string) {
 	return
 }
 
-// gocyclo lint problem
-// needs to follow structure of the view creation where its driven by the type
+// bytes creates the bytes of the header row
 func (h *Header) bytes() []byte {
-	var itms []string
-	len := 30
-	for i := 0; i < len; i++ {
-		var txt string
-		switch i {
-		case 0:
-			txt = text(&h.F901)
-		case 1:
-			txt = text(&h.F902)
-		case 2:
-			txt = text(&h.F903)
-		case 3:
-			txt = text(&h.F904)
-		case 6:
-			txt = JulianNow()
-		case 7:
-			txt = "0000"
-		case 8:
-			txt = JulianNow()
-		case 9:
-			txt = "0000"
-		case 11:
-			txt = text(&h.F912)
-		case 12:
-			txt = text(&h.F913)
-		default:
-			txt = ""
-		}
-		itms = append(itms, txt)
-	}
-	o := strings.Join(itms, ",")
-
-	return []byte("(" + o + ");\r\n")
+	return []byte(MakeRow(h) + ";" + crlf)
 }
 
 func (s *SIL) bytes() []byte {
@@ -199,20 +160,6 @@ func (s *SIL) bytes() []byte {
 	return []byte("(" + o + ");\r\n")
 }
 
-func (s *SIL) tableHeader() []byte {
-	var itms []string
-	for _, col := range s.Table.Columns {
-		var txt string
-
-		txt = col.Name + " " + col.Type
-
-		itms = append(itms, txt)
-	}
-	o := strings.Join(itms, ",")
-
-	return []byte("CREATE TABLE " + s.Table.Name + "_DCT(" + o + ");\r\n")
-}
-
 func (s *SIL) viewHeader() []byte {
 	var itms []string
 	for _, col := range s.Table.Columns {
@@ -227,6 +174,7 @@ func (s *SIL) viewHeader() []byte {
 	return []byte("CREATE VIEW " + s.Table.Name + "_CHG AS SELECT " + o + " FROM " + s.Table.Name + "_DCT;\r\n")
 }
 
+// convert int to string for batches - ints should not have single quotes
 func itoa(i *int) string {
 	if i != nil {
 		return strconv.Itoa(*i)
@@ -234,6 +182,7 @@ func itoa(i *int) string {
 	return ""
 }
 
+// convert anything besides int for LOC - this means put single quotes around it
 func text(t *string) string {
 	if t != nil {
 		return "'" + *t + "'"
