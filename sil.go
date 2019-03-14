@@ -3,7 +3,7 @@ package sil
 import (
 	"fmt"
 	"io/ioutil"
-	"reflect"
+	"log"
 	"strings"
 )
 
@@ -51,7 +51,7 @@ type Header struct {
 // Table contains the definition of the columns to be inserted
 type Table struct {
 	Name    string
-	Columns []Column
+	Columns []string
 }
 
 // Column is each column in a SIL file containing both the name and the type contained
@@ -161,10 +161,7 @@ func (h *Header) bytes() ([]byte, error) {
 
 func (s *SIL) viewHeader() []byte {
 	var itms []string
-	for _, col := range s.Table.Columns {
-		txt := col.Name
-		itms = append(itms, txt)
-	}
+	itms = append(itms, s.Table.Columns...)
 	o := strings.Join(itms, ",")
 
 	return []byte("CREATE VIEW " + s.Table.Name + "_CHG AS SELECT " + o + " FROM " + s.Table.Name + "_DCT;\r\n")
@@ -173,22 +170,11 @@ func (s *SIL) viewHeader() []byte {
 func (s *SIL) view() []byte {
 	var lns []string
 	for _, clk := range s.View.Data {
-		var itms []string
-		values := reflect.ValueOf(clk)
-
-		for i := range s.Table.Columns {
-			value := values.Field(i)
-			var txt string
-			if s.Table.Columns[i].Type == sqlInt {
-				txt = fmt.Sprintf("%v", value)
-			} else {
-				txt = fmt.Sprintf("'%v'", value)
-
-			}
-
-			itms = append(itms, txt)
+		row, err := MakeRow(clk)
+		if err != nil {
+			log.Println("Don't Do this")
 		}
-		lns = append(lns, "("+strings.Join(itms, ",")+")")
+		lns = append(lns, row)
 
 	}
 	cmb := strings.Join(lns, ",\r\n")
