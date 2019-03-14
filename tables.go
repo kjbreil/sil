@@ -30,7 +30,5 @@ func MakeRow(rowData interface{}) (string, error) {
 	fields, values := fieldValue(rowData)
 	// get the data along with setting defaults
 	members, err := forFields(fields, values)
-
-	return (fmt.Sprintf("(%s)", strings.Join(members, ","))), err
-
+	return fmt.Sprintf("(%s)", strings.Join(members, ",")), err
 }
