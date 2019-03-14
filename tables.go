@@ -34,7 +34,7 @@ func (s *SIL) MakeTable(tableType interface{}) {
 		} else {
 			switch typeName {
 			case "int":
-				fieldType = "INTEGER"
+				fieldType = sqlInt
 			case "string":
 				fieldType = "CHAR(30)"
 			default:
@@ -69,7 +69,7 @@ func MakeRow(rowData interface{}) string {
 		}
 
 		// INTEGERS need to be insterted without single quotes, all others with single quotes
-		if tag == "INTEGER" || value.Len() == 0 {
+		if tag == sqlInt || value.Len() == 0 {
 			members = append(members, fmt.Sprintf("%v", value))
 		} else {
 			members = append(members, fmt.Sprintf("'%v'", value))

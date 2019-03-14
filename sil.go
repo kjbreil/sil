@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"reflect"
-	"strconv"
 	"strings"
-	"time"
 )
 
 // SIL is the structure of a SIL file
@@ -70,8 +68,14 @@ func New() SIL {
 	return s
 }
 
+// Some Constants
 const (
-	crlf = "\r\n"
+	crlf   = "\r\n"
+	sqlInt = "INTEGER"
+)
+
+// Bad constants
+const (
 	f902 = "00000001"
 	f903 = "MANUAL"
 	// f901 = "HC"
@@ -113,7 +117,8 @@ func (s *SIL) Create() []byte {
 	f = append(f, s.ViewHeader.bytes())
 	// Create View for Data
 	f = append(f, s.viewHeader())
-	f = append(f, []byte("INSERT INTO "+s.Table.Name+"_CHG VALUES"))
+	// #nosec
+	f = append(f, []byte(fmt.Sprintf("INSERT INTO %s_CHG VALUES", s.Table.Name)))
 	f = append(f, s.view())
 
 	if len(s.Footer) > 0 {
@@ -136,7 +141,6 @@ func (s *SIL) Create() []byte {
 // Append adds a line to the bottom of the SIL file
 func (s *SIL) Append(str string) {
 	s.Footer = append(s.Footer, str)
-	return
 }
 
 // bytes creates the bytes of the header row
@@ -144,50 +148,15 @@ func (h *Header) bytes() []byte {
 	return []byte(MakeRow(h) + ";" + crlf)
 }
 
-func (s *SIL) bytes() []byte {
-	var itms []string
-	for i := range s.Table.Columns {
-		var txt string
-		switch i {
-		case 0:
-		default:
-			txt = ""
-		}
-		itms = append(itms, txt)
-	}
-	o := strings.Join(itms, ",")
-
-	return []byte("(" + o + ");\r\n")
-}
-
 func (s *SIL) viewHeader() []byte {
 	var itms []string
 	for _, col := range s.Table.Columns {
-		var txt string
-
-		txt = col.Name
-
+		txt := col.Name
 		itms = append(itms, txt)
 	}
 	o := strings.Join(itms, ",")
 
 	return []byte("CREATE VIEW " + s.Table.Name + "_CHG AS SELECT " + o + " FROM " + s.Table.Name + "_DCT;\r\n")
-}
-
-// convert int to string for batches - ints should not have single quotes
-func itoa(i *int) string {
-	if i != nil {
-		return strconv.Itoa(*i)
-	}
-	return ""
-}
-
-// convert anything besides int for LOC - this means put single quotes around it
-func text(t *string) string {
-	if t != nil {
-		return "'" + *t + "'"
-	}
-	return ""
 }
 
 func (s *SIL) view() []byte {
@@ -199,7 +168,7 @@ func (s *SIL) view() []byte {
 		for i := range s.Table.Columns {
 			value := values.Field(i)
 			var txt string
-			if s.Table.Columns[i].Type == "INTEGER" {
+			if s.Table.Columns[i].Type == sqlInt {
 				txt = fmt.Sprintf("%v", value)
 			} else {
 				txt = fmt.Sprintf("'%v'", value)
@@ -216,49 +185,4 @@ func (s *SIL) view() []byte {
 
 	return []byte(cmb)
 
-}
-
-func (v *View) addCLK(c CLK) {
-	v.Data = append(v.Data, c)
-	return
-}
-
-// AddUser adds a user to the CLK
-func (v *View) AddUser(u User) {
-	if u.Level == 0 {
-		return
-	}
-	var l CLK
-	l.F1185 = u.Number
-	l.F1126 = u.Number
-	l.F1127 = u.Short
-	l.F1142 = u.Level
-	l.F1143 = u.First
-	l.F1144 = u.Last
-	l.F1145 = u.Birthdate
-
-	// constants
-	l.F253 = JulianTime()
-	l.F1001 = 1
-	l.F902 = "MANUAL"
-	l.F1000 = "PAL"
-	// l.F1964 = "999"
-
-	v.Data = append(v.Data, l)
-}
-
-// JulianDate takes a time.Time and turns it into a julien date - just formatting
-func JulianDate(t time.Time) string {
-	return fmt.Sprintf("%04d%03d", t.Year(), t.YearDay())
-}
-
-// JulianNow returns the julian date for right now
-func JulianNow() string {
-	return JulianDate(time.Now())
-}
-
-// JulianTime is the julien date with a time formatted after
-func JulianTime() string {
-	n := time.Now()
-	return fmt.Sprintf("%v %02d:%02d:%02d", JulianNow(), n.Hour(), n.Minute(), n.Second())
 }
