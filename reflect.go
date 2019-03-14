@@ -70,7 +70,7 @@ func silTag(tag string, value *reflect.Value) string {
 	switch {
 	case tag == sqlInt && value.Type().Name() == "int":
 		return fmt.Sprintf("%v", value.Int())
-	case value.String() == "":
+	case value.String() == "" || tag == sqlInt:
 		return fmt.Sprintf("%v", value.String())
 	default:
 		return fmt.Sprintf("'%v'", value.String())
