@@ -2,7 +2,6 @@ package sil
 
 import (
 	"fmt"
-	"reflect"
 	"strings"
 )
 
@@ -13,7 +12,7 @@ import (
 // this first looks to a sil tag on the type to assign the SQL type otherwise tries to predict
 func (s *SIL) MakeTable(tableType interface{}) {
 	// reflect the tableType to get the fields
-	fields := reflect.TypeOf(tableType)
+	fields, _ := fieldValue(tableType)
 
 	// loop over the fields
 	for i := 0; i < fields.NumField(); i++ {
@@ -56,15 +55,8 @@ func MakeRow(rowData interface{}) string {
 	// create members to hold the strings to join later
 	var members []string
 
-	fields := reflect.TypeOf(rowData)
-	values := reflect.ValueOf(rowData)
+	fields, values := fieldValue(rowData)
 
-	// check if the interface is a pointer and then get the elements that it points
-	// to - fixes panic: reflect: NumField of non-struct type
-	if fields.Kind() == reflect.Ptr && fields.Elem().Kind() == reflect.Struct {
-		fields = fields.Elem()
-		values = values.Elem()
-	}
 	for i := 0; i < fields.NumField(); i++ {
 		field := fields.Field(i)
 		value := values.Field(i)

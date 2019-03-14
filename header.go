@@ -2,7 +2,6 @@ package sil
 
 import (
 	"fmt"
-	"reflect"
 	"strings"
 )
 
@@ -11,15 +10,7 @@ func (h *Header) Check() error {
 	// for the error, which gets returned for any defaults inserted
 	var defaulted []string
 
-	fields := reflect.TypeOf(h)
-	values := reflect.ValueOf(h)
-
-	// check if the interface is a pointer and then get the elements that it points
-	// to - fixes panic: reflect: NumField of non-struct type
-	if fields.Kind() == reflect.Ptr && fields.Elem().Kind() == reflect.Struct {
-		fields = fields.Elem()
-		values = values.Elem()
-	}
+	fields, values := fieldValue(h)
 
 	for i := 0; i < fields.NumField(); i++ {
 		field := fields.Field(i)
@@ -31,7 +22,7 @@ func (h *Header) Check() error {
 		}
 		// get the default tag
 		tag := field.Tag.Get("default")
-		// if there is no sil tag skip
+		// if there is no default tag skip
 		if tag == "" {
 			continue
 		}
