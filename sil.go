@@ -18,30 +18,35 @@ type SIL struct {
 	SILDescription string
 }
 
-// Header tells the system what the SIL file is doing
+// Header tells the system what the SIL file is doing.
+// Data type is only correct for INTEGER's, but this works, essentially for the
+// header all you need to make the file is order and INTEGER
+// defaults are the minimum amount of information LOC requires to
+// process a batch
+// note: a default of NOW defaults to JulianNow
 type Header struct {
-	F901 string `sil:"CHAR(30)"`                    // Batch type
-	F902 string `sil:"CHAR(30)" default:"00000001"` // Batch identifier
-	F903 string `sil:"CHAR(30)"`                    // Batch creator
-	F904 string `sil:"CHAR(30)"`                    // Batch destination
-	F905 string `sil:"CHAR(30)"`                    // Batch audit file
-	F906 string `sil:"CHAR(30)"`                    // Batch response file
-	F907 string `sil:"INTEGER"`                     // Batch ending date
-	F908 string `sil:"INTEGER"`                     // Batch ending time
-	F909 string `sil:"INTEGER"`                     // Batch active date
-	F910 string `sil:"INTEGER"`                     // Batch active time
-	F911 string `sil:"CHAR(30)"`                    // Batch purge date
-	F912 string `sil:"CHAR(30)"`                    // Batch action type
-	F913 string `sil:"CHAR(30)"`                    // Batch description
-	F914 string `sil:"CHAR(30)"`                    // Batch user 1 (state)
-	F918 string `sil:"CHAR(30)"`                    // Batch maximum error count
-	F919 string `sil:"CHAR(30)"`                    // Batch file version
-	F920 string `sil:"CHAR(30)"`                    // Batch creator version
-	F921 string `sil:"CHAR(30)"`                    // Batch primary key
-	F922 string `sil:"CHAR(30)"`                    // Batch specific command
-	F930 string `sil:"CHAR(30)"`                    // Shelf tag type
-	F931 string `sil:"CHAR(30)"`                    // Batch execution priority
-	F932 string `sil:"CHAR(30)"`                    // Batch long description
+	F901 string `sil:"CHAR(30)" default:"HM"`             // Batch type
+	F902 string `sil:"CHAR(30)" default:"00000001"`       // Batch identifier
+	F903 string `sil:"CHAR(30)" default:"MANUAL"`         // Batch creator
+	F904 string `sil:"CHAR(30)" default:"PAL"`            // Batch destination
+	F905 string `sil:"CHAR(30)"`                          // Batch audit file
+	F906 string `sil:"CHAR(30)"`                          // Batch response file
+	F907 string `sil:"INTEGER"`                           // Batch ending date
+	F908 string `sil:"INTEGER"`                           // Batch ending time
+	F909 string `sil:"INTEGER" default:"NOW"`             // Batch active date
+	F910 string `sil:"INTEGER" default:"NOW"`             // Batch active time
+	F911 string `sil:"CHAR(30)"`                          // Batch purge date
+	F912 string `sil:"CHAR(30)" default:"ADDRPL"`         // Batch action type
+	F913 string `sil:"CHAR(30)" default:"ADDRPL FROM GO"` // Batch description
+	F914 string `sil:"CHAR(30)"`                          // Batch user 1 (state)
+	F918 string `sil:"CHAR(30)"`                          // Batch maximum error count
+	F919 string `sil:"CHAR(30)"`                          // Batch file version
+	F920 string `sil:"CHAR(30)"`                          // Batch creator version
+	F921 string `sil:"CHAR(30)"`                          // Batch primary key
+	F922 string `sil:"CHAR(30)"`                          // Batch specific command
+	F930 string `sil:"CHAR(30)"`                          // Shelf tag type
+	F931 string `sil:"CHAR(30)"`                          // Batch execution priority
+	F932 string `sil:"CHAR(30)"`                          // Batch long description
 }
 
 // Table contains the definition of the columns to be inserted
@@ -72,18 +77,6 @@ func New() SIL {
 const (
 	crlf   = "\r\n"
 	sqlInt = "INTEGER"
-)
-
-// Bad constants
-const (
-	f902 = "00000001"
-	f903 = "MANUAL"
-	// f901 = "HC"
-	f904 = "PAL"
-	f909 = "000000"
-	f910 = "0000"
-	// f912 = "LOAD"
-	// f913 = "CREATE DCT"
 )
 
 // Make makes a sil file of the definiton (as struct) passed

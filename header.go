@@ -1,9 +1,15 @@
 package sil
 
-import "reflect"
+import (
+	"fmt"
+	"reflect"
+	"strings"
+)
 
 // Check and fix a header
 func (h *Header) Check() error {
+	// for the error, which gets returned for any defaults inserted
+	var defaulted []string
 
 	fields := reflect.TypeOf(h)
 	values := reflect.ValueOf(h)
@@ -35,8 +41,12 @@ func (h *Header) Check() error {
 			switch value.Type().Name() {
 			case "string":
 				value.SetString(tag)
+				defaulted = append(defaulted, field.Name)
 			}
 		}
+	}
+	if len(defaulted) != 0 {
+		return fmt.Errorf("defaults inserted: %s", strings.Join(defaulted, ","))
 	}
 	return nil
 }
@@ -44,12 +54,9 @@ func (h *Header) Check() error {
 // AddRplDCT Creates and returns the DCT information
 // Needs to be replaced
 func (s *SIL) AddRplDCT() {
-	s.ViewHeader.F902 = f902 // Batch identifier
-	s.ViewHeader.F903 = f903 // Batch creator
-	s.ViewHeader.F901 = "HM" // Batch type
-	s.ViewHeader.F910 = f910
-	s.ViewHeader.F904 = f904 // Batch destination
-	s.ViewHeader.F909 = f909
-	s.ViewHeader.F912 = "ADDRPL"
-	s.ViewHeader.F913 = "ADDRPL CHANGED OPERATORS"
+
+	err := s.ViewHeader.Check()
+	if err != nil {
+		fmt.Println(err)
+	}
 }
