@@ -126,7 +126,7 @@ func (s *SIL) Bytes() (fwn []byte, err error) {
 	f = append(f, s.view())
 
 	if len(s.Footer) > 0 {
-		f = append(f, []byte("\r\n\r\n"))
+		f = append(f, []byte(crlf+crlf))
 		for _, es := range s.Footer {
 			f = append(f, []byte(es))
 		}
@@ -135,7 +135,7 @@ func (s *SIL) Bytes() (fwn []byte, err error) {
 
 	for _, eba := range f {
 		fwn = append(fwn, eba...)
-		fwn = append(fwn, []byte("\r\n")...)
+		fwn = append(fwn, []byte(crlf)...)
 	}
 
 	return fwn, nil
