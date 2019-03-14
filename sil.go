@@ -78,6 +78,14 @@ const (
 	sqlInt = "INTEGER"
 )
 
+// Batch Type Name Constants
+const (
+	ADD    = "ADD"
+	ADDRPL = "ADDRPL"
+	CHANGE = "CHANGE"
+	REMOVE = "REMOVE"
+)
+
 // Make makes a sil file of the definiton (as struct) passed
 func Make(name string, definition interface{}) (s SIL) {
 	s.Table.Name = name
