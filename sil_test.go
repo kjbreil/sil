@@ -16,7 +16,10 @@ func TestHeader(t *testing.T) {
 
 	h.check()
 
-	s := MakeRow(h)
+	s, err := MakeRow(h)
+	if err != nil {
+		t.Fatalf("i had an errur: %v", err)
+	}
 
 	if s != "('HM','00000001','MANUAL','PAL',,,"+JulianNow()+",0000,"+JulianNow()+",0000,,'ADDRPL','ADDRPL FROM GO',,,,,,,,,)" {
 		t.Fail()

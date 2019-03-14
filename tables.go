@@ -51,12 +51,12 @@ func (s *SIL) MakeTable(tableType interface{}) {
 }
 
 // MakeRow makes a row of data to be inserted based on the type definition and data in the object
-func MakeRow(rowData interface{}) string {
+func MakeRow(rowData interface{}) (string, error) {
 	// get the fields and values
 	fields, values := fieldValue(rowData)
 	// get the data along with setting defaults
-	members := forFields(fields, values)
+	members, err := forFields(fields, values)
 
-	return (fmt.Sprintf("(%s)", strings.Join(members, ",")))
+	return (fmt.Sprintf("(%s)", strings.Join(members, ","))), err
 
 }

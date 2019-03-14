@@ -3,6 +3,7 @@ package sil
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 )
 
 func fieldValue(tableType interface{}) (reflect.Type, reflect.Value) {
@@ -18,30 +19,43 @@ func fieldValue(tableType interface{}) (reflect.Type, reflect.Value) {
 	return fields, values
 }
 
-func forFields(fields reflect.Type, values reflect.Value) (members []string) {
+func forFields(fields reflect.Type, values reflect.Value) (members []string, err error) {
+Fields:
 	for i := 0; i < fields.NumField(); i++ {
 		field := fields.Field(i)
 		value := values.Field(i)
 
-		sil := field.Tag.Get("sil")
+		s := field.Tag.Get("sil")
 		// if there is no sil tag skip
-		if sil == "" {
+		if s == "" {
 			continue
 		}
 
-		members = append(members, silTag(sil, value.String()))
+		members = append(members, silTag(s, value.String()))
 
 		// get the default tag
 		def := field.Tag.Get("default")
-		// if there is no default tag skip
-		if def == "" {
-			continue
+		// switch on default tag for special functions and skipping
+		switch def {
+		case "":
+			continue Fields
+		case "NOW":
+			def = JulianNow()
 		}
 
 		// if the value is not there insert default
 		if value.Len() == 0 {
 			switch value.Type().Name() {
-			case "string":
+			case "int":
+				// declare is so we don't shadow the err below
+				var is int64
+				is, err = strconv.ParseInt(def, 10, 64)
+				// the default did not convert to int so freak the f out
+				if err != nil {
+					return members, fmt.Errorf("default tag not int: %v", err)
+				}
+				value.SetInt(is)
+			case "string": // strings fall in here
 				value.SetString(def)
 			}
 		}

@@ -89,27 +89,39 @@ func Make(name string, definition interface{}) (s SIL) {
 }
 
 // Write writes a SIL to a file
-func (s *SIL) Write(filename string) {
+func (s *SIL) Write(filename string) error {
 	// create the bytes of the SIL file
-	d := s.Bytes()
-
-	err := ioutil.WriteFile(filename, d, 0777)
-	// handle this error
+	d, err := s.Bytes()
 	if err != nil {
-		// print it out
-		fmt.Println(err)
+		return fmt.Errorf("sil bytes conversion error: %v", err)
 	}
+
+	err = ioutil.WriteFile(filename, d, 0777)
+	// return the error details
+	if err != nil {
+		return fmt.Errorf("ioutil error: %v", err)
+	}
+	return nil
 }
 
 // Bytes creates the SIL structure from the information in the SIL type
-func (s *SIL) Bytes() []byte {
-	s.Header.check()
+func (s *SIL) Bytes() (fwn []byte, err error) {
+	err = s.Header.check()
+	if err != nil {
+		return
+	}
+
+	var bts []byte
 
 	var f [][]byte
 	// Header Insert
 	f = append(f, []byte("INSERT INTO HEADER_DCT VALUES"))
 	// Values to insert into header
-	f = append(f, s.Header.bytes())
+	bts, err = s.Header.bytes()
+	if err != nil {
+		return
+	}
+	f = append(f, bts)
 	// Create View for Data
 	f = append(f, s.viewHeader())
 	// #nosec
@@ -124,18 +136,18 @@ func (s *SIL) Bytes() []byte {
 		f = append(f, []byte("\r\n"))
 	}
 
-	var fwn []byte
 	for _, eba := range f {
 		fwn = append(fwn, eba...)
 		fwn = append(fwn, []byte("\r\n")...)
 	}
 
-	return fwn
+	return fwn, nil
 }
 
 // String returns a string of a SIL file, wrapper for Bytes()
-func (s *SIL) String() string {
-	return string(s.Bytes())
+func (s *SIL) String() (string, error) {
+	b, e := s.Bytes()
+	return string(b), e
 }
 
 // Append adds a line to the bottom of the SIL file
@@ -144,8 +156,9 @@ func (s *SIL) Append(str string) {
 }
 
 // bytes creates the bytes of the header row
-func (h *Header) bytes() []byte {
-	return []byte(MakeRow(h) + ";" + crlf)
+func (h *Header) bytes() ([]byte, error) {
+	s, e := MakeRow(h)
+	return []byte(s + ";" + crlf), e
 }
 
 func (s *SIL) viewHeader() []byte {
