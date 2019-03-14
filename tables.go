@@ -16,37 +16,11 @@ func (s *SIL) MakeTable(tableType interface{}) {
 
 	// loop over the fields
 	for i := 0; i < fields.NumField(); i++ {
+
 		// get the single field
 		field := fields.Field(i)
-		// get the tag is it exists
-		tag := field.Tag.Get("sil")
-		typeName := field.Type.Name()
-		var fieldType string
 
-		// if the tag is not blank then force uppercase on tag just in case
-		// otherwise try and predict, if that fails it uses the GO type name which will
-		// not work so should error. I still haven't decided how to handle pointers or
-		// bad references in the type definitions
-		if tag != "" {
-			fieldType = strings.ToUpper(tag)
-
-		} else {
-			switch typeName {
-			case "int":
-				fieldType = sqlInt
-			case "string":
-				fieldType = "CHAR(30)"
-			default:
-				fieldType = typeName
-			}
-		}
-
-		column := Column{
-			Name: field.Name,
-			Type: fieldType,
-		}
-
-		s.Table.Columns = append(s.Table.Columns, column)
+		s.Table.Columns = append(s.Table.Columns, field.Name)
 	}
 }
 
