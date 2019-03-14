@@ -9,13 +9,11 @@ import (
 
 // SIL is the structure of a SIL file
 type SIL struct {
-	Table          Table
-	Header         Header
-	View           View
-	Footer         []string
-	TableType      interface{}
-	SILType        string
-	SILDescription string
+	Table     Table
+	Header    Header
+	View      View
+	Footer    []string
+	TableType interface{}
 }
 
 // Header tells the system what the SIL file is doing.
@@ -23,7 +21,8 @@ type SIL struct {
 // header all you need to make the file is order and INTEGER
 // defaults are the minimum amount of information LOC requires to
 // process a batch
-// note: a default of NOW defaults to JulianNow
+// note: a default of NOW inserts to JulianNow
+// F912 can be ADD, ADDRPL, CHANGE and REMOVE
 type Header struct {
 	F901 string `sil:"CHAR(30)" default:"HM"`             // Batch type
 	F902 string `sil:"CHAR(30)" default:"00000001"`       // Batch identifier
