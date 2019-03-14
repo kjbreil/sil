@@ -58,6 +58,13 @@ func MakeRow(rowData interface{}) string {
 
 	fields := reflect.TypeOf(rowData)
 	values := reflect.ValueOf(rowData)
+
+	// check if the interface is a pointer and then get the elements that it points
+	// to - fixes panic: reflect: NumField of non-struct type
+	if fields.Kind() == reflect.Ptr && fields.Elem().Kind() == reflect.Struct {
+		fields = fields.Elem()
+		values = values.Elem()
+	}
 	for i := 0; i < fields.NumField(); i++ {
 		field := fields.Field(i)
 		value := values.Field(i)
