@@ -31,7 +31,7 @@ Fields:
 			continue
 		}
 
-		members = append(members, silTag(s, value.String()))
+		members = append(members, silTag(s, &value))
 
 		// get the default tag
 		def := field.Tag.Get("default")
@@ -63,11 +63,15 @@ Fields:
 	return
 }
 
-func silTag(tag string, value string) string {
+func silTag(tag string, value *reflect.Value) string {
 
 	// INTEGERS need to be insterted without single quotes, all others with single quotes
-	if tag == sqlInt || value == "" {
-		return fmt.Sprintf("%v", value)
+	switch {
+	case tag == sqlInt && value.Type().Name() == "int":
+		return fmt.Sprintf("%v", value.Int())
+	case value.String() == "":
+		return fmt.Sprintf("%v", value.String())
+	default:
+		return fmt.Sprintf("'%v'", value.String())
 	}
-	return fmt.Sprintf("'%v'", value)
 }
