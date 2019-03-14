@@ -20,8 +20,8 @@ type SIL struct {
 
 // Header tells the system what the SIL file is doing
 type Header struct {
-	F901 string `sil:"CHAR(30)" default:"00000001"` // Batch type
-	F902 string `sil:"CHAR(30)"`                    // Batch identifier
+	F901 string `sil:"CHAR(30)"`                    // Batch type
+	F902 string `sil:"CHAR(30)" default:"00000001"` // Batch identifier
 	F903 string `sil:"CHAR(30)"`                    // Batch creator
 	F904 string `sil:"CHAR(30)"`                    // Batch destination
 	F905 string `sil:"CHAR(30)"`                    // Batch audit file
