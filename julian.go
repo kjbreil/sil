@@ -15,8 +15,13 @@ func JulianNow() string {
 	return JulianDate(time.Now())
 }
 
-// JulianTime is the julien date with a time formatted after
-func JulianTime() string {
+// JulianTimeNow returns the JulianDate with time for right now
+func JulianTimeNow() string {
 	n := time.Now()
 	return fmt.Sprintf("%v %02d:%02d:%02d", JulianNow(), n.Hour(), n.Minute(), n.Second())
+}
+
+// JulianTimePart takes
+func JulianTimePart(t time.Time) string {
+	return fmt.Sprintf("%02d:%02d:%02d", t.Hour(), t.Minute(), t.Second())
 }
