@@ -34,7 +34,7 @@ type Header struct {
 	F907 string `sil:"INTEGER"`                           // Batch ending date
 	F908 string `sil:"INTEGER"`                           // Batch ending time
 	F909 string `sil:"INTEGER" default:"NOW"`             // Batch active date
-	F910 string `sil:"INTEGER" default:"NOW"`             // Batch active time
+	F910 string `sil:"INTEGER" default:"0000"`            // Batch active time
 	F911 string `sil:"CHAR(30)"`                          // Batch purge date
 	F912 string `sil:"CHAR(30)" default:"ADDRPL"`         // Batch action type
 	F913 string `sil:"CHAR(30)" default:"ADDRPL FROM GO"` // Batch description
