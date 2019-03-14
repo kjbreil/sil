@@ -6,13 +6,6 @@ import (
 
 func TestHeader(t *testing.T) {
 	var h Header
-	h.F912 = "ADDRPL"
-	// h.F913 = "ADDRPL CHANGED OPERATORS"
-
-	h.F907 = JulianNow()
-	h.F908 = "0000"
-	h.F909 = JulianNow()
-	h.F910 = "0000"
 
 	h.check()
 
