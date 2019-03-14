@@ -47,7 +47,7 @@ Fields:
 		if value.Len() == 0 {
 			switch value.Type().Name() {
 			case "int":
-				// declare is so we don't shadow the err below
+				// declare here is to prevent shadow error below
 				var is int64
 				is, err = strconv.ParseInt(def, 10, 64)
 				// the default did not convert to int so freak the f out
@@ -57,6 +57,7 @@ Fields:
 				value.SetInt(is)
 			case "string": // strings fall in here
 				value.SetString(def)
+
 			}
 		}
 	}
