@@ -1,7 +1,6 @@
 package sil
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -15,11 +14,8 @@ func TestHeader(t *testing.T) {
 	h.F909 = JulianNow()
 	h.F910 = "0000"
 
-	err := h.Check()
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-	}
+	h.check()
+
 	s := MakeRow(h)
 
 	if s != "('HM','00000001','MANUAL','PAL',,,"+JulianNow()+",0000,"+JulianNow()+",0000,,'ADDRPL','ADDRPL FROM GO',,,,,,,,,)" {

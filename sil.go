@@ -10,7 +10,7 @@ import (
 // SIL is the structure of a SIL file
 type SIL struct {
 	Table          Table
-	ViewHeader     Header
+	Header         Header
 	View           View
 	Footer         []string
 	TableType      interface{}
@@ -91,9 +91,9 @@ func Make(name string, definition interface{}) (s SIL) {
 // Write writes a SIL to a file
 func (s *SIL) Write(filename string) {
 	// create the bytes of the SIL file
-	mydata := s.Create()
+	d := s.Bytes()
 
-	err := ioutil.WriteFile(filename, mydata, 0777)
+	err := ioutil.WriteFile(filename, d, 0777)
 	// handle this error
 	if err != nil {
 		// print it out
@@ -101,13 +101,15 @@ func (s *SIL) Write(filename string) {
 	}
 }
 
-// Create creates the SIL structure from the information in the SIL type
-func (s *SIL) Create() []byte {
+// Bytes creates the SIL structure from the information in the SIL type
+func (s *SIL) Bytes() []byte {
+	s.Header.check()
+
 	var f [][]byte
 	// Header Insert
 	f = append(f, []byte("INSERT INTO HEADER_DCT VALUES"))
 	// Values to insert into header
-	f = append(f, s.ViewHeader.bytes())
+	f = append(f, s.Header.bytes())
 	// Create View for Data
 	f = append(f, s.viewHeader())
 	// #nosec
