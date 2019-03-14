@@ -20,28 +20,28 @@ type SIL struct {
 
 // Header tells the system what the SIL file is doing
 type Header struct {
-	F901 string `sil:"CHAR(30)"` // Batch type
-	F902 string `sil:"CHAR(30)"` // Batch identifier
-	F903 string `sil:"CHAR(30)"` // Batch creator
-	F904 string `sil:"CHAR(30)"` // Batch destination
-	F905 string `sil:"CHAR(30)"` // Batch audit file
-	F906 string `sil:"CHAR(30)"` // Batch response file
-	F907 string `sil:"INTEGER"`  // Batch ending date
-	F908 string `sil:"INTEGER"`  // Batch ending time
-	F909 string `sil:"INTEGER"`  // Batch active date
-	F910 string `sil:"INTEGER"`  // Batch active time
-	F911 string `sil:"CHAR(30)"` // Batch purge date
-	F912 string `sil:"CHAR(30)"` // Batch action type
-	F913 string `sil:"CHAR(30)"` // Batch description
-	F914 string `sil:"CHAR(30)"` // Batch user 1 (state)
-	F918 string `sil:"CHAR(30)"` // Batch maximum error count
-	F919 string `sil:"CHAR(30)"` // Batch file version
-	F920 string `sil:"CHAR(30)"` // Batch creator version
-	F921 string `sil:"CHAR(30)"` // Batch primary key
-	F922 string `sil:"CHAR(30)"` // Batch specific command
-	F930 string `sil:"CHAR(30)"` // Shelf tag type
-	F931 string `sil:"CHAR(30)"` // Batch execution priority
-	F932 string `sil:"CHAR(30)"` // Batch long description
+	F901 string `sil:"CHAR(30)" default:"00000001"` // Batch type
+	F902 string `sil:"CHAR(30)"`                    // Batch identifier
+	F903 string `sil:"CHAR(30)"`                    // Batch creator
+	F904 string `sil:"CHAR(30)"`                    // Batch destination
+	F905 string `sil:"CHAR(30)"`                    // Batch audit file
+	F906 string `sil:"CHAR(30)"`                    // Batch response file
+	F907 string `sil:"INTEGER"`                     // Batch ending date
+	F908 string `sil:"INTEGER"`                     // Batch ending time
+	F909 string `sil:"INTEGER"`                     // Batch active date
+	F910 string `sil:"INTEGER"`                     // Batch active time
+	F911 string `sil:"CHAR(30)"`                    // Batch purge date
+	F912 string `sil:"CHAR(30)"`                    // Batch action type
+	F913 string `sil:"CHAR(30)"`                    // Batch description
+	F914 string `sil:"CHAR(30)"`                    // Batch user 1 (state)
+	F918 string `sil:"CHAR(30)"`                    // Batch maximum error count
+	F919 string `sil:"CHAR(30)"`                    // Batch file version
+	F920 string `sil:"CHAR(30)"`                    // Batch creator version
+	F921 string `sil:"CHAR(30)"`                    // Batch primary key
+	F922 string `sil:"CHAR(30)"`                    // Batch specific command
+	F930 string `sil:"CHAR(30)"`                    // Shelf tag type
+	F931 string `sil:"CHAR(30)"`                    // Batch execution priority
+	F932 string `sil:"CHAR(30)"`                    // Batch long description
 }
 
 // Table contains the definition of the columns to be inserted
