@@ -52,28 +52,10 @@ func (s *SIL) MakeTable(tableType interface{}) {
 
 // MakeRow makes a row of data to be inserted based on the type definition and data in the object
 func MakeRow(rowData interface{}) string {
-	// create members to hold the strings to join later
-	var members []string
-
+	// get the fields and values
 	fields, values := fieldValue(rowData)
-
-	for i := 0; i < fields.NumField(); i++ {
-		field := fields.Field(i)
-		value := values.Field(i)
-		// get the SIL tag from the object
-		tag := field.Tag.Get("sil")
-		// if there is no sil tag skip
-		if tag == "" {
-			continue
-		}
-
-		// INTEGERS need to be insterted without single quotes, all others with single quotes
-		if tag == sqlInt || value.Len() == 0 {
-			members = append(members, fmt.Sprintf("%v", value))
-		} else {
-			members = append(members, fmt.Sprintf("'%v'", value))
-		}
-	}
+	// get the data along with setting defaults
+	members := forFields(fields, values)
 
 	return (fmt.Sprintf("(%s)", strings.Join(members, ",")))
 

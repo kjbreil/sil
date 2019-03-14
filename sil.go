@@ -133,6 +133,11 @@ func (s *SIL) Bytes() []byte {
 	return fwn
 }
 
+// String returns a string of a SIL file, wrapper for Bytes()
+func (s *SIL) String() string {
+	return string(s.Bytes())
+}
+
 // Append adds a line to the bottom of the SIL file
 func (s *SIL) Append(str string) {
 	s.Footer = append(s.Footer, str)
