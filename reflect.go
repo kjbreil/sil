@@ -36,7 +36,7 @@ Fields:
 
 		// get the default tag
 		def := field.Tag.Get("default")
-		// switch on default tag for special functions and skipping
+		// switch on default tag for special functions
 		switch def {
 		case "":
 			continue Fields
