@@ -20,6 +20,7 @@ func fieldValue(tableType interface{}) (reflect.Type, reflect.Value) {
 }
 
 func forFields(fields reflect.Type, values reflect.Value) (members []string, err error) {
+	// label Fields because of nested loops
 Fields:
 	for i := 0; i < fields.NumField(); i++ {
 		field := fields.Field(i)
