@@ -17,10 +17,10 @@ type SIL struct {
 }
 
 // Header tells the system what the SIL file is doing.
-// Data type is only correct for INTEGER's, but this works, essentially for the
-// header all you need to make the file is order and INTEGER
-// defaults are the minimum amount of information LOC requires to
-// process a batch
+// Since the header insert is not needed the only sil tag that is used is
+// INTEGER - the rest are dummy holders but should get correct and validate data
+// against the sql data type. Does not support pointers at the moment, the type
+// can contain them but they cannot have a sil tag
 // note: a default of NOW inserts to JulianNow
 // F912 can be ADD, ADDRPL, CHANGE and REMOVE
 type Header struct {
@@ -54,7 +54,9 @@ type Table struct {
 	Columns []string
 }
 
-// Column is each column in a SIL file containing both the name and the type contained
+// Column is each column in a SIL file containing both the name and the type 
+// contained. For the data structure this is important because reflecting over
+// each value is wasteful
 type Column struct {
 	Name string
 	Type string
