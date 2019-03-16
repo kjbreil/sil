@@ -5,7 +5,7 @@
 Changing fairly often right now but starting to stabilize on needed API. 
 High level goal is to have a type define the SIL structure and add data and get []bytes representing a complete SIL file that processes without errors.
 
-Like JSON or XML tags are used to define the structure from a  type. Currently there are two tags, sil and default. The sil tag triggers that it will be used to create the sil file data and default will fill in data that is missing but required. Pointers will be optional values but right now they are treated the same as non pointers and processed normally, I would recommend creating any types using pointers for optional values because they work right now and will eventually allow for more compact and smarter SIL file creation.
+Like JSON or XML tags are being used to define the structure of the SIL using a type. Currently there are two tags, sil and default. The sil tag is used to define the data type and default will fill in data that is missing but required. Pointers will be optional values but right now they are treated the same as non pointers and processed normally, I would recommend creating any types using pointers for optional values because they work right now and will eventually allow for more compact and smarter SIL file creation.
 
 Features:
 - [ ] Use GO type as definition
@@ -18,7 +18,7 @@ Features:
 	- [ ] Define table name with struct tag
 	- [x] View Header
 		- [x] respect default tag
-		- [x] check for unsafe edits to either error or correct problems
+		- [x] check for unsafe elements, correct or error as needed
 	- [ ] View Data
 		- [x] Create View data
 		- [ ] only insert optional elements into SIL file when they are used
