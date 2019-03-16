@@ -3,9 +3,9 @@
 ## Create a SIL File in Go
 
 Changing fairly often right now but starting to stabilize on needed API. 
-Working towards passing a SIL type and getting []bytes back of the created SIL file
+High level goal is to have a type define the SIL structure and add data and get []bytes representing a complete SIL file that processes without errors.
 
-Like JSON or XML types in golang tags are used to define the structure from a go type. Currently there are two tags, sil and default. The sil tag triggers that it will be used to create the sil file data and default will fill in data that is missing but required. Pointers will be optional values but right now they are treated the same as non pointers and processed normally. 
+Like JSON or XML tags are used to define the structure from a  type. Currently there are two tags, sil and default. The sil tag triggers that it will be used to create the sil file data and default will fill in data that is missing but required. Pointers will be optional values but right now they are treated the same as non pointers and processed normally, I would recommend creating any types using pointers for optional values because they work right now and will eventually allow for more compact and smarter SIL file creation.
 
 Features:
 - [] Use GO type as definition
