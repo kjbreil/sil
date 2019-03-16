@@ -7,7 +7,7 @@ High level goal is to have a type define the SIL structure and add data and get 
 
 Like JSON or XML tags are being used to define the structure of the SIL using a type. Currently there are two tags, sil and default. The sil tag is used to define the data type and default will fill in data that is missing but required. Pointers will be optional values but right now they are treated the same as non pointers and processed normally, I would recommend creating any types using pointers for optional values because they work right now and will eventually allow for more compact and smarter SIL file creation.
 
-Features:
+### Goals:
 - [ ] Use GO type as definition
 	- [x] Allow pointers to be used for optional elements
 	- [x] single quote for most data types and no quotes for integers
@@ -22,6 +22,7 @@ Features:
 	- [ ] View Data
 		- [x] Create View data
 		- [ ] only insert optional elements into SIL file when they are used
+
 
 ## Example
 

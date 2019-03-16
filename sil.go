@@ -3,7 +3,6 @@ package sil
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"strings"
 )
 
@@ -19,8 +18,8 @@ type SIL struct {
 // Header tells the system what the SIL file is doing.
 // Since the header insert is not needed the only sil tag that is used is
 // INTEGER - the rest are dummy holders but should get correct and validate data
-// against the sql data type. Does not support pointers at the moment, the type
-// can contain them but they cannot have a sil tag
+// against the sql data type. Pointers are not handled normally and shoulk be
+// used for optional elements.
 // note: a default of NOW inserts to JulianNow
 // F912 can be ADD, ADDRPL, CHANGE and REMOVE
 type Header struct {
@@ -54,7 +53,7 @@ type Table struct {
 	Columns []string
 }
 
-// Column is each column in a SIL file containing both the name and the type 
+// Column is each column in a SIL file containing both the name and the type
 // contained. For the data structure this is important because reflecting over
 // each value is wasteful
 type Column struct {
@@ -133,14 +132,19 @@ func (s *SIL) Bytes() (fwn []byte, err error) {
 	f = append(f, s.viewHeader())
 	// #nosec
 	f = append(f, []byte(fmt.Sprintf("INSERT INTO %s_CHG VALUES", s.Table.Name)))
-	f = append(f, s.view())
+
+	bts, err = s.view()
+	if err != nil {
+		return
+	}
+	f = append(f, bts)
 
 	if len(s.Footer) > 0 {
 		f = append(f, []byte(crlf+crlf))
 		for _, es := range s.Footer {
 			f = append(f, []byte(es))
 		}
-		f = append(f, []byte("\r\n"))
+		f = append(f, []byte(crlf))
 	}
 
 	for _, eba := range f {
@@ -176,19 +180,19 @@ func (s *SIL) viewHeader() []byte {
 	return []byte("CREATE VIEW " + s.Table.Name + "_CHG AS SELECT " + o + " FROM " + s.Table.Name + "_DCT;\r\n")
 }
 
-func (s *SIL) view() []byte {
+func (s *SIL) view() ([]byte, error) {
 	var lns []string
 	for _, clk := range s.View.Data {
 		row, err := MakeRow(clk)
 		if err != nil {
-			log.Println("Don't Do this")
+			return []byte(""), err
 		}
 		lns = append(lns, row)
 
 	}
-	cmb := strings.Join(lns, ",\r\n")
-	cmb = cmb + ";\r\n"
+	cmb := strings.Join(lns, ","+crlf)
+	cmb = cmb + ";" + crlf
 
-	return []byte(cmb)
+	return []byte(cmb), nil
 
 }
