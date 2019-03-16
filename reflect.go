@@ -32,7 +32,7 @@ Fields:
 			continue
 		}
 
-		members = append(members, silTag(s, &value))
+		members = append(members, silTag(s, value))
 
 		// get the default tag
 		def := field.Tag.Get("default")
@@ -44,8 +44,9 @@ Fields:
 			def = JulianNow()
 		}
 
-		// if the value is not there insert default
-		if value.Len() == 0 {
+		// if the value is not there insert default. Defaults can only be on
+		// required fields
+		if value.Len() == 0 && value.Kind() != reflect.Ptr {
 			switch value.Type().Name() {
 			case "int":
 				// declare here is to prevent shadow error below
@@ -65,12 +66,20 @@ Fields:
 	return
 }
 
-func silTag(tag string, value *reflect.Value) string {
+func silTag(tag string, value reflect.Value) string {
 
 	// INTEGERS need to be insterted without single quotes, all others with single quotes
 	switch {
+	// if the element is a pointer and is nil return a blank
+	case value.Kind() == reflect.Ptr && value.IsNil():
+		return ""
+	// if the element is a pointer and has a value assign the "value" variable
+	// to the element of contained in the pointer and fallthrough to next case
+	case value.Kind() == reflect.Ptr:
+		value = value.Elem()
+		fallthrough
 	case tag == sqlInt && value.Type().Name() == "int":
-		return fmt.Sprintf("%v", value.Int())
+		return fmt.Sprintf("%d", value.Int())
 	case value.String() == "" || tag == sqlInt:
 		return fmt.Sprintf("%v", value.String())
 	default:
