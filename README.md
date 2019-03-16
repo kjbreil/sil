@@ -9,22 +9,28 @@ Mostly stripped of CLK specific code, just not tested with another type yet. Ref
 
 A tag is needed for the F code, this way the type elements can be human readable
 
+Features:
+- [x] Use GO type as definition
+	- [x] Allow pointers to be used for optional elements
+	- [x] single quote for most data types and no quotes for integers
+		- [x] confirm data is integer for integer types
+- [] Create View
+	- [] Define table name with struct tag
+	- [x] View Header
+		- [x] respect default tag
+
+		- [x] check for unsafe edits to either error or correct problems
+	- [] View Data
+		- [] only insert optional elements into SIL file when they are used
+
+
 ```Go
 
-// Define type of batch
-type CLK struct {
-	F1185 int    `sil:"INTEGER"`  // User order number
-	F1001 int    `sil:"INTEGER"`  // Record status
-	F1126 int    `sil:"INTEGER"`  // User number
-	F253  string `sil:"DATE(7)"`  // Last change date
-	F902  string `sil:"CHAR(8)"`  // Batch identifier
-	F1000 string `sil:"CHAR(5)"`  // Target Identifier
-	F1127 string `sil:"CHAR(30)"` // User short name
-	F1142 int    `sil:"INTEGER"`  // User restriction level
-	F1143 string `sil:"CHAR(30)"`
-	F1144 string `sil:"CHAR(30)"`
-	F1145 string `sil:"DATE(7)"` // Operator Birthdate
-	F1964 string `sil:"CHAR(4)"` // Store responsible
+// Define type of batch - incomplete example, OBJ table has more required fields
+type OBJ struct {
+	F01 string `sil:"CHAR(13)"` // Product code, max 13 digits BUT is stored as text in LOC
+	F16 int    `sil:"INTEGER"`
+	F17 *int   `sil:"INTEGER"`
 }
 
 // I'll write more soon
