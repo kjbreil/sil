@@ -25,6 +25,7 @@ Features:
 
 
 ```Go
+package main
 
 // Define type of batch - incomplete example, OBJ table has more required fields
 type OBJ struct {
@@ -32,28 +33,34 @@ type OBJ struct {
 	F16 int    `sil:"INTEGER"`
 	F17 *int   `sil:"INTEGER"`
 }
-// Need to pass the name along with the type of data that will be passed
-s := Make("OBJ", OBJ{})
-// this will be a pointer so assigning now to point to later
-n := 1
-// assign a value with data in the pointer
-s.View.Data = append(s.View.Data, OBJ{
-	F01: "0000000009087",
-	F16: 17,
-	F17: &n,
-})
 
-// leave the pointer out, a row will still be inserted
-s.View.Data = append(s.View.Data, OBJ{
-	F01: "0000000009902",
-	F16: 17,
-})
-// return []bytes of the sil file
-b, err := s.Bytes()
-if err != nil {
-	fmt.Println(err)
+func main() {
+	// Need to pass the name along with the type of data that will be passed
+	s := Make("OBJ", OBJ{})
+
+	// this will be a pointer so assigning now to point to later
+	n := 1
+
+	// assign a value with data in the pointer
+	s.View.Data = append(s.View.Data, OBJ{
+		F01: "0000000009087",
+		F16: 17,
+		F17: &n,
+	})
+
+	// leave the pointer out, a row will still be inserted
+	s.View.Data = append(s.View.Data, OBJ{
+		F01: "0000000009902",
+		F16: 17,
+	})
+
+	// return []bytes of the sil file
+	b, err := s.Bytes()
+	if err != nil {
+		fmt.Println(err)
+	}
+	
+	// print the SIL file to console
+	fmt.Println(string(b))
 }
-// print the SIL file to console
-fmt.Println(string(b))
-
 ```
