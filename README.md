@@ -23,6 +23,7 @@ Features:
 		- [x] Create View data
 		- [ ] only insert optional elements into SIL file when they are used
 
+## Example
 
 ```Go
 package main
