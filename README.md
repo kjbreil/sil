@@ -12,16 +12,16 @@ Features:
 	- [x] Allow pointers to be used for optional elements
 	- [x] single quote for most data types and no quotes for integers
 		- [x] confirm data is integer for integer types
-	- [] Validate that element name is a proper SIL type
-	- [] Validate that data passed for Rows matches type used for Make
-- [] Create View
-	- [] Define table name with struct tag
+	- [ ] Validate that element name is a proper SIL type
+	- [ ] Validate that data passed for Rows matches type used for Make
+- [ ] Create View
+	- [ ] Define table name with struct tag
 	- [x] View Header
 		- [x] respect default tag
 		- [x] check for unsafe edits to either error or correct problems
-	- [] View Data
+	- [ ] View Data
 		- [x] Create View data
-		- [] only insert optional elements into SIL file when they are used
+		- [ ] only insert optional elements into SIL file when they are used
 
 
 ```Go
