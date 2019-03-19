@@ -67,12 +67,6 @@ type View struct {
 	Data []interface{}
 }
 
-// New returns a new SIL
-func New() SIL {
-	var s SIL
-	return s
-}
-
 // Some Constants
 const (
 	crlf   = "\r\n"
@@ -86,6 +80,12 @@ const (
 	CHANGE = "CHANGE"
 	REMOVE = "REMOVE"
 )
+
+// New returns a new SIL
+func New() SIL {
+	var s SIL
+	return s
+}
 
 // Make makes a sil file of the definiton (as struct) passed
 func Make(name string, definition interface{}) (s SIL) {
