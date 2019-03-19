@@ -182,8 +182,8 @@ func (s *SIL) viewHeader() []byte {
 
 func (s *SIL) view() ([]byte, error) {
 	var lns []string
-	for _, clk := range s.View.Data {
-		row, err := MakeRow(clk)
+	for _, e := range s.View.Data {
+		row, err := MakeRow(e)
 		if err != nil {
 			return []byte(""), err
 		}

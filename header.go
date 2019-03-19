@@ -4,7 +4,7 @@ package sil
 func (h *Header) check() error {
 	fields, values := fieldValue(h)
 
-	_, err := forFields(fields, values)
+	_, err := forFields(fields, values, true)
 	if err != nil {
 		return err
 	}

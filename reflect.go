@@ -19,7 +19,8 @@ func fieldValue(tableType interface{}) (reflect.Type, reflect.Value) {
 	return fields, values
 }
 
-func forFields(fields reflect.Type, values reflect.Value) (members []string, err error) {
+// forFields loops over each field and returns the "members"
+func forFields(fields reflect.Type, values reflect.Value, optional bool) (members []string, err error) {
 	// label Fields because of nested loops
 Fields:
 	for i := 0; i < fields.NumField(); i++ {
@@ -32,7 +33,17 @@ Fields:
 			continue
 		}
 
-		members = append(members, silTag(s, value))
+		// if optional is false or the value is there is a value add it to members
+
+		switch {
+		case !optional:
+			members = append(members, silTag(s, value))
+		case value.Kind() != reflect.Ptr:
+			members = append(members, silTag(s, value))
+		case !value.IsNil():
+			members = append(members, silTag(s, value))
+
+		}
 
 		// get the default tag
 		def := field.Tag.Get("default")
