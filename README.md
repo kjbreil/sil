@@ -16,6 +16,7 @@ Like JSON or XML tags are being used to define the structure of the SIL using a 
 		- [x] confirm data is integer for integer types
 	- [ ] Validate that element name is a proper SIL type
 	- [ ] Validate that data passed for Rows matches type used for Make
+	- [ ] Accept time.Time as type for DATE(7)
 - [ ] Header
 	- [ ] Batch number creation
 - [ ] View
