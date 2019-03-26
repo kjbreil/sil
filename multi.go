@@ -6,15 +6,15 @@ import "fmt"
 func (s *SIL) Optional() (sils []SIL, err error) {
 	colmap := make(map[int][]interface{})
 
-	for _, e := range s.View.Data {
+	for i := range s.View.Data {
 		// get the fields and values
-		fields, values := fieldValue(e)
+		fields, values := fieldValue(&s.View.Data[i])
 		members, err := forFields(fields, values, true)
 		if err != nil {
 			return sils, err
 		}
 
-		colmap[len(members)] = append(colmap[len(members)], e)
+		colmap[len(members)] = append(colmap[len(members)], &s.View.Data[i])
 
 	}
 

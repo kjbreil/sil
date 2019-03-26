@@ -19,12 +19,17 @@ func fieldValue(tableType interface{}) (reflect.Type, reflect.Value) {
 	return fields, values
 }
 
+// func process(tableType interface{}) (
+// 	values := reflect.ValueOf(tableType)
+// )
+
 // forFields loops over each field and returns the "members"
 func forFields(fields reflect.Type, values reflect.Value, optional bool) (members []string, err error) {
 	// label Fields because of nested loops
 Fields:
 	for i := 0; i < fields.NumField(); i++ {
 		field := fields.Field(i)
+
 		value := values.Field(i)
 
 		s := field.Tag.Get("sil")
@@ -57,22 +62,27 @@ Fields:
 
 		// if the value is not there insert default. Defaults can only be on
 		// required fields
-		if value.Len() == 0 && value.Kind() != reflect.Ptr {
-			switch value.Type().Name() {
-			case "int":
-				// declare here is to prevent shadow error below
-				var is int64
-				is, err = strconv.ParseInt(def, 10, 64)
-				// the default did not convert to int so freak the f out
-				if err != nil {
-					return members, fmt.Errorf("default tag not int: %v", err)
-				}
-				value.SetInt(is)
-			case "string": // strings fall in here
-				value.SetString(def)
-
+		switch {
+		case !value.CanSet():
+			continue Fields
+		case def == "":
+			continue Fields
+		case def == "NOW":
+			def = JulianNow()
+			fallthrough
+		case value.Kind() == reflect.Int && value.Int() == int64(0):
+			// declare here is to prevent shadow error below
+			var is int64
+			is, err = strconv.ParseInt(def, 10, 64)
+			// the default did not convert to int so freak the f out
+			if err != nil {
+				return members, fmt.Errorf("default tag not int: %v", err)
 			}
+			value.SetInt(is)
+		case value.Kind() == reflect.String && value.Len() == 0:
+			value.SetString(def)
 		}
+
 	}
 	return
 }
