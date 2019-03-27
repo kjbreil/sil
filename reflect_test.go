@@ -10,16 +10,16 @@ import (
 func TestReflect(t *testing.T) {
 	s := Make("CFG", loc.CFG{})
 
-	var c loc.CFG
-	c.F1000 = "001901"
-	c.F1056 = "001"
-	c.F2846 = "GROC_LANE"
-	c.F253 = JulianNow()
-	c.F940 = 999
-	c.F941 = 999
-	c.F1001 = 1
-	c.F1264 = JulianNow()
-
+	c := loc.CFG{
+		F1000: "001901",
+		F1056: "001",
+		F2846: "GROC_LANE",
+		F253:  JulianNow(),
+		F940:  999,
+		F941:  999,
+		F1001: 1,
+		F1264: JulianNow(),
+	}
 	keys := []string{"KEY1", "KEY2"}
 	for range keys {
 		c.F2845 = "SMS"
