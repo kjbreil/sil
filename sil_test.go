@@ -46,26 +46,26 @@ func TestMake(t *testing.T) {
 	t.Fail()
 }
 
-func TestHeader(t *testing.T) {
-	// create a header
-	var h Header
-	// run the check of the header
-	err := h.check()
-	if err != nil {
-		t.Fatalf("failed to check header: %v", err)
-	}
-	// make the header into a row
-	s, err := MakeRow(h)
-	if err != nil {
-		t.Fatalf("failed to make a row: %v", err)
-	}
+// func TestHeader(t *testing.T) {
+// 	// create a header
+// 	var h Header
+// 	// run the check of the header
+// 	err := h.check()
+// 	if err != nil {
+// 		t.Fatalf("failed to check header: %v", err)
+// 	}
+// 	// make the header into a row
+// 	s, err := MakeRow(h)
+// 	if err != nil {
+// 		t.Fatalf("failed to make a row: %v", err)
+// 	}
 
-	// set the reference header to what we should see from defaults
-	reference := "('HM','00000001','MANUAL','PAL',,," + JulianNow() + ",0000," + JulianNow() + ",0000,,'ADDRPL','ADDRPL FROM GO',,,,,,,,,)"
+// 	// set the reference header to what we should see from defaults
+// 	reference := "('HM','00000001','MANUAL','PAL',,," + JulianNow() + ",0000," + JulianNow() + ",0000,,'ADDRPL','ADDRPL FROM GO',,,,,,,,,)"
 
-	if s != reference {
-		t.Fatalf("Created header row did not match expected header row\nWant: %s\nHave: %s", reference, s)
+// 	if s != reference {
+// 		t.Fatalf("Created header row did not match expected header row\nWant: %s\nHave: %s", reference, s)
 
-	}
+// 	}
 
-}
+// }
