@@ -10,12 +10,6 @@ type SIL struct {
 	TableType interface{}
 }
 
-// View holds the data
-type View struct {
-	Name string
-	Data []interface{}
-}
-
 // Some Constants
 const (
 	crlf   = "\r\n"
@@ -36,6 +30,8 @@ func (s *SIL) Bytes() (data []byte, err error) {
 	data = append(data, s.Header.insert()...)
 
 	data = append(data, s.Header.row()...)
+
+	data = append(data, s.View.bytes()...)
 
 	return data, nil
 }

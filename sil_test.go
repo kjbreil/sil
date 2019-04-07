@@ -9,7 +9,7 @@ import (
 // creation from a type
 type OBJ struct {
 	F01 string `sil:"CHAR(13)"`
-	F16 int    `sil:"INTEGER"`
+	F16 int    `sil:"INTEGER" default:"666"`
 	F17 *int   `sil:"INTEGER"`
 }
 
@@ -23,7 +23,6 @@ func TestMake(t *testing.T) {
 	n := 1
 	s.View.Data = append(s.View.Data, OBJ{
 		F01: "0000000009087",
-		F16: 17,
 		F17: &n,
 	})
 	s.View.Data = append(s.View.Data, OBJ{

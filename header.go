@@ -1,6 +1,8 @@
 package sil
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Batch Type Name Constants
 const (
@@ -13,8 +15,8 @@ const (
 // Header tells the system what the SIL file is doing.
 // Since the header insert is not needed the only sil tag that is used is
 // INTEGER - the rest are dummy holders but should get correct and validate data
-// against the sql data type. Pointers are not handled normally and shoulk be
-// used for optional elements.
+// against the sql data type. Pointers are not handled normally and should be
+// used for optional elements. 0000
 // note: a default of NOW inserts to JulianNow
 // F912 can be ADD, ADDRPL, CHANGE and REMOVE
 type Header struct {

@@ -26,17 +26,10 @@ func value(v reflect.Value, f reflect.StructField) *string {
 	if silTag == "" {
 		return nil
 	}
+
 	// get default tag
 	dt := defaultTag(&f)
-	if dt != "" {
-		switch silTag {
-		case "INTEGER":
-		default:
-			dt = fmt.Sprintf("'%s'", dt)
-		}
-		return &dt
 
-	}
 	// return be depending on kind
 	b := kind(&v, &dt)
 	return &b
@@ -56,16 +49,33 @@ func defaultTag(f *reflect.StructField) string {
 	}
 }
 
+// this needs all kinds of work. only works for int and string at the moment
 func kind(v *reflect.Value, dt *string) string {
+	// has default tag boolean
+	hd := len(*dt) != 0
+
 	switch v.Kind() {
+	case reflect.Ptr: // pointer so return kind of Elem()
+		nv := v.Elem()
+		s := kind(&nv, dt)
+		return s
 	case reflect.Int:
-		return strconv.Itoa(int(v.Int()))
-	case reflect.String:
-		if v.Len() == 0 {
-			return v.String()
+		switch {
+		case v.Int() == 0 && hd: // empty INT with default
+			return *dt
+		default:
+			return strconv.Itoa(int(v.Int()))
 		}
-		return fmt.Sprintf("'%s'", v.String())
-	default: // not defined above gets a '', no data comes through
-		return "''"
+	case reflect.String:
+		switch {
+		case v.Len() == 0 && hd: // empty string with default
+			return fmt.Sprintf("'%s'", *dt)
+		case v.Len() == 0: // without default
+			return ""
+		default:
+			return fmt.Sprintf("'%s'", v.String())
+		}
+	default: // not defined above gets a blank entry
+		return ""
 	}
 }
