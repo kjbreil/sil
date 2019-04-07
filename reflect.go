@@ -4,106 +4,68 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
-func fieldValue(tableType interface{}) (reflect.Type, reflect.Value) {
-	fields := reflect.TypeOf(tableType)
-	values := reflect.ValueOf(tableType)
-
-	// check if the interface is a pointer and then get the elements that it points
-	// to - fixes panic: reflect: NumField of non-struct type
-	if fields.Kind() == reflect.Ptr && fields.Elem().Kind() == reflect.Struct {
-		fields = fields.Elem()
-		values = values.Elem()
-	}
-	return fields, values
-}
-
-// func process(tableType interface{}) (
-// 	values := reflect.ValueOf(tableType)
-// )
-
-// forFields loops over each field and returns the "members"
-func forFields(fields reflect.Type, values reflect.Value, optional bool) (members []string, err error) {
-	// label Fields because of nested loops
-Fields:
+func row(rowType interface{}) []byte {
+	values, fields := reflect.ValueOf(rowType), reflect.TypeOf(rowType)
+	// string array
+	var sa []string
+	// loop over the fields
 	for i := 0; i < fields.NumField(); i++ {
-		field := fields.Field(i)
-
-		value := values.Field(i)
-
-		s := field.Tag.Get("sil")
-		// if there is no sil tag skip
-		if s == "" {
-			continue
-		}
-
-		// if optional is false or the value is there is a value add it to members
-
-		switch {
-		case !optional:
-			members = append(members, silTag(s, value))
-		case value.Kind() != reflect.Ptr:
-			members = append(members, silTag(s, value))
-		case !value.IsNil():
-			members = append(members, silTag(s, value))
-
-		}
-
-		// get the default tag
-		def := field.Tag.Get("default")
-		// switch on default tag for special functions
-		switch def {
-		case "":
-			continue Fields
-		case "NOW":
-			def = JulianNow()
-		}
-
-		// if the value is not there insert default. Defaults can only be on
-		// required fields
-		switch {
-		case !value.CanSet():
-			continue Fields
-		case def == "":
-			continue Fields
-		case def == "NOW":
-			def = JulianNow()
-			fallthrough
-		case value.Kind() == reflect.Int && value.Int() == int64(0):
-			// declare here is to prevent shadow error below
-			var is int64
-			is, err = strconv.ParseInt(def, 10, 64)
-			// the default did not convert to int so freak the f out
-			if err != nil {
-				return members, fmt.Errorf("default tag not int: %v", err)
-			}
-			value.SetInt(is)
-		case value.Kind() == reflect.String && value.Len() == 0:
-			value.SetString(def)
-		}
-
+		val := value(values.Field(i), fields.Field(i))
+		sa = append(sa, *val)
 	}
-	return
+	// join the strings with commas and put it in ()
+	s := fmt.Sprintf("(%s)", strings.Join(sa, ","))
+	return []byte(s)
 }
 
-func silTag(tag string, value reflect.Value) string {
+func value(v reflect.Value, f reflect.StructField) *string {
+	silTag := f.Tag.Get("sil")
+	if silTag == "" {
+		return nil
+	}
+	// get default tag
+	dt := defaultTag(&f)
+	if dt != "" {
+		switch silTag {
+		case "INTEGER":
+		default:
+			dt = fmt.Sprintf("'%s'", dt)
+		}
+		return &dt
 
-	// INTEGERS need to be insterted without single quotes, all others with single quotes
-	switch {
-	// if the element is a pointer and is nil return a blank
-	case value.Kind() == reflect.Ptr && value.IsNil():
+	}
+	// return be depending on kind
+	b := kind(&v)
+	return &b
+}
+
+func defaultTag(f *reflect.StructField) string {
+	// get the default tag
+	def := f.Tag.Get("default")
+	// switch on default tag for special functions
+	switch def {
+	case "":
 		return ""
-	// if the element is a pointer and has a value assign the "value" variable
-	// to the element of contained in the pointer and fallthrough to next case
-	case value.Kind() == reflect.Ptr:
-		value = value.Elem()
-		fallthrough
-	case tag == sqlInt && value.Type().Name() == "int":
-		return fmt.Sprintf("%d", value.Int())
-	case value.String() == "" || tag == sqlInt:
-		return fmt.Sprintf("%v", value.String())
+	case "NOW":
+		return JulianNow()
 	default:
-		return fmt.Sprintf("'%v'", value.String())
+		return def
+	}
+}
+
+func kind(v *reflect.Value, dt *string) string {
+	switch v.Kind() {
+	case reflect.Int:
+		return strconv.Itoa(int(v.Int()))
+	case reflect.String:
+		if v.Len() == 0 {
+			return v.String()
+		}
+		return fmt.Sprintf("'%s'", v.String())
+	default: // not defined above gets a '', no data comes through
+		return "''"
 	}
 }

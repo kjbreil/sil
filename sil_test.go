@@ -1,6 +1,7 @@
 package sil
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -30,18 +31,24 @@ func TestMake(t *testing.T) {
 		F16: 17,
 	})
 
-	ss, err := s.Optional()
+	str, err := s.String()
 	if err != nil {
-		t.Fatalf("failed to get optional: %v", err)
+		t.Fatal(err)
 	}
+	t.Log("Putting out")
+	fmt.Println(str)
+	// ss, err := s.Optional()
+	// if err != nil {
+	// 	t.Fatalf("failed to get optional: %v", err)
+	// }
 
-	for _, es := range ss {
-		b, err := es.Bytes()
-		if err != nil {
-			t.Fatalf("failed to convert to bytes with: %v", err)
-		}
-		t.Log(string(b))
-	}
+	// for _, es := range ss {
+	// 	b, err := es.Bytes()
+	// 	if err != nil {
+	// 		t.Fatalf("failed to convert to bytes with: %v", err)
+	// 	}
+	// 	t.Log(string(b))
+	// }
 
 	t.Fail()
 }

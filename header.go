@@ -1,5 +1,7 @@
 package sil
 
+import "fmt"
+
 // Batch Type Name Constants
 const (
 	ADD    = "ADD"
@@ -22,10 +24,10 @@ type Header struct {
 	F904 string `sil:"CHAR(30)" default:"PAL"`            // Batch destination
 	F905 string `sil:"CHAR(30)"`                          // Batch audit file
 	F906 string `sil:"CHAR(30)"`                          // Batch response file
-	F907 string `sil:"INTEGER" default:"NOW"`             // Batch ending date
-	F908 string `sil:"INTEGER" default:"0000"`            // Batch ending time
-	F909 string `sil:"INTEGER" default:"NOW"`             // Batch active date
-	F910 string `sil:"INTEGER" default:"0000"`            // Batch active time
+	F907 int    `sil:"INTEGER" default:"NOW"`             // Batch ending date
+	F908 int    `sil:"INTEGER" default:"0000"`            // Batch ending time
+	F909 int    `sil:"INTEGER" default:"NOW"`             // Batch active date
+	F910 int    `sil:"INTEGER" default:"0000"`            // Batch active time
 	F911 string `sil:"CHAR(30)"`                          // Batch purge date
 	F912 string `sil:"CHAR(30)" default:"ADDRPL"`         // Batch action type
 	F913 string `sil:"CHAR(30)" default:"ADDRPL FROM GO"` // Batch description
@@ -40,13 +42,14 @@ type Header struct {
 	F932 string `sil:"CHAR(30)"`                          // Batch long description
 }
 
-// check and fix a header with default tag
-func (h *Header) check() error {
-	fields, values := fieldValue(h)
+// insert creates the insert line with a crlf for newline
+func (h *Header) insert() []byte {
+	return []byte(fmt.Sprintf("INSERT INTO HEADER_DCT VALUES%s", crlf))
+}
 
-	_, err := forFields(fields, values, true)
-	if err != nil {
-		return err
-	}
-	return nil
+func (h *Header) row() (b []byte) {
+	b = append(b, row(*h)...)
+	// header row is a single row so insert endline
+	b = append(b, endLine()...)
+	return
 }

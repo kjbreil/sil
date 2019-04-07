@@ -1,5 +1,7 @@
 package sil
 
+import "fmt"
+
 // SIL is the structure of a SIL file
 type SIL struct {
 	Header    Header
@@ -10,16 +12,8 @@ type SIL struct {
 
 // View holds the data
 type View struct {
-	Name    string
-	Columns []Column
-	Data    []interface{}
-}
-
-// Column is each column in a SIL file containing both the name and the type
-// contained.
-type Column struct {
 	Name string
-	Type string
+	Data []interface{}
 }
 
 // Some Constants
@@ -29,7 +23,8 @@ const (
 )
 
 // Make makes a sil file of the definiton (as struct) passed
-func Make(name string, definition interface{}) (s *SIL) {
+func Make(name string, definition interface{}) *SIL {
+	s := new(SIL)
 	// store the name of the table in the returned sil file
 	s.View.Name = name
 	return s
@@ -37,6 +32,10 @@ func Make(name string, definition interface{}) (s *SIL) {
 
 // Bytes creates the SIL structure from the information in the SIL type
 func (s *SIL) Bytes() (data []byte, err error) {
+	// Create the Header insert
+	data = append(data, s.Header.insert()...)
+
+	data = append(data, s.Header.row()...)
 
 	return data, nil
 }
@@ -45,4 +44,8 @@ func (s *SIL) Bytes() (data []byte, err error) {
 func (s *SIL) String() (string, error) {
 	b, e := s.Bytes()
 	return string(b), e
+}
+
+func endLine() []byte {
+	return []byte(fmt.Sprintf(";%s", crlf))
 }
