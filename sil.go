@@ -24,8 +24,8 @@ func Make(name string, definition interface{}) *SIL {
 	return s
 }
 
-// Bytes creates the SIL structure from the information in the SIL type
-func (s *SIL) Bytes() (data []byte, err error) {
+// Marshal creates the SIL structure from the information in the SIL type
+func (s *SIL) Marshal() (data []byte, err error) {
 	// Create the Header insert
 	data = append(data, s.Header.insert()...)
 
@@ -34,12 +34,6 @@ func (s *SIL) Bytes() (data []byte, err error) {
 	data = append(data, s.View.bytes()...)
 
 	return data, nil
-}
-
-// String returns a string of a SIL file, wrapper for Bytes()
-func (s *SIL) String() (string, error) {
-	b, e := s.Bytes()
-	return string(b), e
 }
 
 func endLine() []byte {

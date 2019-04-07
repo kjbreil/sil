@@ -8,7 +8,7 @@ import (
 // Write writes a SIL to a file
 func (s *SIL) Write(filename string) error {
 	// create the bytes of the SIL file
-	d, err := s.Bytes()
+	d, err := s.Marshal()
 	if err != nil {
 		return fmt.Errorf("sil bytes conversion error: %v", err)
 	}
