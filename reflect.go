@@ -38,7 +38,7 @@ func value(v reflect.Value, f reflect.StructField) *string {
 
 	}
 	// return be depending on kind
-	b := kind(&v)
+	b := kind(&v, &dt)
 	return &b
 }
 
