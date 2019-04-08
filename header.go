@@ -50,7 +50,7 @@ func (h *Header) insert() []byte {
 }
 
 func (h *Header) row() (b []byte) {
-	b = append(b, row(*h)...)
+	b = append(b, rowBytes(*h)...)
 	// header row is a single row so insert endline
 	b = append(b, endLine()...)
 	return

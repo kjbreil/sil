@@ -1,12 +1,15 @@
 package sil
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // SIL is the structure of a SIL file
 type SIL struct {
-	Header    Header
-	View      View
-	Footer    Footer
+	Header Header
+	View   View
+	Footer Footer
+
 	TableType interface{}
 }
 
@@ -21,6 +24,7 @@ func Make(name string, definition interface{}) *SIL {
 	s := new(SIL)
 	// store the name of the table in the returned sil file
 	s.View.Name = name
+	s.View.Required = true
 	return s
 }
 
@@ -31,7 +35,11 @@ func (s *SIL) Marshal() (data []byte, err error) {
 
 	data = append(data, s.Header.row()...)
 
-	data = append(data, s.View.bytes()...)
+	// data = append(data, s.View.bytes()...)
+	secs := multi(s.View.Data)
+	for _, sec := range secs {
+		data = append(data, sec.create(s.View.Name)...)
+	}
 
 	return data, nil
 }

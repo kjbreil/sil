@@ -4,13 +4,15 @@ package sil
 // Name is the table name
 // Data is an array of interfaces
 type View struct {
-	Name string
-	Data []interface{}
+	Name     string
+	Required bool
+	Data     []interface{}
 }
 
 func (v *View) bytes() (b []byte) {
+
 	for i := range v.Data {
-		row := row(v.Data[i])
+		row := rowBytes(v.Data[i])
 		b = append(b, row...)
 		b = append(b, []byte(crlf)...)
 	}
@@ -20,3 +22,7 @@ func (v *View) bytes() (b []byte) {
 	b = append(b, endLine()...)
 	return
 }
+
+// func (v *View) create() []byte {
+
+// }

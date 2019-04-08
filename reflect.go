@@ -7,13 +7,51 @@ import (
 	"strings"
 )
 
-func row(rowType interface{}) []byte {
+type row struct {
+	elems []elem
+}
+
+type elem struct {
+	name *string
+	data *string
+}
+
+func (r *row) make(rowType interface{}, include bool) {
+	values, fields := reflect.ValueOf(rowType), reflect.TypeOf(rowType)
+	// loop over the fields
+	for i := 0; i < fields.NumField(); i++ {
+		val, name, ptr := value(values.Field(i), fields.Field(i))
+		fmt.Println(*val, *name, *ptr)
+		switch {
+		case !include: //
+			switch {
+			case *ptr == true && *val == "":
+				var v string
+				r.elems = append(r.elems, elem{
+					name: name,
+					data: &v,
+				})
+			default:
+				continue
+			}
+
+		default:
+			fmt.Println(*val, *name, *ptr)
+			r.elems = append(r.elems, elem{
+				name: name,
+				data: val,
+			})
+		}
+	}
+}
+
+func rowBytes(rowType interface{}) []byte {
 	values, fields := reflect.ValueOf(rowType), reflect.TypeOf(rowType)
 	// string array
 	var sa []string
 	// loop over the fields
 	for i := 0; i < fields.NumField(); i++ {
-		val := value(values.Field(i), fields.Field(i))
+		val, _, _ := value(values.Field(i), fields.Field(i))
 		sa = append(sa, *val)
 	}
 	// join the strings with commas and put it in ()
@@ -21,18 +59,21 @@ func row(rowType interface{}) []byte {
 	return []byte(s)
 }
 
-func value(v reflect.Value, f reflect.StructField) *string {
+func value(v reflect.Value, f reflect.StructField) (*string, *string, *bool) {
 	silTag := f.Tag.Get("sil")
 	if silTag == "" {
-		return nil
+		return nil, nil, nil
 	}
+
+	// get the name of the object
+	name := f.Name
 
 	// get default tag
 	dt := defaultTag(&f)
 
-	// return be depending on kind
-	b := kind(&v, &dt)
-	return &b
+	// return bytes depending on kind
+	bytes, pointer := kind(&v, &dt)
+	return &bytes, &name, &pointer
 }
 
 func defaultTag(f *reflect.StructField) string {
@@ -50,32 +91,32 @@ func defaultTag(f *reflect.StructField) string {
 }
 
 // this needs all kinds of work. only works for int and string at the moment
-func kind(v *reflect.Value, dt *string) string {
+func kind(v *reflect.Value, dt *string) (value string, pointer bool) {
 	// has default tag boolean
 	hd := len(*dt) != 0
 
 	switch v.Kind() {
 	case reflect.Ptr: // pointer so return kind of Elem()
 		nv := v.Elem()
-		s := kind(&nv, dt)
-		return s
+		s, _ := kind(&nv, dt)
+		return s, true
 	case reflect.Int:
 		switch {
 		case v.Int() == 0 && hd: // empty INT with default
-			return *dt
+			return *dt, false
 		default:
-			return strconv.Itoa(int(v.Int()))
+			return strconv.Itoa(int(v.Int())), false
 		}
 	case reflect.String:
 		switch {
 		case v.Len() == 0 && hd: // empty string with default
-			return fmt.Sprintf("'%s'", *dt)
+			return fmt.Sprintf("'%s'", *dt), false
 		case v.Len() == 0: // without default
-			return ""
+			return "", false
 		default:
-			return fmt.Sprintf("'%s'", v.String())
+			return fmt.Sprintf("'%s'", v.String()), false
 		}
 	default: // not defined above gets a blank entry
-		return ""
+		return "", false
 	}
 }

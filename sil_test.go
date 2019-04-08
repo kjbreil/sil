@@ -36,6 +36,7 @@ func TestMake(t *testing.T) {
 	}
 	t.Log("Putting out")
 	fmt.Println(string(str))
+
 	// ss, err := s.Optional()
 	// if err != nil {
 	// 	t.Fatalf("failed to get optional: %v", err)
