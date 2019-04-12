@@ -1,14 +1,25 @@
 package sil
 
-import "github.com/kjbreil/sil/loc"
+import (
+	"math/rand"
+	"time"
+
+	"github.com/kjbreil/sil/loc"
+)
 
 // Multi holds an array of SIL's and methods to work with them
 type Multi map[string]*SIL
 
 // Marshal creates the SIL structure from the information in the Multi
 func (m Multi) Marshal() (data []byte, err error) {
+	// assign a local prefix to the Multi to group all the batches
+	rand.Seed(time.Now().UnixNano())
+	prefix := rand.Intn(100)
 
 	for _, s := range m {
+		// assign that prefix to the local SIL
+		s.prefix = prefix
+
 		b, err := s.Marshal()
 		if err != nil {
 			return data, err
@@ -25,7 +36,7 @@ func (m Multi) Make(name string, definition interface{}) {
 	m[name] = Make(name, loc.OBJ{})
 }
 
-// Append data to the view
+// AppendView appends data to the view
 func (m Multi) AppendView(name string, data interface{}) {
 	// should check if the data is the correct type
 	m[name].View.Data = append(m[name].View.Data, data)

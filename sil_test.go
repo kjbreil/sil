@@ -3,34 +3,46 @@ package sil
 import (
 	"fmt"
 	"testing"
+
+	"github.com/kjbreil/sil/loc"
 )
 
 // OBJ will probably not work for an actual SIL file, this is for testing
 // creation from a type
-type OBJ struct {
-	F01 string `sil:"CHAR(13)"`
-	F16 int    `sil:"INTEGER" default:"666"`
-	F17 *int   `sil:"INTEGER"`
-}
+// type OBJ struct {
+// 	F01 string `sil:"CHAR(13)"`
+// 	F16 int    `sil:"INTEGER" default:"666"`
+// 	F17 *int   `sil:"INTEGER"`
+// }
 
 func TestMake(t *testing.T) {
-	s := Make("OBJ", OBJ{})
+	m := make(Multi)
 
-	s.View.Data = append(s.View.Data, OBJ{
-		F01: "0000000009902",
-		F16: 17,
-	})
-	n := 1
-	s.View.Data = append(s.View.Data, OBJ{
-		F01: "0000000009087",
-		F17: &n,
-	})
-	s.View.Data = append(s.View.Data, OBJ{
-		F01: "0000000009902",
-		F16: 17,
+	// m["OBJ"] = Make("OBJ", loc.OBJ{})
+	m.Make("OBJ", loc.OBJ{})
+
+	m.AppendView("OBJ", loc.OBJ{
+		F01: "9902",
 	})
 
-	str, err := s.Marshal()
+	// m.AppendView("OBJ", loc.OBJ{
+	// 	F01: "0000000009902",
+	// })
+	// n := 1
+	// m.AppendView("OBJ", loc.OBJ{
+	// 	F01: "0000000009087",
+	// 	F17: &n,
+	// })
+	// m.AppendView("OBJ", loc.OBJ{
+	// 	F01: "0000000009902",
+	// })
+
+	// m["PRICE"] = Make("PRICE", loc.PRICE{})
+	// m["PRICE"].View.Data = append(m["PRICE"].View.Data, loc.PRICE{
+	// 	F01: "0000000009902",
+	// })
+
+	str, err := m.Marshal()
 	if err != nil {
 		t.Fatal(err)
 	}

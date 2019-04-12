@@ -12,6 +12,8 @@ type SIL struct {
 	View   View
 	Footer Footer
 
+	prefix int
+
 	TableType interface{}
 }
 
@@ -26,18 +28,18 @@ func Make(name string, definition interface{}) *SIL {
 	// store the name of the table in the returned sil file
 	s.View.Name = name
 	s.View.Required = true
+	rand.Seed(time.Now().UnixNano())
+	s.prefix = rand.Intn(100)
 	return s
 }
 
 // Marshal creates the SIL structure from the information in the SIL type
 func (s *SIL) Marshal() (data []byte, err error) {
-	rand.Seed(time.Now().UnixNano())
-	prefix := rand.Intn(100)
 	// get the multiple sections
 	secs := split(s.View.Data)
 	for _, sec := range secs {
 		// Create the Header insert
-		s.Header.F902 = batchNum(prefix)
+		s.Header.F902 = batchNum(s.prefix)
 		data = append(data, s.Header.insert()...)
 		data = append(data, s.Header.row()...)
 
@@ -57,5 +59,6 @@ func endLine() []byte {
 // pass a prefix that will group the batches together
 func batchNum(prefix int) string {
 	t := time.Now()
-	return fmt.Sprintf("%02d%02d%02d%02d", prefix, t.Hour(), t.Minute(), t.Second())
+	rand.Seed(t.UnixNano())
+	return fmt.Sprintf("%02d%06d", prefix, rand.Intn(1000000))
 }
