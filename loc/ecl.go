@@ -13,5 +13,5 @@ type ECL struct {
 	F64   *string `sil:"NUMBER(10,3)"`
 	F65   *string `sil:"MONEY"`
 	F67   *string `sil:"NUMBER(10,3)"`
-	F1001 string  `sil:"INTEGER" default:"1"`
+	F1001 int     `sil:"INTEGER" default:"1"`
 }

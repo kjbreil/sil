@@ -81,7 +81,7 @@ type POS struct {
 	F383  *string `sil:"CHAR(80)"`
 	F388  *string `sil:"FLAG(1)"`
 	F397  *string `sil:"FLAG(1)"`
-	F1001 *int    `sil:"INTEGER"`
+	F1001 int     `sil:"INTEGER" default:"1"`
 	F1099 *int    `sil:"INTEGER"`
 	F1120 *string `sil:"CHAR(12)"`
 	F1124 *string `sil:"NUMBER(10,4)"`

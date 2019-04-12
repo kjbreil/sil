@@ -29,7 +29,7 @@ type OBJ struct {
 	F940  *int    `sil:"INTEGER"`
 	F941  *int    `sil:"INTEGER"`
 	F1000 *string `sil:"CHAR(5)"`
-	F1001 *int    `sil:"INTEGER"`
+	F1001 int     `sil:"INTEGER" default:"1"`
 	F1002 *string `sil:"NUMBER(5,3)"`
 	F1004 *int    `sil:"INTEGER"`
 	F1118 *string `sil:"CHAR(9)"`

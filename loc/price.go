@@ -30,7 +30,7 @@ type PRICE struct {
 	F168  *string `sil:"MONEY"`
 	F169  *int    `sil:"INTEGER"`
 	F205  *string `sil:"MONEY"`
-	F1001 *string `sil:"INTEGER"`
+	F1001 int     `sil:"INTEGER" default:"1"`
 	F1005 *string `sil:"CHAR(4)"`
 	F1713 *string `sil:"NUMBER(10,4)"`
 	F1714 *string `sil:"CHAR(4)"`
