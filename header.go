@@ -46,6 +46,7 @@ type Header struct {
 
 // insert creates the insert line with a crlf for newline
 func (h *Header) insert() []byte {
+	// #nosec
 	return []byte(fmt.Sprintf("INSERT INTO HEADER_DCT VALUES%s", crlf))
 }
 

@@ -22,13 +22,13 @@ func (r *row) make(rowType interface{}, include bool) {
 	for i := 0; i < fields.NumField(); i++ {
 		val, name, ptr := value(values.Field(i), fields.Field(i))
 		switch {
-		case include && *ptr == true && *val == "":
+		case include && *ptr && *val == "":
 			var v string
 			r.elems = append(r.elems, elem{
 				name: name,
 				data: &v,
 			})
-		case !include && *ptr == true && *val == "":
+		case !include && *ptr && *val == "":
 			continue
 		default:
 			r.elems = append(r.elems, elem{
@@ -95,22 +95,30 @@ func kind(v *reflect.Value, dt *string) (value string, pointer bool) {
 		s, _ := kind(&nv, dt)
 		return s, true
 	case reflect.Int:
-		switch {
-		case v.Int() == 0 && hd: // empty INT with default
-			return *dt, false
-		default:
-			return strconv.Itoa(int(v.Int())), false
-		}
+		return reflectInt(v, dt, &hd), false
 	case reflect.String:
-		switch {
-		case v.Len() == 0 && hd: // empty string with default
-			return fmt.Sprintf("'%s'", *dt), false
-		case v.Len() == 0: // without default
-			return "", false
-		default:
-			return fmt.Sprintf("'%s'", v.String()), false
-		}
+		return reflectString(v, dt, &hd), false
 	default: // not defined above gets a blank entry
 		return "", false
+	}
+}
+
+func reflectString(v *reflect.Value, dt *string, hd *bool) string {
+	switch {
+	case v.Len() == 0 && *hd: // empty string with default
+		return fmt.Sprintf("'%s'", *dt)
+	case v.Len() == 0: // without default
+		return ""
+	default:
+		return fmt.Sprintf("'%s'", v.String())
+	}
+}
+
+func reflectInt(v *reflect.Value, dt *string, hd *bool) string {
+	switch {
+	case v.Int() == 0 && *hd: // empty INT with default
+		return *dt
+	default:
+		return strconv.Itoa(int(v.Int()))
 	}
 }

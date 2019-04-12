@@ -8,21 +8,3 @@ type View struct {
 	Required bool
 	Data     []interface{}
 }
-
-func (v *View) bytes() (b []byte) {
-
-	for i := range v.Data {
-		row := rowBytes(v.Data[i])
-		b = append(b, row...)
-		b = append(b, []byte(crlf)...)
-	}
-	// remove the last CRLF, 2 bytes
-	b = b[:len(b)-2]
-	// append the endline code (; + crlf)
-	b = append(b, endLine()...)
-	return
-}
-
-// func (v *View) create() []byte {
-
-// }

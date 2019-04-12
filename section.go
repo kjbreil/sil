@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// section is a view
 type section []row
 
 func multi(rows []interface{}) map[int]section {
@@ -30,9 +31,11 @@ func (sec section) create(table string) (data []byte) {
 	na, sa := sec[0].array()
 
 	names := strings.Join(na, ",")
+	// #nosec
 	d := []byte(fmt.Sprintf("CREATE VIEW %s_CHG AS SELECT %s FROM %s_DCT%s", table, names, table, crlf))
 
-	d = append(d, []byte(fmt.Sprintf("INSERT INTO %s_DCT VALUES%s", table, crlf))...)
+	// #nosec
+	d = append(d, []byte(fmt.Sprintf("INSERT INTO %s_CHG VALUES%s", table, crlf))...)
 
 	for _, r := range sec {
 		r.array()
@@ -47,8 +50,8 @@ func (sec section) create(table string) (data []byte) {
 
 func (r *row) array() (na []string, sa []string) {
 	for _, e := range r.elems {
-		na = append(na, fmt.Sprintf("%s", *e.name))
-		sa = append(sa, fmt.Sprintf("%s", *e.data))
+		na = append(na, *e.name)
+		sa = append(sa, *e.data)
 	}
 	return
 }
