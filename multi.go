@@ -12,7 +12,7 @@ func multi(rows []interface{}) map[int]section {
 
 	for i := range rows {
 		var r row
-		r.make(rows[i], true)
+		r.make(rows[i], false)
 		ssec = append(ssec, r)
 	}
 

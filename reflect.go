@@ -21,22 +21,16 @@ func (r *row) make(rowType interface{}, include bool) {
 	// loop over the fields
 	for i := 0; i < fields.NumField(); i++ {
 		val, name, ptr := value(values.Field(i), fields.Field(i))
-		fmt.Println(*val, *name, *ptr)
 		switch {
-		case !include: //
-			switch {
-			case *ptr == true && *val == "":
-				var v string
-				r.elems = append(r.elems, elem{
-					name: name,
-					data: &v,
-				})
-			default:
-				continue
-			}
-
+		case include && *ptr == true && *val == "":
+			var v string
+			r.elems = append(r.elems, elem{
+				name: name,
+				data: &v,
+			})
+		case !include && *ptr == true && *val == "":
+			continue
 		default:
-			fmt.Println(*val, *name, *ptr)
 			r.elems = append(r.elems, elem{
 				name: name,
 				data: val,
