@@ -30,7 +30,10 @@ func (sec section) create(table string) (data []byte) {
 	na, sa := sec[0].array()
 
 	names := strings.Join(na, ",")
-	d := []byte(fmt.Sprintf("CREATE VIEW %s_CHG AS SELECT %s FROM %s_DCT;%s", table, names, table, crlf))
+	d := []byte(fmt.Sprintf("CREATE VIEW %s_CHG AS SELECT %s FROM %s_DCT%s", table, names, table, crlf))
+
+	d = append(d, []byte(fmt.Sprintf("INSERT INTO %s_DCT VALUES%s", table, crlf))...)
+
 	for _, r := range sec {
 		r.array()
 		d = append(d, []byte(fmt.Sprintf("(%s)%s", strings.Join(sa, ","), crlf))...)
