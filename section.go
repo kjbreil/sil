@@ -32,7 +32,7 @@ func (sec section) create(table string) (data []byte) {
 
 	names := strings.Join(na, ",")
 	// #nosec
-	d := []byte(fmt.Sprintf("CREATE VIEW %s_CHG AS SELECT %s FROM %s_DCT%s", table, names, table, crlf))
+	d := []byte(fmt.Sprintf("CREATE VIEW %s_CHG AS SELECT %s FROM %s_DCT;%s%s", table, names, table, crlf, crlf))
 
 	// #nosec
 	d = append(d, []byte(fmt.Sprintf("INSERT INTO %s_CHG VALUES%s", table, crlf))...)
