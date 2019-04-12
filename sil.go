@@ -34,7 +34,7 @@ func (s *SIL) Marshal() (data []byte, err error) {
 	rand.Seed(time.Now().UnixNano())
 	prefix := rand.Intn(100)
 	// get the multiple sections
-	secs := multi(s.View.Data)
+	secs := split(s.View.Data)
 	for _, sec := range secs {
 		// Create the Header insert
 		s.Header.F902 = batchNum(prefix)
@@ -42,6 +42,8 @@ func (s *SIL) Marshal() (data []byte, err error) {
 		data = append(data, s.Header.row()...)
 
 		data = append(data, sec.create(s.View.Name)...)
+
+		data = append(data, []byte(crlf)...)
 	}
 
 	return data, nil

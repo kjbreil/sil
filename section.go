@@ -8,7 +8,7 @@ import (
 // section is a view
 type section []row
 
-func multi(rows []interface{}) map[int]section {
+func split(rows []interface{}) map[int]section {
 	var ssec section
 
 	for i := range rows {

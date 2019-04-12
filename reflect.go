@@ -67,6 +67,10 @@ func value(v reflect.Value, f reflect.StructField) (*string, *string, *bool) {
 
 	// return bytes depending on kind
 	bytes, pointer := kind(&v, &dt)
+	switch name {
+	case "F01":
+		bytes = fmt.Sprintf("'%013v'", bytes[1:len(bytes)-1])
+	}
 	return &bytes, &name, &pointer
 }
 
@@ -109,6 +113,7 @@ func reflectString(v *reflect.Value, dt *string, hd *bool) string {
 		return fmt.Sprintf("'%s'", *dt)
 	case v.Len() == 0: // without default
 		return ""
+
 	default:
 		return fmt.Sprintf("'%s'", v.String())
 	}
