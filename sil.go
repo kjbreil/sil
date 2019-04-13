@@ -48,6 +48,8 @@ func (s *SIL) Marshal() (data []byte, err error) {
 		data = append(data, []byte(crlf)...)
 	}
 
+	data = append(data, s.Footer.bytes()...)
+
 	return data, nil
 }
 
