@@ -2,7 +2,7 @@ package loc
 
 // OBJ is the main object table
 type OBJ struct {
-	F01   string  `sil:"CHAR(13)"`
+	F01   string  `sil:"CHAR(13),zeropad"`
 	F902  *string `sil:"CHAR(8)"`
 	F07   *int    `sil:"INTEGER"`
 	F11   *int    `sil:"INTEGER"`

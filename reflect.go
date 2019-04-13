@@ -58,7 +58,7 @@ func rowBytes(rowType interface{}) []byte {
 
 func value(v reflect.Value, f reflect.StructField) (*string, *string, *bool, error) {
 	// get the silTag
-	err := silTag(&f)
+	_, err := getSilTag(&f)
 	if err != nil {
 		return nil, nil, nil, err
 	}
