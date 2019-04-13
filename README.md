@@ -9,16 +9,16 @@ Like JSON or XML tags are being used to define the structure of the SIL using a 
 
 ### Goals:
 - [ ] Type
-	- [ ] Marshal function
+	- [x] Marshal function
 	- [ ] Unmarshal function
 	- [x] Allow pointers to be used for optional elements
 	- [x] single quote for most data types and no quotes for integers
-		- [x] confirm data is integer for integer types
+		- [] confirm data is integer for integer types
 	- [ ] Validate that element name is a proper SIL type
 	- [ ] Validate that data passed for Rows matches type used for Make
 	- [ ] Accept time.Time as type for DATE(7)
 - [ ] Header
-	- [ ] Batch number creation
+	- [x] Batch number creation
 - [ ] View
 	- [ ] Define table name with struct tag
 	- [x] View Header
@@ -26,7 +26,7 @@ Like JSON or XML tags are being used to define the structure of the SIL using a 
 		- [x] check for unsafe elements, correct or error as needed
 	- [ ] View Data
 		- [x] Create View data
-		- [x] Only insert optional elements into SIL file when they are used. Need to use Optional() sil method. Without using all elements, even pointers, are still inserted.
+		- [x] Only insert optional elements into SIL file when they are used.
 
 ### Eventuals
 - [ ] Read SQL structure to create Go Types for tables automagically
