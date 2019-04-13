@@ -38,7 +38,7 @@ func (sec section) create(table string) (data []byte) {
 	d = append(d, []byte(fmt.Sprintf("INSERT INTO %s_CHG VALUES%s", table, crlf))...)
 
 	for _, r := range sec {
-		r.array()
+		_, sa = r.array()
 		d = append(d, []byte(fmt.Sprintf("(%s)%s", strings.Join(sa, ","), crlf))...)
 	}
 	// remove the last CRLF, 2 bytes
