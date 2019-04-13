@@ -7,10 +7,13 @@ import (
 	"strings"
 )
 
+// row is the makeup of each row with an array of elem
 type row struct {
 	elems []elem
 }
 
+// elem is the parts of the row containg the name of the field and the data
+// held within
 type elem struct {
 	name *string
 	data *string
@@ -20,7 +23,7 @@ func (r *row) make(rowType interface{}, include bool) {
 	values, fields := reflect.ValueOf(rowType), reflect.TypeOf(rowType)
 	// loop over the fields
 	for i := 0; i < fields.NumField(); i++ {
-		val, name, ptr := value(values.Field(i), fields.Field(i))
+		val, name, ptr, _ := value(values.Field(i), fields.Field(i))
 		switch {
 		case include && *ptr && *val == "":
 			var v string
@@ -45,7 +48,7 @@ func rowBytes(rowType interface{}) []byte {
 	var sa []string
 	// loop over the fields
 	for i := 0; i < fields.NumField(); i++ {
-		val, _, _ := value(values.Field(i), fields.Field(i))
+		val, _, _, _ := value(values.Field(i), fields.Field(i))
 		sa = append(sa, *val)
 	}
 	// join the strings with commas and put it in ()
@@ -53,12 +56,12 @@ func rowBytes(rowType interface{}) []byte {
 	return []byte(s)
 }
 
-func value(v reflect.Value, f reflect.StructField) (*string, *string, *bool) {
-	silTag := f.Tag.Get("sil")
-	if silTag == "" {
-		return nil, nil, nil
+func value(v reflect.Value, f reflect.StructField) (*string, *string, *bool, error) {
+	// get the silTag
+	err := silTag(&f)
+	if err != nil {
+		return nil, nil, nil, err
 	}
-
 	// get the name of the object
 	name := f.Name
 
@@ -71,7 +74,7 @@ func value(v reflect.Value, f reflect.StructField) (*string, *string, *bool) {
 	case "F01":
 		bytes = fmt.Sprintf("'%013v'", bytes[1:len(bytes)-1])
 	}
-	return &bytes, &name, &pointer
+	return &bytes, &name, &pointer, nil
 }
 
 func defaultTag(f *reflect.StructField) string {

@@ -27,6 +27,7 @@ func split(rows []interface{}) map[int]section {
 
 }
 
+// create makes the sil structure for each section
 func (sec section) create(table string) (data []byte) {
 	na, sa := sec[0].array()
 
