@@ -49,4 +49,5 @@ type PRICE struct {
 	F147  *string `sil:"NUMBER(2,0)"`
 	F1193 *int    `sil:"INTEGER"`
 	F146  *string `sil:"CHAR(8)"`
+	F1221 *string `sil:"NUMBER(5,3)"`
 }
