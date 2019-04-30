@@ -2,7 +2,7 @@ package loc
 
 // ECL is Electronic Coupon Link Table
 type ECL struct {
-	F164  string  `sil:"CHAR(13)"`
+	F164  string  `sil:"CHAR(13),zeropad"`
 	F1033 string  `sil:"CHAR(3)"`
 	F01   string  `sil:"CHAR(13)"`
 	F1031 string  `sil:"CHAR(1)" default:"T"`
