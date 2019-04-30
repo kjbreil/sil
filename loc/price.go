@@ -41,4 +41,12 @@ type PRICE struct {
 	F1927 *string `sil:"NUMBER(8,4)"`
 	F1934 *string `sil:"MONEY"`
 	F1964 *string `sil:"CHAR(4)"`
+	// addition of sale column - need to update whole type to have all price types
+	F136  *string `sil:"CHAR(8)"`
+	F137  *string `sil:"DATE(7)"`
+	F138  *string `sil:"DATE(7)"`
+	F148  *string `sil:"MONEY"`
+	F147  *string `sil:"NUMBER(2,0)"`
+	F1193 *int    `sil:"INTEGER"`
+	F146  *string `sil:"CHAR(8)"`
 }
