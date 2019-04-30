@@ -41,3 +41,10 @@ func (m Multi) AppendView(name string, data interface{}) {
 	// should check if the data is the correct type
 	m[name].View.Data = append(m[name].View.Data, data)
 }
+
+// SetHeaders sets all the headers in a sil file to the same name
+func (m Multi) SetHeaders(name string) {
+	for _, s := range m {
+		s.Header.F913 = name
+	}
+}
