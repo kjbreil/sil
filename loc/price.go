@@ -5,7 +5,7 @@ package loc
 type PRICE struct {
 	F1000 string  `sil:"CHAR(5)" default:"PAL"`
 	F1056 *string `sil:"CHAR(4)"`
-	F01   string  `sil:"CHAR(13)"`
+	F01   string  `sil:"CHAR(13),zeropad"`
 	F902  *string `sil:"CHAR(8)"`
 	F126  *int    `sil:"INTEGER"`
 	F07   *int    `sil:"INTEGER"`

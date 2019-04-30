@@ -58,7 +58,7 @@ func rowBytes(rowType interface{}) []byte {
 
 func value(v reflect.Value, f reflect.StructField) (*string, *string, *bool, error) {
 	// get the silTag
-	_, err := getSilTag(&f)
+	_, pad, err := getSilTag(&f)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -70,10 +70,16 @@ func value(v reflect.Value, f reflect.StructField) (*string, *string, *bool, err
 
 	// return bytes depending on kind
 	bytes, pointer := kind(&v, &dt)
-	switch name {
-	case "F01":
+	// switch name {
+	// case "F01":
+	// 	bytes = fmt.Sprintf("'%013v'", bytes[1:len(bytes)-1])
+	// }
+
+	if pad {
 		bytes = fmt.Sprintf("'%013v'", bytes[1:len(bytes)-1])
+
 	}
+
 	return &bytes, &name, &pointer, nil
 }
 
