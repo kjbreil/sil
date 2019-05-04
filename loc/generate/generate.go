@@ -43,14 +43,36 @@ func main() {
 		// convert the table name into lowercase snake for filename
 		// and Camel case for the type name
 		tf := TypeFile{
-			Name:      strcase.ToCamel(strings.ToLower(k)),
+			Name:      name(strings.ToLower(k)),
 			TableName: k,
 			FileName:  strcase.ToSnake(k),
 		}
 		// this is horrible - should use pointers to reduce overhead
 		for i := range structure[k] {
+			switch structure[k][i][2] {
+			case "SPARE":
+				continue
+			case "SPARE RECREG/FCOST":
+				continue
+			case "SPARE REGSAL/POS":
+				continue
+			case "SPARE REGSAL/GPRICE":
+				continue
+			case "SPARE REGSAL/FPRICE":
+				continue
+			case "SPARE REC/VND":
+				continue
+			case "SPARE REGREC":
+				continue
+			case "SPARE HDR/REG SAL":
+				continue
+			case "SPARE REGSAL":
+				continue
+			case "Buying format":
+				continue
+			}
 			elem := Element{
-				Name:      strcase.ToCamel(structure[k][i][2]),
+				Name:      name(structure[k][i][2]),
 				Type:      dataType(structure[k][i][6]),
 				Sil:       structure[k][i][1],
 				Arguments: arguments(structure[k][i][1]),
@@ -63,6 +85,35 @@ func main() {
 
 	}
 
+}
+
+func name(n string) string {
+	// switch over the name edit certain ones
+	// switch n {
+	// case "SPARE":
+
+	// }
+
+	// switch over the last element to correct for special characters
+	switch n[len(n)-1:] {
+	case "$":
+		n = strings.TrimSuffix(n, "$") + "Dollar"
+	case "%":
+		n = strings.TrimSuffix(n, "%") + "Pct"
+
+	}
+
+	camel := strcase.ToCamel(n)
+
+	switch {
+	case strings.Contains(camel, "Id"):
+		return strings.ReplaceAll(camel, "Id", "ID")
+	case strings.Contains(camel, "Ttl"):
+		return strings.ReplaceAll(camel, "Ttl", "TTL")
+
+	}
+
+	return camel
 }
 
 func read() [][]string {
@@ -180,6 +231,8 @@ func (tf *TypeFile) write() {
 
 func hasDefault(silCode string) string {
 	switch silCode {
+	case "F1000":
+		return "PAL"
 	case "F1001":
 		return "1"
 	case "F253":
