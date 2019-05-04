@@ -7,34 +7,38 @@ import (
 )
 
 type silTag struct {
-	field *reflect.StructField
+	name    string
+	options []string
+	field   *reflect.StructField
 }
 
-// getSilTag takes the StructField and returns a silTag pointer along with a pointer to a zero-pad int lenght of the zero pad
+// getSilTag takes the StructField and returns a silTag pointer along with bool for padding
 func getSilTag(f *reflect.StructField) (*silTag, bool, error) {
 
 	st := silTag{
 		field: f,
 	}
+	// get assigns the name and options to the sil tag
+	err := st.get()
 
-	options, err := st.get()
 	if err != nil {
 		return nil, false, err
 	}
 
-	if options != nil {
+	if len(st.options) > 0 {
 		return &st, true, nil
 	}
 
 	return &st, false, nil
 }
 
-func (st *silTag) get() (*[]string, error) {
+// get returns the sil tag and then an array of any other arguments for sil
+func (st *silTag) get() error {
 	silTag := strings.Split(st.field.Tag.Get("sil"), ",")
 
 	switch silTag[0] {
 	case "":
-		return nil, fmt.Errorf("does not contain a sil tag")
+		return fmt.Errorf("does not contain a sil tag")
 	}
 
 	if len(silTag) > 1 {
@@ -48,17 +52,16 @@ func (st *silTag) get() (*[]string, error) {
 			if silTag[i] == "zeropad" {
 				options = append(options, silTag[i])
 			}
-			// _, ok := strconv.Atoi(silTag[i])
-			// if ok != nil {
-			// 	options = append(options, silTag[i])
-			// }
 		}
 		if len(options) > 0 {
-			return &options, nil
+			st.options = options
+			return nil
 		}
 	}
 
-	return nil, nil
+	st.name = silTag[0]
+
+	return nil
 }
 
 func silArguments(args []string) {
