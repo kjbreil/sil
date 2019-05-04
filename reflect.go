@@ -2,6 +2,7 @@ package sil
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 	"strconv"
 	"strings"
@@ -23,15 +24,18 @@ func (r *row) make(rowType interface{}, include bool) {
 	values, fields := reflect.ValueOf(rowType), reflect.TypeOf(rowType)
 	// loop over the fields
 	for i := 0; i < fields.NumField(); i++ {
+		// get the value, name and if its a pointer
 		val, name, ptr, _ := value(values.Field(i), fields.Field(i))
 		switch {
+		case !*ptr && *val == "": // panic if its a required field without any data
+			log.Panicf("the element %s does not contain any data and is required", *name)
 		case include && *ptr && *val == "":
 			var v string
 			r.elems = append(r.elems, elem{
 				name: name,
 				data: &v,
 			})
-		case !include && *ptr && *val == "":
+		case !include && *ptr && *val == "": // if we are not including pointers and it is a pointer and does not have a value contiue (skip)
 			continue
 		default:
 			r.elems = append(r.elems, elem{
