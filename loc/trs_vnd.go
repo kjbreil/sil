@@ -12,7 +12,7 @@ type TrsVnd struct {
 	OperatorValidated *int    `sil:"F1765"`
 	LastChangeDate    string  `sil:"F253" default:"NOW"`
 	DateEnd           *string `sil:"F254"`
-	VendorId          *string `sil:"F27"`
+	VendorID          *string `sil:"F27"`
 	TotalUnits        *string `sil:"F64"`
 	TotalDollars      *string `sil:"F65"`
 	TotalWeight       *string `sil:"F67"`

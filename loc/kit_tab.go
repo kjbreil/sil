@@ -13,5 +13,5 @@ type KitTab struct {
 	MaintenanceOperatorLevel *int    `sil:"F1759"`
 	StoreResponsible         *string `sil:"F1964"`
 	LastChangeDate           string  `sil:"F253" default:"NOW"`
-	BatchIdentifier          *string `sil:"F902"`
+	BatchIDentifier          *string `sil:"F902"`
 }

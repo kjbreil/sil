@@ -3,7 +3,7 @@ package loc
 // HeaderDct is the HEADER_DCT definition
 type HeaderDct struct {
 	BatchType              *string `sil:"F901"`
-	BatchIdentifier        *string `sil:"F902"`
+	BatchIDentifier        *string `sil:"F902"`
 	BatchCreator           *string `sil:"F903"`
 	BatchDestination       *string `sil:"F904"`
 	BatchAuditFile         *string `sil:"F905"`

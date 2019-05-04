@@ -3,7 +3,7 @@ package loc
 // SclTxtTab is the SCL_TXT_TAB definition
 type SclTxtTab struct {
 	SubDepartmentCode        *int    `sil:"F04"`
-	TargetIdentifier         string  `sil:"F1000"`
+	TargetIDentifier         string  `sil:"F1000" default:"PAL"`
 	RecordStatus             int     `sil:"F1001" default:"1"`
 	Text9                    *string `sil:"F1517"`
 	Text10                   *string `sil:"F1518"`
@@ -27,5 +27,5 @@ type SclTxtTab struct {
 	TextNumber               *int    `sil:"F267"`
 	IngredientTextFontSize   *int    `sil:"F2943"`
 	Text1                    *string `sil:"F297"`
-	BatchIdentifier          *string `sil:"F902"`
+	BatchIDentifier          *string `sil:"F902"`
 }

@@ -13,7 +13,7 @@ type SalBat struct {
 	UserNumber              *int    `sil:"F1126"`
 	UserShortName           *string `sil:"F1127"`
 	TransactionVoidCount    *int    `sil:"F1137"`
-	CustomerId              *string `sil:"F1148"`
+	CustomerID              *string `sil:"F1148"`
 	CustFirstName           *string `sil:"F1149"`
 	CustLastName            *string `sil:"F1150"`
 	CustPosComment          *string `sil:"F1151"`
@@ -43,8 +43,8 @@ type SalBat struct {
 	DateDelivery            *string `sil:"F1246"`
 	TransactionNote         *string `sil:"F1254"`
 	TransBatchFileName      *string `sil:"F1255"`
-	ShopperGetDsc           *string `sil:"F1271"`
-	ShopperGetDsc           *string `sil:"F1272"`
+	ShopperGetDscDollar     *string `sil:"F1271"`
+	ShopperGetDscPct        *string `sil:"F1272"`
 	ShopperGetLinkedItem    *string `sil:"F1273"`
 	ShopperGetCouponLink    *string `sil:"F1274"`
 	ShopperGetDscDept       *string `sil:"F1277"`
@@ -54,7 +54,7 @@ type SalBat struct {
 	CustomerLanguage        *string `sil:"F1504"`
 	BirthDate               *string `sil:"F1520"`
 	EmailAddress            *string `sil:"F1573"`
-	ShipIdNumber            *string `sil:"F1642"`
+	ShipIDNumber            *string `sil:"F1642"`
 	ShipName                *string `sil:"F1643"`
 	ShipContactName         *string `sil:"F1644"`
 	ShipAddressLine1        *string `sil:"F1645"`
@@ -78,7 +78,7 @@ type SalBat struct {
 	OperatorReceiptConfirm  *int    `sil:"F1694"`
 	OperatorInvoiceEntered  *int    `sil:"F1695"`
 	OperatorTrucker         *int    `sil:"F1696"`
-	FreightRouteId          *string `sil:"F1697"`
+	FreightRouteID          *string `sil:"F1697"`
 	ShippingPieceCount      *string `sil:"F1699"`
 	PriceLevelFallBack      *int    `sil:"F1711"`
 	SaleOrderNumber         *string `sil:"F1763"`
@@ -89,23 +89,13 @@ type SalBat struct {
 	DatePayable             *string `sil:"F2596"`
 	CurrencyExchangeNow     *string `sil:"F2598"`
 	CurrencyExchangeOrder   *string `sil:"F2599"`
-	SPAREHDRREGSAL          *int    `sil:"F2613"`
-	SPAREHDRREGSAL          *string `sil:"F2614"`
-	SPARE                   *string `sil:"F2615"`
-	SPARE                   *int    `sil:"F2616"`
-	SPARE                   *string `sil:"F2617"`
-	SPARE                   *string `sil:"F2618"`
 	FreightRate3            *string `sil:"F2619"`
-	SPARE                   *string `sil:"F2620"`
-	SPARE                   *int    `sil:"F2621"`
-	SPARE                   *int    `sil:"F2622"`
-	SPARE                   *string `sil:"F2623"`
 	ShipInfoSource          *string `sil:"F2816"`
 	TransactionComment      *string `sil:"F2848"`
 	ShipCountry             *string `sil:"F2889"`
 	RouteType               *string `sil:"F2904"`
 	PickupNote              *string `sil:"F2934"`
 	DateOrder               *string `sil:"F76"`
-	BatchIdentifier         *string `sil:"F902"`
+	BatchIDentifier         *string `sil:"F902"`
 	PurchaseOrderNumber     *string `sil:"F91"`
 }

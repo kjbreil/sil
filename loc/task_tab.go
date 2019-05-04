@@ -3,13 +3,12 @@ package loc
 // TaskTab is the TASK_TAB definition
 type TaskTab struct {
 	UPCCode                 string  `sil:"F01,zeropad"`
-	TargetIdentifier        string  `sil:"F1000"`
+	TargetIDentifier        string  `sil:"F1000" default:"PAL"`
 	RecordStatus            int     `sil:"F1001" default:"1"`
 	TerminalStore           string  `sil:"F1056"`
 	UserRestrictionLevel    *int    `sil:"F1142"`
-	CustomerId              *string `sil:"F1148"`
+	CustomerID              *string `sil:"F1148"`
 	OperatorResponsible     *int    `sil:"F1168"`
-	BuyingFormat            *string `sil:"F1184"`
 	UserOrderNumber         *int    `sil:"F1185"`
 	ReferenceNumber         *string `sil:"F1245"`
 	EventRegularType        *string `sil:"F1675"`
@@ -27,7 +26,7 @@ type TaskTab struct {
 	TaskRecurseFormulas     *string `sil:"F1828"`
 	TaskEnabled             *string `sil:"F1829"`
 	LastChangeDate          string  `sil:"F253" default:"NOW"`
-	VendorId                *string `sil:"F27"`
+	VendorID                *string `sil:"F27"`
 	OperatorLastTouch       *int    `sil:"F2754"`
 	TaskComments            *string `sil:"F2755"`
 	TaskLastComment         *string `sil:"F2756"`

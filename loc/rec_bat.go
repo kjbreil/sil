@@ -12,14 +12,14 @@ type RecBat struct {
 	LineNumber              *int    `sil:"F1101"`
 	UserNumber              *int    `sil:"F1126"`
 	UserShortName           *string `sil:"F1127"`
-	CustomerId              *string `sil:"F1148"`
+	CustomerID              *string `sil:"F1148"`
 	OperatorResponsible     *int    `sil:"F1168"`
 	ReferenceNumber         *string `sil:"F1245"`
 	DateDelivery            *string `sil:"F1246"`
 	TransactionNote         *string `sil:"F1254"`
 	TransBatchFileName      *string `sil:"F1255"`
 	DateCreation            string  `sil:"F1264" default:"NOW"`
-	ShipIdNumber            *string `sil:"F1642"`
+	ShipIDNumber            *string `sil:"F1642"`
 	ShipName                *string `sil:"F1643"`
 	ShipContactName         *string `sil:"F1644"`
 	ShipAddressLine1        *string `sil:"F1645"`
@@ -49,7 +49,6 @@ type RecBat struct {
 	DeliveryDays            *int    `sil:"F1793"`
 	MinimumWeight           *string `sil:"F1883"`
 	MinimumDollars          *string `sil:"F1884"`
-	BuyingFormat            *string `sil:"F1887"`
 	VendorContact2          *string `sil:"F1889"`
 	VendorContact2Phone     *string `sil:"F1890"`
 	LastChangeDate          string  `sil:"F253" default:"NOW"`
@@ -57,19 +56,13 @@ type RecBat struct {
 	DatePayable             *string `sil:"F2596"`
 	CurrencyExchangeNow     *string `sil:"F2598"`
 	CurrencyExchangeOrder   *string `sil:"F2599"`
-	SPARERECVND             *string `sil:"F2630"`
-	SPARERECVND             *int    `sil:"F2631"`
 	OperatorPickupPrinted   *int    `sil:"F2632"`
-	SPARE                   *string `sil:"F2633"`
-	SPARE                   *string `sil:"F2634"`
-	SPARE                   *string `sil:"F2635"`
-	SPARE                   *string `sil:"F2636"`
 	OrderTime               *string `sil:"F2655"`
 	DeliveryTime            *string `sil:"F2656"`
 	EventDate               *string `sil:"F2657"`
 	InvisibleOnPDA          *string `sil:"F2658"`
 	DocumentSubType         *string `sil:"F2659"`
-	VendorId                *string `sil:"F27"`
+	VendorID                *string `sil:"F27"`
 	AssociatedTaxRates      *string `sil:"F2710"`
 	TransactionComment      *string `sil:"F2848"`
 	VendorName              *string `sil:"F334"`
@@ -90,6 +83,6 @@ type RecBat struct {
 	TermsDiscountPercent    *string `sil:"F349"`
 	VendorAccount           *string `sil:"F352"`
 	DateOrder               *string `sil:"F76"`
-	BatchIdentifier         *string `sil:"F902"`
+	BatchIDentifier         *string `sil:"F902"`
 	PurchaseOrderNumber     *string `sil:"F91"`
 }

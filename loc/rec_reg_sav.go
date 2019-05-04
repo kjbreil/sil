@@ -27,7 +27,6 @@ type RecRegSav struct {
 	CostFeeAmount           *string `sil:"F1121"`
 	CostFeePercent          *string `sil:"F1122"`
 	UnitNetCost             *string `sil:"F1140"`
-	BuyingFormat            *string `sil:"F1184"`
 	SplitCaseCost           *string `sil:"F120"`
 	DateDelivery            *string `sil:"F1246"`
 	ItemFreeFlag            *string `sil:"F1247"`
@@ -89,7 +88,6 @@ type RecRegSav struct {
 	OpenAmount              *string `sil:"F1815"`
 	OpenTotalizer           *int    `sil:"F1816"`
 	CaseDepositValue        *string `sil:"F186"`
-	BuyingFormat            *string `sil:"F1887"`
 	SOMatching              *string `sil:"F1899"`
 	CaseSize                *string `sil:"F19"`
 	BackOrderCase           *string `sil:"F1918"`
@@ -147,12 +145,8 @@ type RecRegSav struct {
 	VendorCode              *string `sil:"F26"`
 	SPARERECREGGCOST        *int    `sil:"F2624"`
 	SPARERECREG             *int    `sil:"F2625"`
-	SPARERECREGFCOST        *string `sil:"F2626"`
 	GrossPurchase           *string `sil:"F2627"`
-	SPARERECREGFCOST        *string `sil:"F2628"`
 	BackstorePickup         *string `sil:"F2629"`
-	SPARERECVND             *string `sil:"F2630"`
-	SPARERECVND             *int    `sil:"F2631"`
 	URL                     *string `sil:"F2660"`
 	DefaultQuantity         *string `sil:"F2666"`
 	WeightNet               *string `sil:"F270"`
@@ -165,10 +159,6 @@ type RecRegSav struct {
 	Tax6Paid                *string `sil:"F2716"`
 	Tax7Paid                *string `sil:"F2717"`
 	Tax8Paid                *string `sil:"F2718"`
-	SPAREREGREC             *string `sil:"F2864"`
-	SPAREREGREC             *string `sil:"F2868"`
-	SPAREREGREC             *string `sil:"F2872"`
-	SPAREREGREC             *string `sil:"F2873"`
 	TimestampTransArchive   *string `sil:"F2890"`
 	FreightCaseWeight       *string `sil:"F327"`
 	FreightCaseCube         *string `sil:"F328"`

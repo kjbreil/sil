@@ -8,7 +8,7 @@ type TimTab struct {
 	TerminalNumber       *string `sil:"F1057"`
 	TransactionMode      *string `sil:"F1068"`
 	LineNumber           *int    `sil:"F1101"`
-	CustomerId           *string `sil:"F1148"`
+	CustomerID           *string `sil:"F1148"`
 	UserOrderNumber      *int    `sil:"F1185"`
 	SoftField1           *string `sil:"F1301"`
 	UserDepartmentNumber *int    `sil:"F1569"`

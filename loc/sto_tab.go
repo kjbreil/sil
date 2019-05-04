@@ -2,7 +2,7 @@ package loc
 
 // StoTab is the STO_TAB definition
 type StoTab struct {
-	TargetIdentifier      string  `sil:"F1000"`
+	TargetIDentifier      string  `sil:"F1000" default:"PAL"`
 	TargetDescriptor      *string `sil:"F1018"`
 	TargetForReportFlag   *string `sil:"F1180"`
 	TargetForExchangeFlag *string `sil:"F1181"`

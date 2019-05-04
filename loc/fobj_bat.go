@@ -4,12 +4,12 @@ package loc
 type FobjBat struct {
 	UPCCode                                string  `sil:"F01,zeropad"`
 	UPCCodeFormat                          *int    `sil:"F07"`
-	TargetIdentifier                       string  `sil:"F1000"`
+	TargetIDentifier                       string  `sil:"F1000" default:"PAL"`
 	RecordStatus                           int     `sil:"F1001" default:"1"`
 	SizeCubic                              *string `sil:"F1002"`
 	ContainerType                          *int    `sil:"F1004"`
 	MeasurementSystem                      *int    `sil:"F11"`
-	ManufacturerId                         *string `sil:"F1118"`
+	ManufacturerID                         *string `sil:"F1118"`
 	GraphicFile                            *string `sil:"F1119"`
 	OperatorResponsible                    *int    `sil:"F1168"`
 	SizeHeight                             *string `sil:"F12"`
@@ -54,7 +54,7 @@ type FobjBat struct {
 	InterDeptCode                          *string `sil:"F2789"`
 	ExpandedDescription                    *string `sil:"F29"`
 	NACSCode                               *int    `sil:"F2931"`
-	BatchIdentifier                        *string `sil:"F902"`
+	BatchIDentifier                        *string `sil:"F902"`
 	AccountCode                            *string `sil:"F93"`
 	CreatedByUser                          *int    `sil:"F940"`
 	ModifiedByUser                         *int    `sil:"F941"`

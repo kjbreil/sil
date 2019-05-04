@@ -5,7 +5,7 @@ type CostTab struct {
 	UPCCode                  string  `sil:"F01,zeropad"`
 	UPCCodeFormat            *int    `sil:"F07"`
 	StatusCode               *string `sil:"F08"`
-	TargetIdentifier         string  `sil:"F1000"`
+	TargetIDentifier         string  `sil:"F1000" default:"PAL"`
 	RecordStatus             int     `sil:"F1001" default:"1"`
 	ActiveVendor             *string `sil:"F1037"`
 	NextCostEvent            *string `sil:"F1038"`
@@ -13,7 +13,6 @@ type CostTab struct {
 	CostFeePercent           *string `sil:"F1122"`
 	UnitNetCost              *string `sil:"F1140"`
 	OperatorResponsible      *int    `sil:"F1168"`
-	BuyingFormat             *string `sil:"F1184"`
 	SplitCaseCost            *string `sil:"F120"`
 	AlternateItemCode        *string `sil:"F127"`
 	SequenceNumber           *int    `sil:"F131"`
@@ -51,7 +50,6 @@ type CostTab struct {
 	CostForSupplier          *string `sil:"F1798"`
 	HalfCaseCost             *string `sil:"F185"`
 	InventoryMode            *string `sil:"F1875"`
-	BuyingFormat             *string `sil:"F1887"`
 	CaseSize                 *string `sil:"F19"`
 	LastReceivingPackSize    *string `sil:"F194"`
 	LastBaseCost             *string `sil:"F195"`
@@ -97,11 +95,9 @@ type CostTab struct {
 	VendorCode               *string `sil:"F26"`
 	VendorSubstitutionPolicy *string `sil:"F2601"`
 	SPARERECREGGCOST         *int    `sil:"F2624"`
-	SPARERECREGFCOST         *string `sil:"F2626"`
-	SPARERECREGFCOST         *string `sil:"F2628"`
 	DefaultQuantity          *string `sil:"F2666"`
 	CostMethodDate           *string `sil:"F2699"`
-	VendorId                 *string `sil:"F27"`
+	VendorID                 *string `sil:"F27"`
 	CaseUPCCode              *string `sil:"F28"`
 	PalletCases              *string `sil:"F325"`
 	PalletLayers             *string `sil:"F326"`
@@ -111,5 +107,5 @@ type CostTab struct {
 	BaseCost                 *string `sil:"F38"`
 	BaseCostDate             *string `sil:"F39"`
 	VendorAuthorizedItem     *string `sil:"F90"`
-	BatchIdentifier          *string `sil:"F902"`
+	BatchIDentifier          *string `sil:"F902"`
 }

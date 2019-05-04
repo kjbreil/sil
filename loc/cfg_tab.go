@@ -2,7 +2,7 @@ package loc
 
 // CfgTab is the CFG_TAB definition
 type CfgTab struct {
-	TargetIdentifier string `sil:"F1000"`
+	TargetIDentifier string `sil:"F1000" default:"PAL"`
 	RecordStatus     int    `sil:"F1001" default:"1"`
 	DateCreation     string `sil:"F1264" default:"NOW"`
 	LastChangeDate   string `sil:"F253" default:"NOW"`

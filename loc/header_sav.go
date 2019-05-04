@@ -3,7 +3,7 @@ package loc
 // HeaderSav is the HEADER_SAV definition
 type HeaderSav struct {
 	BatchType              *string `sil:"F901"`
-	BatchIdentifier        *string `sil:"F902"`
+	BatchIDentifier        *string `sil:"F902"`
 	BatchCreator           *string `sil:"F903"`
 	BatchDestination       *string `sil:"F904"`
 	BatchAuditFile         *string `sil:"F905"`

@@ -8,7 +8,7 @@ type RentTab struct {
 	TerminalNumber    *string `sil:"F1057"`
 	ReferenceNumber   *string `sil:"F1079"`
 	LineNumber        *int    `sil:"F1101"`
-	CustomerId        *string `sil:"F1148"`
+	CustomerID        *string `sil:"F1148"`
 	PriceLevel        *int    `sil:"F126"`
 	Behavior          *string `sil:"F1785"`
 	RentStartDate     *string `sil:"F1845"`

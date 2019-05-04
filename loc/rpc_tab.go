@@ -9,6 +9,5 @@ type RpcTab struct {
 	ReportCode           *int    `sil:"F18"`
 	ShowPriority         *int    `sil:"F1965"`
 	ShowFilter           *string `sil:"F1966"`
-	SPARE                *string `sil:"F1967"`
 	PriceMargin          *string `sil:"F49"`
 }

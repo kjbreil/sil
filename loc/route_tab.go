@@ -5,7 +5,7 @@ type RouteTab struct {
 	TerminalStore     string  `sil:"F1056"`
 	FreightRateWeight *string `sil:"F1654"`
 	FreightRateVolume *string `sil:"F1655"`
-	FreightRouteId    *string `sil:"F1697"`
+	FreightRouteID    *string `sil:"F1697"`
 	FreightRate3      *string `sil:"F2619"`
 	PickupDate        *string `sil:"F2893"`
 	PickupTime        *string `sil:"F2894"`

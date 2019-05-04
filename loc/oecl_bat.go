@@ -4,7 +4,7 @@ package loc
 type OeclBat struct {
 	UPCCode                  string  `sil:"F01,zeropad"`
 	POSDescription           *string `sil:"F02"`
-	TargetIdentifier         string  `sil:"F1000"`
+	TargetIDentifier         string  `sil:"F1000" default:"PAL"`
 	RecordStatus             int     `sil:"F1001" default:"1"`
 	MovementPeriodType       string  `sil:"F1031"`
 	MovementFile             string  `sil:"F1033"`
@@ -16,5 +16,5 @@ type OeclBat struct {
 	TotalUnits               *string `sil:"F64"`
 	TotalDollars             *string `sil:"F65"`
 	TotalWeight              *string `sil:"F67"`
-	BatchIdentifier          *string `sil:"F902"`
+	BatchIDentifier          *string `sil:"F902"`
 }

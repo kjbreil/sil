@@ -2,7 +2,7 @@ package loc
 
 // WatchTab is the WATCH_TAB definition
 type WatchTab struct {
-	TargetIdentifier    string  `sil:"F1000"`
+	TargetIDentifier    string  `sil:"F1000" default:"PAL"`
 	MovementPeriodType  string  `sil:"F1031"`
 	TotalizerNumber     int     `sil:"F1034"`
 	LineNumber          *int    `sil:"F1101"`

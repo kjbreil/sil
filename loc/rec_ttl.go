@@ -1,7 +1,7 @@
 package loc
 
-// RecTtl is the REC_TTL definition
-type RecTtl struct {
+// RecTTL is the REC_TTL definition
+type RecTTL struct {
 	TransactionNumber   *int    `sil:"F1032"`
 	TotalizerNumber     int     `sil:"F1034"`
 	TotalizerDescriptor *string `sil:"F1039"`

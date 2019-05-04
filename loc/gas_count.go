@@ -7,7 +7,7 @@ type GasCount struct {
 	MovementEndTime        *string `sil:"F1036"`
 	TerminalStore          string  `sil:"F1056"`
 	PriceLevel             *int    `sil:"F126"`
-	GasHoseId              *string `sil:"F1610"`
+	GasHoseID              *string `sil:"F1610"`
 	GasDollarsEndCounter   *string `sil:"F1611"`
 	GasDollarsStartCounter *string `sil:"F1612"`
 	GasDollarsPumpTest     *string `sil:"F1613"`

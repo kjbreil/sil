@@ -3,7 +3,7 @@ package loc
 // SclTab is the SCL_TAB definition
 type SclTab struct {
 	UPCCode                      string  `sil:"F01,zeropad"`
-	TargetIdentifier             string  `sil:"F1000"`
+	TargetIDentifier             string  `sil:"F1000" default:"PAL"`
 	RecordStatus                 int     `sil:"F1001" default:"1"`
 	MaintenanceOperatorLevel     *int    `sil:"F1759"`
 	ScaleSpecificFlag            *string `sil:"F1840"`
@@ -55,5 +55,5 @@ type SclTab struct {
 	BarcodeFormat                *int    `sil:"F2949"`
 	UsedByNumberOfDays           *int    `sil:"F2950"`
 	StorageInstructionNumber     *int    `sil:"F2952"`
-	BatchIdentifier              *string `sil:"F902"`
+	BatchIDentifier              *string `sil:"F902"`
 }

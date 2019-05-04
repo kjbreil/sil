@@ -4,9 +4,8 @@ package loc
 type ObbackBat struct {
 	UPCCode             string  `sil:"F01,zeropad"`
 	UPCCodeFormat       *int    `sil:"F07"`
-	TargetIdentifier    string  `sil:"F1000"`
+	TargetIDentifier    string  `sil:"F1000" default:"PAL"`
 	RecordStatus        int     `sil:"F1001" default:"1"`
-	BuyingFormat        *string `sil:"F1184"`
 	BillBack1Amount     *string `sil:"F1662"`
 	BillBack1Percent    *string `sil:"F1663"`
 	BillBack2Amount     *string `sil:"F1664"`
@@ -16,6 +15,6 @@ type ObbackBat struct {
 	BillBack4Descriptor *string `sil:"F1668"`
 	BillBack4Amount     *string `sil:"F1669"`
 	BillBack4Percent    *string `sil:"F1670"`
-	VendorId            *string `sil:"F27"`
-	BatchIdentifier     *string `sil:"F902"`
+	VendorID            *string `sil:"F27"`
+	BatchIDentifier     *string `sil:"F902"`
 }

@@ -12,7 +12,7 @@ type FposBat struct {
 	StatusCode                 *string `sil:"F08"`
 	StatusIndicatorDate        *string `sil:"F09"`
 	TaxFlag6                   *string `sil:"F100"`
-	TargetIdentifier           string  `sil:"F1000"`
+	TargetIDentifier           string  `sil:"F1000" default:"PAL"`
 	RecordStatus               int     `sil:"F1001" default:"1"`
 	TaxFlag7                   *string `sil:"F101"`
 	ProhibitQuantity           *string `sil:"F102"`
@@ -58,20 +58,15 @@ type FposBat struct {
 	ReplaceAddingFunction      *int    `sil:"F1787"`
 	ReceiptCopyCount           *int    `sil:"F1788"`
 	StoreCouponCount           *string `sil:"F1789"`
-	SPARE                      *string `sil:"F1790"`
 	POSValidItem               *string `sil:"F188"`
 	SendToScale                *string `sil:"F189"`
 	AltDescPOS                 *string `sil:"F1892"`
-	SPAREREGSALPOS             *string `sil:"F1926"`
-	SPAREREGSALPOS             *int    `sil:"F1929"`
-	SPAREREGSALPOS             *string `sil:"F1933"`
 	StoreResponsible           *string `sil:"F1964"`
 	CompetitivePriceQty        *string `sil:"F209"`
 	CompetitivePrice           *string `sil:"F210"`
 	CompetitivePriceStartDate  *string `sil:"F211"`
 	ComparableSize             *string `sil:"F217"`
 	WeightDivisor              *string `sil:"F24"`
-	SPAREREGSALPOS             *string `sil:"F2608"`
 	URL                        *string `sil:"F2660"`
 	ItemAliasForWIC            *string `sil:"F2930"`
 	CouponOfferCode            *string `sil:"F302"`
@@ -98,7 +93,7 @@ type FposBat struct {
 	NotForSaleInStore          *string `sil:"F86"`
 	RestrictedSale             *string `sil:"F87"`
 	StoreCoupon                *string `sil:"F88"`
-	BatchIdentifier            *string `sil:"F902"`
+	BatchIDentifier            *string `sil:"F902"`
 	DepositContainerCode       *string `sil:"F92"`
 	TaxFlag2                   *string `sil:"F96"`
 	TaxFlag3                   *string `sil:"F97"`

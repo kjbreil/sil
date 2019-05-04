@@ -4,7 +4,7 @@ package loc
 type RptCltD struct {
 	TotalizerNumber int     `sil:"F1034"`
 	TerminalStore   string  `sil:"F1056"`
-	CustomerId      *string `sil:"F1148"`
+	CustomerID      *string `sil:"F1148"`
 	LastChangeDate  string  `sil:"F253" default:"NOW"`
 	DateEnd         *string `sil:"F254"`
 	TotalUnits      *string `sil:"F64"`

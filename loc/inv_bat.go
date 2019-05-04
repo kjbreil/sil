@@ -23,14 +23,7 @@ type InvBat struct {
 	CategoryCode           *int    `sil:"F17"`
 	LastChangeDate         string  `sil:"F253" default:"NOW"`
 	DateEnd                *string `sil:"F254"`
-	SPARE                  *string `sil:"F2641"`
-	SPARE                  *int    `sil:"F2642"`
-	SPARE                  *string `sil:"F2643"`
-	SPARE                  *int    `sil:"F2644"`
-	SPARE                  *string `sil:"F2645"`
-	SPARE                  *string `sil:"F2646"`
-	SPARE                  *string `sil:"F2647"`
-	VendorId               *string `sil:"F27"`
+	VendorID               *string `sil:"F27"`
 	TransactionComment     *string `sil:"F2848"`
-	BatchIdentifier        *string `sil:"F902"`
+	BatchIDentifier        *string `sil:"F902"`
 }

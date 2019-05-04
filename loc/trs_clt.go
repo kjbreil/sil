@@ -10,7 +10,7 @@ type TrsClt struct {
 	ReferenceNumber   *string `sil:"F1079"`
 	MatchingNumber    *int    `sil:"F1100"`
 	LineNumber        *int    `sil:"F1101"`
-	CustomerId        *string `sil:"F1148"`
+	CustomerID        *string `sil:"F1148"`
 	OperatorValidated *int    `sil:"F1765"`
 	LastChangeDate    string  `sil:"F253" default:"NOW"`
 	DateEnd           *string `sil:"F254"`

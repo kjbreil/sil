@@ -12,7 +12,7 @@ type GasTrans struct {
 	LineNumber          *int    `sil:"F1101"`
 	UserOrderNumber     *int    `sil:"F1185"`
 	PriceLevel          *int    `sil:"F126"`
-	GasHoseId           *string `sil:"F1610"`
+	GasHoseID           *string `sil:"F1610"`
 	ShiftNumber         *int    `sil:"F1819"`
 	PassiveDiscountInfo *string `sil:"F1936"`
 	LastChangeDate      string  `sil:"F253" default:"NOW"`

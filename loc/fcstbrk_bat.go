@@ -4,9 +4,8 @@ package loc
 type FcstbrkBat struct {
 	UPCCode             string  `sil:"F01,zeropad"`
 	UPCCodeFormat       *int    `sil:"F07"`
-	TargetIdentifier    string  `sil:"F1000"`
+	TargetIDentifier    string  `sil:"F1000" default:"PAL"`
 	RecordStatus        int     `sil:"F1001" default:"1"`
-	BuyingFormat        *string `sil:"F1184"`
 	CostBreakOffInvoice *string `sil:"F1661"`
 	CostBreakQualifier  *string `sil:"F1975"`
 	CostBreakEndDate    *string `sil:"F219"`
@@ -16,6 +15,6 @@ type FcstbrkBat struct {
 	CostBreakStartDate  *string `sil:"F227"`
 	CostBreakMaxQty     *string `sil:"F2568"`
 	CstbrkRetailRule    *string `sil:"F2594"`
-	VendorId            *string `sil:"F27"`
-	BatchIdentifier     *string `sil:"F902"`
+	VendorID            *string `sil:"F27"`
+	BatchIDentifier     *string `sil:"F902"`
 }

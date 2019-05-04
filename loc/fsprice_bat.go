@@ -4,7 +4,7 @@ package loc
 type FspriceBat struct {
 	UPCCode                string  `sil:"F01,zeropad"`
 	UPCCodeFormat          *int    `sil:"F07"`
-	TargetIdentifier       string  `sil:"F1000"`
+	TargetIDentifier       string  `sil:"F1000" default:"PAL"`
 	RecordStatus           int     `sil:"F1001" default:"1"`
 	SaleShopperPoints      *int    `sil:"F1192"`
 	SaleMixmatch           *int    `sil:"F1193"`
@@ -35,5 +35,5 @@ type FspriceBat struct {
 	ChangePriceReason      *string `sil:"F34"`
 	ChangePriceOriginator  *string `sil:"F37"`
 	AdFlag                 *string `sil:"F42"`
-	BatchIdentifier        *string `sil:"F902"`
+	BatchIDentifier        *string `sil:"F902"`
 }

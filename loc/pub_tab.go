@@ -3,7 +3,7 @@ package loc
 // PubTab is the PUB_TAB definition
 type PubTab struct {
 	UPCCode                  string  `sil:"F01,zeropad"`
-	TargetIdentifier         string  `sil:"F1000"`
+	TargetIDentifier         string  `sil:"F1000" default:"PAL"`
 	RecordStatus             int     `sil:"F1001" default:"1"`
 	MovementFile             string  `sil:"F1033"`
 	MaintenanceOperatorLevel *int    `sil:"F1759"`

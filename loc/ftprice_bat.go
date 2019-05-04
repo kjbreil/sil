@@ -4,7 +4,7 @@ package loc
 type FtpriceBat struct {
 	UPCCode               string  `sil:"F01,zeropad"`
 	UPCCodeFormat         *int    `sil:"F07"`
-	TargetIdentifier      string  `sil:"F1000"`
+	TargetIDentifier      string  `sil:"F1000" default:"PAL"`
 	RecordStatus          int     `sil:"F1001" default:"1"`
 	TPRPackagePrice       *string `sil:"F1186"`
 	TPRPackagePriceQty    *string `sil:"F1187"`
@@ -28,5 +28,5 @@ type FtpriceBat struct {
 	TPRNumber             *string `sil:"F2667"`
 	ChangePriceReason     *string `sil:"F34"`
 	ChangePriceOriginator *string `sil:"F37"`
-	BatchIdentifier       *string `sil:"F902"`
+	BatchIDentifier       *string `sil:"F902"`
 }

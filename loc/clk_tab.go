@@ -2,7 +2,7 @@ package loc
 
 // ClkTab is the CLK_TAB definition
 type ClkTab struct {
-	TargetIdentifier      string  `sil:"F1000"`
+	TargetIDentifier      string  `sil:"F1000" default:"PAL"`
 	RecordStatus          int     `sil:"F1001" default:"1"`
 	TerminalStore         string  `sil:"F1056"`
 	UserNumber            *int    `sil:"F1126"`
@@ -13,7 +13,7 @@ type ClkTab struct {
 	UserLastName          *string `sil:"F1144"`
 	UserBirthDate         *string `sil:"F1145"`
 	UserLanguage          *string `sil:"F1146"`
-	CustomerId            *string `sil:"F1148"`
+	CustomerID            *string `sil:"F1148"`
 	UserActiveOnNode      *string `sil:"F1176"`
 	UserOrderNumber       *int    `sil:"F1185"`
 	DateCreation          string  `sil:"F1264" default:"NOW"`
@@ -49,7 +49,7 @@ type ClkTab struct {
 	ClockInout            *string `sil:"F2587"`
 	Profil                *string `sil:"F2597"`
 	ShowFilterUser        *string `sil:"F2692"`
-	VendorId              *string `sil:"F27"`
+	VendorID              *string `sil:"F27"`
 	CellularPhone         *string `sil:"F2806"`
 	UserGroup             *string `sil:"F2827"`
 	WeeklyHomeBreakfast   *string `sil:"F2828"`
@@ -59,7 +59,7 @@ type ClkTab struct {
 	PetsAtHome            *string `sil:"F2832"`
 	ActivityLevel         *int    `sil:"F2833"`
 	NotificationOptOut    *string `sil:"F2844"`
-	BatchIdentifier       *string `sil:"F902"`
+	BatchIDentifier       *string `sil:"F902"`
 	CreatedByUser         *int    `sil:"F940"`
 	ModifiedByUser        *int    `sil:"F941"`
 }

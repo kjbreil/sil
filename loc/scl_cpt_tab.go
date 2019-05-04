@@ -3,7 +3,7 @@ package loc
 // SclCptTab is the SCL_CPT_TAB definition
 type SclCptTab struct {
 	SubDepartmentCode        *int    `sil:"F04"`
-	TargetIdentifier         string  `sil:"F1000"`
+	TargetIDentifier         string  `sil:"F1000" default:"PAL"`
 	RecordStatus             int     `sil:"F1001" default:"1"`
 	MaintenanceOperatorLevel *int    `sil:"F1759"`
 	StoreResponsible         *string `sil:"F1964"`
@@ -11,5 +11,5 @@ type SclCptTab struct {
 	COOLClassNumber          *int    `sil:"F2799"`
 	COOLProdNumber           *int    `sil:"F2804"`
 	COOLProdText             *string `sil:"F2805"`
-	BatchIdentifier          *string `sil:"F902"`
+	BatchIDentifier          *string `sil:"F902"`
 }

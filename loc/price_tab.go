@@ -4,7 +4,7 @@ package loc
 type PriceTab struct {
 	UPCCode                    string  `sil:"F01,zeropad"`
 	UPCCodeFormat              *int    `sil:"F07"`
-	TargetIdentifier           string  `sil:"F1000"`
+	TargetIDentifier           string  `sil:"F1000" default:"PAL"`
 	RecordStatus               int     `sil:"F1001" default:"1"`
 	PriceRoundingMethod        *string `sil:"F1005"`
 	ActivePriceQuantity        *string `sil:"F1006"`
@@ -70,10 +70,8 @@ type PriceTab struct {
 	NextDiscountPercent        *string `sil:"F1227"`
 	RedeemDiscountPoints       *int    `sil:"F1228"`
 	RedeemDiscountAmount       *string `sil:"F1229"`
-	SPARE                      *int    `sil:"F1230"`
 	LastLabelRegularPrice      *string `sil:"F1231"`
 	RedeemFreePoints           *int    `sil:"F1232"`
-	SPARE                      *string `sil:"F1233"`
 	RedeemStartDate            *string `sil:"F1234"`
 	RedeemEndDate              *string `sil:"F1235"`
 	PriceLevel                 *int    `sil:"F126"`
@@ -121,11 +119,6 @@ type PriceTab struct {
 	TPRStartDate               *string `sil:"F183"`
 	TPREndDate                 *string `sil:"F184"`
 	CommissionDollars          *string `sil:"F1885"`
-	SPAREREGSALFPRICE          *string `sil:"F1927"`
-	SPAREREGSALGPRICE          *string `sil:"F1928"`
-	SPAREREGSALGPRICE          *int    `sil:"F1930"`
-	SPAREREGSALFPRICE          *string `sil:"F1934"`
-	SPAREREGSALGPRICE          *string `sil:"F1935"`
 	StoreResponsible           *string `sil:"F1964"`
 	TargetDollarMarkup         *string `sil:"F205"`
 	MeasureSellPack            *string `sil:"F21"`
@@ -167,6 +160,6 @@ type PriceTab struct {
 	InstoreOverRegularPrice    *string `sil:"F59"`
 	PriceLimitedQty            *string `sil:"F62"`
 	PriceLimited               *string `sil:"F63"`
-	BatchIdentifier            *string `sil:"F902"`
+	BatchIDentifier            *string `sil:"F902"`
 	BatchCreator               *string `sil:"F903"`
 }

@@ -31,7 +31,6 @@ type SdpTab struct {
 	CostPlusPercent         *string `sil:"F1938"`
 	ShowPriority            *int    `sil:"F1965"`
 	ShowFilter              *string `sil:"F1966"`
-	SPARE                   *string `sil:"F1967"`
 	MaximumAmount           *string `sil:"F239"`
 	MinimumAmount           *string `sil:"F240"`
 	MaximumVoid             *string `sil:"F241"`

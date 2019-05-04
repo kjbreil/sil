@@ -6,7 +6,7 @@ type OfrTab struct {
 	TerminalStore            string  `sil:"F1056"`
 	TerminalNumber           *string `sil:"F1057"`
 	LineNumber               *int    `sil:"F1101"`
-	CustomerId               *string `sil:"F1148"`
+	CustomerID               *string `sil:"F1148"`
 	DateCreation             string  `sil:"F1264" default:"NOW"`
 	CallingStore             *string `sil:"F1525"`
 	LastChangeDate           string  `sil:"F253" default:"NOW"`

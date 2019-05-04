@@ -2,9 +2,9 @@ package loc
 
 // CltTab is the CLT_TAB definition
 type CltTab struct {
-	TargetIdentifier          string  `sil:"F1000"`
+	TargetIDentifier          string  `sil:"F1000" default:"PAL"`
 	RecordStatus              int     `sil:"F1001" default:"1"`
-	CustomerId                *string `sil:"F1148"`
+	CustomerID                *string `sil:"F1148"`
 	CustFirstName             *string `sil:"F1149"`
 	CustLastName              *string `sil:"F1150"`
 	CustPosComment            *string `sil:"F1151"`
@@ -47,7 +47,7 @@ type CltTab struct {
 	CreditCardType            *string `sil:"F1582"`
 	LastCallingDate           *string `sil:"F1583"`
 	LastMailingDate           *string `sil:"F1584"`
-	ShipIdNumber              *string `sil:"F1642"`
+	ShipIDNumber              *string `sil:"F1642"`
 	ShipName                  *string `sil:"F1643"`
 	ShipContactName           *string `sil:"F1644"`
 	ShipAddressLine1          *string `sil:"F1645"`
@@ -61,7 +61,7 @@ type CltTab struct {
 	FreightRateVolume         *string `sil:"F1655"`
 	BackOrderDays             *int    `sil:"F1685"`
 	ShippingNote              *string `sil:"F1692"`
-	FreightRouteId            *string `sil:"F1697"`
+	FreightRouteID            *string `sil:"F1697"`
 	TemporaryShopperLevel     *int    `sil:"F1743"`
 	MaintenanceOperatorLevel  *int    `sil:"F1759"`
 	CustomerGroup2            *string `sil:"F1777"`
@@ -74,9 +74,6 @@ type CltTab struct {
 	LastChangeDate            string  `sil:"F253" default:"NOW"`
 	Profil                    *string `sil:"F2597"`
 	CurrencyCode              *string `sil:"F2602"`
-	SPARE                     *string `sil:"F2615"`
-	SPARE                     *int    `sil:"F2616"`
-	SPARE                     *string `sil:"F2617"`
 	FreightRate3              *string `sil:"F2619"`
 	URL                       *string `sil:"F2660"`
 	PointProgramMember        *string `sil:"F2743"`
@@ -93,7 +90,7 @@ type CltTab struct {
 	AcceptedTermsAndCondition *string `sil:"F2901"`
 	RouteType                 *string `sil:"F2904"`
 	PickupNote                *string `sil:"F2934"`
-	BatchIdentifier           *string `sil:"F902"`
+	BatchIDentifier           *string `sil:"F902"`
 	CreatedByUser             *int    `sil:"F940"`
 	ModifiedByUser            *int    `sil:"F941"`
 }

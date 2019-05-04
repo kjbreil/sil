@@ -23,7 +23,6 @@ type InvReg struct {
 	AlphaParameter          *string `sil:"F1081"`
 	LineNumber              *int    `sil:"F1101"`
 	UnitNetCost             *string `sil:"F1140"`
-	BuyingFormat            *string `sil:"F1184"`
 	SequenceNumber          *int    `sil:"F131"`
 	NextCostNet             *string `sil:"F151"`
 	TargetStore             *string `sil:"F1690"`
@@ -41,14 +40,8 @@ type InvReg struct {
 	LastChangeDate          string  `sil:"F253" default:"NOW"`
 	DateEnd                 *string `sil:"F254"`
 	VendorCode              *string `sil:"F26"`
-	SPARE                   *int    `sil:"F2638"`
-	SPARE                   *string `sil:"F2639"`
-	SPARE                   *string `sil:"F2640"`
-	SPARE                   *string `sil:"F2641"`
-	SPARE                   *int    `sil:"F2642"`
-	SPARE                   *string `sil:"F2643"`
 	URL                     *string `sil:"F2660"`
-	VendorId                *string `sil:"F27"`
+	VendorID                *string `sil:"F27"`
 	WeightNet               *string `sil:"F270"`
 	Price                   *string `sil:"F30"`
 	PriceQty                *string `sil:"F31"`

@@ -3,7 +3,7 @@ package loc
 // OpidBat is the OPID_BAT definition
 type OpidBat struct {
 	UPCCode          string  `sil:"F01,zeropad"`
-	TargetIdentifier string  `sil:"F1000"`
+	TargetIDentifier string  `sil:"F1000" default:"PAL"`
 	PromotionCode    *string `sil:"F383"`
-	BatchIdentifier  *string `sil:"F902"`
+	BatchIDentifier  *string `sil:"F902"`
 }

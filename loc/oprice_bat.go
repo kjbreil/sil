@@ -4,7 +4,7 @@ package loc
 type OpriceBat struct {
 	UPCCode                    string  `sil:"F01,zeropad"`
 	UPCCodeFormat              *int    `sil:"F07"`
-	TargetIdentifier           string  `sil:"F1000"`
+	TargetIDentifier           string  `sil:"F1000" default:"PAL"`
 	RecordStatus               int     `sil:"F1001" default:"1"`
 	PriceRoundingMethod        *string `sil:"F1005"`
 	PriceDiscountAmount        *string `sil:"F111"`
@@ -23,8 +23,6 @@ type OpriceBat struct {
 	PricePackageRounding       *string `sil:"F1768"`
 	PriceLimitedMargin         *string `sil:"F1769"`
 	PriceLimitedRounding       *string `sil:"F1770"`
-	SPAREREGSALFPRICE          *string `sil:"F1927"`
-	SPAREREGSALFPRICE          *string `sil:"F1934"`
 	StoreResponsible           *string `sil:"F1964"`
 	TargetDollarMarkup         *string `sil:"F205"`
 	Price                      *string `sil:"F30"`
@@ -38,5 +36,5 @@ type OpriceBat struct {
 	PriceMargin                *string `sil:"F49"`
 	PriceLimitedQty            *string `sil:"F62"`
 	PriceLimited               *string `sil:"F63"`
-	BatchIdentifier            *string `sil:"F902"`
+	BatchIDentifier            *string `sil:"F902"`
 }

@@ -1,7 +1,7 @@
 package loc
 
-// InvTtl is the INV_TTL definition
-type InvTtl struct {
+// InvTTL is the INV_TTL definition
+type InvTTL struct {
 	TransactionNumber   *int    `sil:"F1032"`
 	TotalizerNumber     int     `sil:"F1034"`
 	TotalizerDescriptor *string `sil:"F1039"`

@@ -12,8 +12,8 @@ type ClfTab struct {
 	ShopperDescriptor        *string `sil:"F1174"`
 	ShopperCouponMultiple    *string `sil:"F1269"`
 	ShopperMaxCouponTotal    *string `sil:"F1270"`
-	ShopperGetDsc            *string `sil:"F1271"`
-	ShopperGetDsc            *string `sil:"F1272"`
+	ShopperGetDscDollar      *string `sil:"F1271"`
+	ShopperGetDscPct         *string `sil:"F1272"`
 	ShopperGetLinkedItem     *string `sil:"F1273"`
 	ShopperGetCouponLink     *string `sil:"F1274"`
 	ShopperMaxCouponValue    *string `sil:"F1275"`

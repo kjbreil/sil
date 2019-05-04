@@ -5,7 +5,7 @@ type CltItmTab struct {
 	UPCCode                  string  `sil:"F01,zeropad"`
 	RecordStatus             int     `sil:"F1001" default:"1"`
 	PriceRoundingMethod      *string `sil:"F1005"`
-	CustomerId               *string `sil:"F1148"`
+	CustomerID               *string `sil:"F1148"`
 	PriceEndDate             *string `sil:"F129"`
 	SuggestedPrice           *string `sil:"F168"`
 	SuggestedPriceMargin     *string `sil:"F1713"`
@@ -23,5 +23,5 @@ type CltItmTab struct {
 	PriceMargin              *string `sil:"F49"`
 	PriceLimitedQty          *string `sil:"F62"`
 	PriceLimited             *string `sil:"F63"`
-	BatchIdentifier          *string `sil:"F902"`
+	BatchIDentifier          *string `sil:"F902"`
 }

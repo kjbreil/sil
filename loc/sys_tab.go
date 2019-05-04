@@ -17,6 +17,6 @@ type SysTab struct {
 	DateChangeMaximum    *string `sil:"F2590"`
 	LicenseControlString *string `sil:"F2874"`
 	CouponOfferCode      *string `sil:"F302"`
-	BatchIdentifier      *string `sil:"F902"`
+	BatchIDentifier      *string `sil:"F902"`
 	PurchaseOrderNumber  *string `sil:"F91"`
 }

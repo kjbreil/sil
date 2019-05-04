@@ -2,7 +2,7 @@ package loc
 
 // CpnTab is the CPN_TAB definition
 type CpnTab struct {
-	TargetIdentifier   string  `sil:"F1000"`
+	TargetIDentifier   string  `sil:"F1000" default:"PAL"`
 	RecordStatus       int     `sil:"F1001" default:"1"`
 	CouponCode         *int    `sil:"F2034"`
 	CouponData         *string `sil:"F2035"`

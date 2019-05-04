@@ -2,7 +2,7 @@ package loc
 
 // RunTab is the RUN_TAB definition
 type RunTab struct {
-	TargetIdentifier         string  `sil:"F1000"`
+	TargetIDentifier         string  `sil:"F1000" default:"PAL"`
 	AutorunOrder             *int    `sil:"F1102"`
 	AutorunCommand           *string `sil:"F1103"`
 	AutorunDestinationStores *string `sil:"F1104"`

@@ -4,7 +4,7 @@ package loc
 type FinstoreBat struct {
 	UPCCode                 string  `sil:"F01,zeropad"`
 	UPCCodeFormat           *int    `sil:"F07"`
-	TargetIdentifier        string  `sil:"F1000"`
+	TargetIDentifier        string  `sil:"F1000" default:"PAL"`
 	RecordStatus            int     `sil:"F1001" default:"1"`
 	InstorePrice            *string `sil:"F1133"`
 	InstorePriceQty         *string `sil:"F1134"`
@@ -28,5 +28,5 @@ type FinstoreBat struct {
 	ChangePriceReason       *string `sil:"F34"`
 	ChangePriceOriginator   *string `sil:"F37"`
 	InstoreOverRegularPrice *string `sil:"F59"`
-	BatchIdentifier         *string `sil:"F902"`
+	BatchIDentifier         *string `sil:"F902"`
 }

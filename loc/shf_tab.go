@@ -2,7 +2,7 @@ package loc
 
 // ShfTab is the SHF_TAB definition
 type ShfTab struct {
-	TargetIdentifier string  `sil:"F1000"`
+	TargetIDentifier string  `sil:"F1000" default:"PAL"`
 	ShelfLife        *int    `sil:"F105"`
 	AisleLocation    *string `sil:"F116"`
 	ShelfLocation    *string `sil:"F117"`

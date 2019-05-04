@@ -4,7 +4,7 @@ package loc
 type DsdTab struct {
 	UPCCode                   string  `sil:"F01,zeropad"`
 	UPCCodeFormat             *int    `sil:"F07"`
-	TargetIdentifier          string  `sil:"F1000"`
+	TargetIDentifier          string  `sil:"F1000" default:"PAL"`
 	RecordStatus              int     `sil:"F1001" default:"1"`
 	KnownShrinkFactor         *string `sil:"F1123"`
 	DepartmentNumberReceiving *int    `sil:"F15"`
@@ -18,5 +18,5 @@ type DsdTab struct {
 	OrderTrigger              *string `sil:"F72"`
 	SuggestedOrder            *string `sil:"F73"`
 	MinimumInventory          *string `sil:"F74"`
-	BatchIdentifier           *string `sil:"F902"`
+	BatchIDentifier           *string `sil:"F902"`
 }

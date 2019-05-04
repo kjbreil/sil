@@ -1,7 +1,7 @@
 package loc
 
-// RecTtlSav is the REC_TTL_SAV definition
-type RecTtlSav struct {
+// RecTTLSav is the REC_TTL_SAV definition
+type RecTTLSav struct {
 	TransactionNumber     *int    `sil:"F1032"`
 	TotalizerNumber       int     `sil:"F1034"`
 	TotalizerDescriptor   *string `sil:"F1039"`

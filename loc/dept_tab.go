@@ -29,7 +29,6 @@ type DeptTab struct {
 	AltDescDept             *string `sil:"F1894"`
 	ShowPriority            *int    `sil:"F1965"`
 	ShowFilter              *string `sil:"F1966"`
-	SPARE                   *string `sil:"F1967"`
 	DepartmentDescription   *string `sil:"F238"`
 	MaximumAmount           *string `sil:"F239"`
 	MinimumAmount           *string `sil:"F240"`

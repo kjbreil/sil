@@ -8,7 +8,7 @@ type CkzTab struct {
 	UserLimit       *string `sil:"F2825"`
 	UserLimitMethod *string `sil:"F2826"`
 	UserGroup       *string `sil:"F2827"`
-	BatchIdentifier *string `sil:"F902"`
+	BatchIDentifier *string `sil:"F902"`
 	CreatedByUser   *int    `sil:"F940"`
 	ModifiedByUser  *int    `sil:"F941"`
 }

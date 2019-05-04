@@ -3,7 +3,7 @@ package loc
 // SclCslTab is the SCL_CSL_TAB definition
 type SclCslTab struct {
 	SubDepartmentCode        *int    `sil:"F04"`
-	TargetIdentifier         string  `sil:"F1000"`
+	TargetIDentifier         string  `sil:"F1000" default:"PAL"`
 	RecordStatus             int     `sil:"F1001" default:"1"`
 	MaintenanceOperatorLevel *int    `sil:"F1759"`
 	StoreResponsible         *string `sil:"F1964"`
@@ -12,5 +12,5 @@ type SclCslTab struct {
 	COOLTextType             *string `sil:"F2795"`
 	COOLShortListNumber      *int    `sil:"F2797"`
 	COOLShortListSequence    *int    `sil:"F2798"`
-	BatchIdentifier          *string `sil:"F902"`
+	BatchIDentifier          *string `sil:"F902"`
 }

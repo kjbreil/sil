@@ -12,9 +12,8 @@ type LabelTab struct {
 	PriceDiscountAmount    *string `sil:"F111"`
 	PriceDiscountPercent   *string `sil:"F112"`
 	ActivePriceDescription *string `sil:"F113"`
-	CustomerId             *string `sil:"F1148"`
+	CustomerID             *string `sil:"F1148"`
 	ShelfLocation          *string `sil:"F117"`
-	BuyingFormat           *string `sil:"F1184"`
 	PriceLevel             *int    `sil:"F126"`
 	PriceEndDate           *string `sil:"F129"`
 	PriceEndTime           *string `sil:"F130"`
@@ -46,7 +45,7 @@ type LabelTab struct {
 	LongDescription        *string `sil:"F255"`
 	LabelFromDevice        *string `sil:"F2588"`
 	VendorCode             *string `sil:"F26"`
-	VendorId               *string `sil:"F27"`
+	VendorID               *string `sil:"F27"`
 	ExpandedDescription    *string `sil:"F29"`
 	Price                  *string `sil:"F30"`
 	PriceQty               *string `sil:"F31"`
@@ -59,7 +58,7 @@ type LabelTab struct {
 	PriceLimited           *string `sil:"F63"`
 	TaxFlag1               *string `sil:"F81"`
 	ScalableItem           *string `sil:"F82"`
-	BatchIdentifier        *string `sil:"F902"`
+	BatchIDentifier        *string `sil:"F902"`
 	BatchCreator           *string `sil:"F903"`
 	ShelfTagQuantity       *int    `sil:"F94"`
 	ShelfTagType           *string `sil:"F95"`

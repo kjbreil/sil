@@ -3,7 +3,7 @@ package loc
 // HeaderExe is the HEADER_EXE definition
 type HeaderExe struct {
 	BatchType              *string `sil:"F901"`
-	BatchIdentifier        *string `sil:"F902"`
+	BatchIDentifier        *string `sil:"F902"`
 	BatchCreator           *string `sil:"F903"`
 	BatchDestination       *string `sil:"F904"`
 	BatchAuditFile         *string `sil:"F905"`

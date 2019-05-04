@@ -1,7 +1,7 @@
 package loc
 
-// SalTtlSav is the SAL_TTL_SAV definition
-type SalTtlSav struct {
+// SalTTLSav is the SAL_TTL_SAV definition
+type SalTTLSav struct {
 	TransactionNumber     *int    `sil:"F1032"`
 	TotalizerNumber       int     `sil:"F1034"`
 	TotalizerDescriptor   *string `sil:"F1039"`

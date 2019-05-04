@@ -11,7 +11,7 @@ type LstReg struct {
 	TentativeItemFlag       *string `sil:"F1071"`
 	SelectPkgPrice          *int    `sil:"F1874"`
 	LastChangeDate          string  `sil:"F253" default:"NOW"`
-	ListId                  *string `sil:"F2891"`
+	ListID                  *string `sil:"F2891"`
 	TotalUnits              *string `sil:"F64"`
 	TotalWeight             *string `sil:"F67"`
 	ModifiedByUser          *int    `sil:"F941"`

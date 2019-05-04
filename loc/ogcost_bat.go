@@ -5,11 +5,10 @@ type OgcostBat struct {
 	UPCCode                  string  `sil:"F01,zeropad"`
 	UPCCodeFormat            *int    `sil:"F07"`
 	StatusCode               *string `sil:"F08"`
-	TargetIdentifier         string  `sil:"F1000"`
+	TargetIDentifier         string  `sil:"F1000" default:"PAL"`
 	RecordStatus             int     `sil:"F1001" default:"1"`
 	ActiveVendor             *string `sil:"F1037"`
 	OperatorResponsible      *int    `sil:"F1168"`
-	BuyingFormat             *string `sil:"F1184"`
 	AlternateItemCode        *string `sil:"F127"`
 	SequenceNumber           *int    `sil:"F131"`
 	VendorBrokerNumber       *string `sil:"F165"`
@@ -26,7 +25,6 @@ type OgcostBat struct {
 	SpareRECREGGCOST         *string `sil:"F1797"`
 	CostForSupplier          *string `sil:"F1798"`
 	InventoryMode            *string `sil:"F1875"`
-	BuyingFormat             *string `sil:"F1887"`
 	ReturnPolicy             *string `sil:"F1961"`
 	CostComment              *string `sil:"F1976"`
 	AvailabilityDate         *string `sil:"F216"`
@@ -36,12 +34,12 @@ type OgcostBat struct {
 	SPARERECREGGCOST         *int    `sil:"F2624"`
 	DefaultQuantity          *string `sil:"F2666"`
 	CostMethodDate           *string `sil:"F2699"`
-	VendorId                 *string `sil:"F27"`
+	VendorID                 *string `sil:"F27"`
 	CaseUPCCode              *string `sil:"F28"`
 	PalletCases              *string `sil:"F325"`
 	PalletLayers             *string `sil:"F326"`
 	FreightCaseWeight        *string `sil:"F327"`
 	FreightCaseCube          *string `sil:"F328"`
 	VendorAuthorizedItem     *string `sil:"F90"`
-	BatchIdentifier          *string `sil:"F902"`
+	BatchIDentifier          *string `sil:"F902"`
 }

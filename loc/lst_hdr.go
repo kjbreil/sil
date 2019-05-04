@@ -5,10 +5,10 @@ type LstHdr struct {
 	RecordStatus     int     `sil:"F1001" default:"1"`
 	RegistrationMode *string `sil:"F1067"`
 	TransactionMode  *string `sil:"F1068"`
-	CustomerId       *string `sil:"F1148"`
+	CustomerID       *string `sil:"F1148"`
 	DateCreation     string  `sil:"F1264" default:"NOW"`
 	LastChangeDate   string  `sil:"F253" default:"NOW"`
-	ListId           *string `sil:"F2891"`
+	ListID           *string `sil:"F2891"`
 	ListDescription  *string `sil:"F2892"`
 	ModifiedByUser   *int    `sil:"F941"`
 }

@@ -3,7 +3,7 @@ package loc
 // SclNutTab is the SCL_NUT_TAB definition
 type SclNutTab struct {
 	SubDepartmentCode              *int    `sil:"F04"`
-	TargetIdentifier               string  `sil:"F1000"`
+	TargetIDentifier               string  `sil:"F1000" default:"PAL"`
 	RecordStatus                   int     `sil:"F1001" default:"1"`
 	MaintenanceOperatorLevel       *int    `sil:"F1759"`
 	StoreResponsible               *string `sil:"F1964"`
@@ -54,15 +54,6 @@ type SclNutTab struct {
 	Omega6PolyunsaturatedFat       *string `sil:"F2539"`
 	Omega3PolyunsaturatedFat       *string `sil:"F2540"`
 	Starch                         *string `sil:"F2541"`
-	SPARE                          *string `sil:"F2542"`
-	SPARE                          *string `sil:"F2543"`
-	SPARE                          *string `sil:"F2544"`
-	SPARE                          *string `sil:"F2545"`
-	SPARE                          *string `sil:"F2546"`
-	SPARE                          *string `sil:"F2547"`
-	SPARE                          *string `sil:"F2548"`
-	SPARE                          *string `sil:"F2549"`
-	SPARE                          *string `sil:"F2550"`
 	TemplateNumber                 *string `sil:"F268"`
 	ServingSize                    *string `sil:"F276"`
 	ServingsPerContainer           *string `sil:"F277"`
@@ -94,5 +85,5 @@ type SclNutTab struct {
 	CalciumPercent                 *string `sil:"F295"`
 	NutritionPortion               *int    `sil:"F2951"`
 	IronPercent                    *string `sil:"F296"`
-	BatchIdentifier                *string `sil:"F902"`
+	BatchIDentifier                *string `sil:"F902"`
 }

@@ -91,8 +91,8 @@ type SalReg struct {
 	VendorCouponAmt          *string `sil:"F1723"`
 	DoubleCouponAmt          *string `sil:"F1724"`
 	ItemDiscountQty          *string `sil:"F1725"`
-	ItemDiscount             *string `sil:"F1726"`
-	ItemDiscount             *string `sil:"F1727"`
+	ItemDiscountDollar       *string `sil:"F1726"`
+	ItemDiscountPct          *string `sil:"F1727"`
 	ProportionalDiscountAmt  *string `sil:"F1728"`
 	DepartmentDiscountTotal  *string `sil:"F1729"`
 	ProhibitMultipleCoupon   *string `sil:"F173"`
@@ -130,16 +130,8 @@ type SalReg struct {
 	DoubleCpnCnt             *string `sil:"F1888"`
 	ProportionalDiscPercent  *string `sil:"F1924"`
 	ComparePriceQty          *string `sil:"F1925"`
-	SPAREREGSALPOS           *string `sil:"F1926"`
-	SPAREREGSALFPRICE        *string `sil:"F1927"`
-	SPAREREGSALGPRICE        *string `sil:"F1928"`
-	SPAREREGSALPOS           *int    `sil:"F1929"`
-	SPAREREGSALGPRICE        *int    `sil:"F1930"`
 	RedeemOnStoreECoupon     *int    `sil:"F1931"`
 	ComparePrice             *string `sil:"F1932"`
-	SPAREREGSALPOS           *string `sil:"F1933"`
-	SPAREREGSALFPRICE        *string `sil:"F1934"`
-	SPAREREGSALGPRICE        *string `sil:"F1935"`
 	PassiveDiscountInfo      *string `sil:"F1936"`
 	CostPlusPercent          *string `sil:"F1938"`
 	WeightDivisor            *string `sil:"F24"`
@@ -150,13 +142,9 @@ type SalReg struct {
 	Fee3                     *string `sil:"F2553"`
 	Fee4                     *string `sil:"F2554"`
 	Fee5                     *string `sil:"F2555"`
-	SPAREREGSALPOS           *string `sil:"F2608"`
 	RedeemOnStoreCoupon      *int    `sil:"F2609"`
 	PODistributionMatch      *string `sil:"F2610"`
 	PriceModification        *string `sil:"F2611"`
-	SPAREREGSAL              *string `sil:"F2612"`
-	SPAREHDRREGSAL           *int    `sil:"F2613"`
-	SPAREHDRREGSAL           *string `sil:"F2614"`
 	URL                      *string `sil:"F2660"`
 	WeightNet                *string `sil:"F270"`
 	PointRedeemProgram       *string `sil:"F2744"`
@@ -171,14 +159,7 @@ type SalReg struct {
 	VendorCouponMethod       *string `sil:"F2753"`
 	OpenQuantity             *string `sil:"F2860"`
 	BagCount                 *int    `sil:"F2861"`
-	SPAREREGSAL              *int    `sil:"F2862"`
-	SPAREREGSAL              *int    `sil:"F2863"`
-	SPAREREGSAL              *string `sil:"F2865"`
-	SPAREREGSAL              *string `sil:"F2866"`
-	SPAREREGSAL              *string `sil:"F2867"`
-	SPAREREGSAL              *string `sil:"F2869"`
 	SaleAsDiscount           *string `sil:"F2870"`
-	SPAREREGSAL              *string `sil:"F2871"`
 	Price                    *string `sil:"F30"`
 	PriceQty                 *string `sil:"F31"`
 	PromotionCode            *string `sil:"F383"`

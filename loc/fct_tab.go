@@ -3,7 +3,7 @@ package loc
 // FctTab is the FCT_TAB definition
 type FctTab struct {
 	TaxFlag6                 *string `sil:"F100"`
-	TargetIdentifier         string  `sil:"F1000"`
+	TargetIDentifier         string  `sil:"F1000" default:"PAL"`
 	TaxFlag7                 *string `sil:"F101"`
 	ProhibitQuantity         *string `sil:"F102"`
 	NewUserAccessLevel       *int    `sil:"F1042"`

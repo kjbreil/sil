@@ -13,10 +13,10 @@ type TlzTab struct {
 	AffectedFiles            *string `sil:"F1048"`
 	NoUserAccessLevel        *int    `sil:"F1054"`
 	ClerkUserAccessLevel     *int    `sil:"F1055"`
-	TtlzGroup1               *string `sil:"F1128"`
-	TtlzGroup2               *string `sil:"F1129"`
-	TtlzGLAccount            *string `sil:"F1130"`
-	TtlzGroupingExpression   *string `sil:"F1131"`
+	TTLzGroup1               *string `sil:"F1128"`
+	TTLzGroup2               *string `sil:"F1129"`
+	TTLzGLAccount            *string `sil:"F1130"`
+	TTLzGroupingExpression   *string `sil:"F1131"`
 	SequenceNumber           *int    `sil:"F1147"`
 	TotalizerSectionNumber   *int    `sil:"F1179"`
 	DebitOrCreditEntry       *string `sil:"F1253"`

@@ -2,10 +2,10 @@ package loc
 
 // VendorTab is the VENDOR_TAB definition
 type VendorTab struct {
-	TargetIdentifier         string  `sil:"F1000"`
+	TargetIDentifier         string  `sil:"F1000" default:"PAL"`
 	RecordStatus             int     `sil:"F1001" default:"1"`
 	OperatorResponsible      *int    `sil:"F1168"`
-	ShipIdNumber             *string `sil:"F1642"`
+	ShipIDNumber             *string `sil:"F1642"`
 	FreightRateWeight        *string `sil:"F1654"`
 	FreightRateVolume        *string `sil:"F1655"`
 	VendorTermDescriptor     *string `sil:"F1656"`
@@ -19,7 +19,6 @@ type VendorTab struct {
 	VendorComment            *string `sil:"F1882"`
 	MinimumWeight            *string `sil:"F1883"`
 	MinimumDollars           *string `sil:"F1884"`
-	BuyingFormat             *string `sil:"F1887"`
 	VendorContact2           *string `sil:"F1889"`
 	VendorContact2Phone      *string `sil:"F1890"`
 	VendorContact2Fax        *string `sil:"F1891"`
@@ -32,14 +31,10 @@ type VendorTab struct {
 	Profil                   *string `sil:"F2597"`
 	CurrencyCode             *string `sil:"F2602"`
 	VendorEmail              *string `sil:"F2603"`
-	SPARERECVND              *string `sil:"F2630"`
-	SPARERECVND              *int    `sil:"F2631"`
-	SPARE                    *string `sil:"F2633"`
-	SPARE                    *string `sil:"F2635"`
 	InvisibleOnPDA           *string `sil:"F2658"`
 	URL                      *string `sil:"F2660"`
 	DefaultQuantity          *string `sil:"F2666"`
-	VendorId                 *string `sil:"F27"`
+	VendorID                 *string `sil:"F27"`
 	MaximumCases             *string `sil:"F2700"`
 	MaximumCubic             *string `sil:"F2701"`
 	MaximumWeight            *string `sil:"F2702"`
@@ -70,5 +65,5 @@ type VendorTab struct {
 	DeliverFriday            *string `sil:"F357"`
 	DeliverSaturday          *string `sil:"F358"`
 	DeliverSunday            *string `sil:"F359"`
-	BatchIdentifier          *string `sil:"F902"`
+	BatchIDentifier          *string `sil:"F902"`
 }

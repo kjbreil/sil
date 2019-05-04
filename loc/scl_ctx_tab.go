@@ -3,7 +3,7 @@ package loc
 // SclCtxTab is the SCL_CTX_TAB definition
 type SclCtxTab struct {
 	SubDepartmentCode        *int    `sil:"F04"`
-	TargetIdentifier         string  `sil:"F1000"`
+	TargetIDentifier         string  `sil:"F1000" default:"PAL"`
 	RecordStatus             int     `sil:"F1001" default:"1"`
 	MaintenanceOperatorLevel *int    `sil:"F1759"`
 	StoreResponsible         *string `sil:"F1964"`
@@ -12,5 +12,5 @@ type SclCtxTab struct {
 	COOLTextDescription      *string `sil:"F2794"`
 	COOLTextType             *string `sil:"F2795"`
 	COOLTextFontSize         *int    `sil:"F2938"`
-	BatchIdentifier          *string `sil:"F902"`
+	BatchIDentifier          *string `sil:"F902"`
 }

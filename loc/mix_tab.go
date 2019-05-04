@@ -5,5 +5,5 @@ type MixTab struct {
 	RecordStatus    int     `sil:"F1001" default:"1"`
 	MixDescriptor   *string `sil:"F1019"`
 	PriceMixmatch   *int    `sil:"F32"`
-	BatchIdentifier *string `sil:"F902"`
+	BatchIDentifier *string `sil:"F902"`
 }

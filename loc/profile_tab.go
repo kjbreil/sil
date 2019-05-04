@@ -2,7 +2,7 @@ package loc
 
 // ProfileTab is the PROFILE_TAB definition
 type ProfileTab struct {
-	TargetIdentifier    string  `sil:"F1000"`
+	TargetIDentifier    string  `sil:"F1000" default:"PAL"`
 	ProfileName         *string `sil:"F2669"`
 	ProfileParamName    *string `sil:"F2670"`
 	ProfileParamValue1  *string `sil:"F2671"`
