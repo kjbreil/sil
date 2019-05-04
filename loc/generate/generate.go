@@ -59,10 +59,8 @@ func main() {
 			}
 			tf.Data = append(tf.Data, elem)
 		}
-		if tf.Name == "CfgTab" {
-			tf.write()
-			// fmt.Println(tf.marshal())
-		}
+		tf.write()
+
 	}
 
 }
