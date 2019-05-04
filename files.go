@@ -1,8 +1,11 @@
 package sil
 
 import (
+	"bufio"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 )
 
 // Write writes a SIL to a file
@@ -18,5 +21,21 @@ func (s *SIL) Write(filename string) error {
 	if err != nil {
 		return fmt.Errorf("ioutil error: %v", err)
 	}
+	return nil
+}
+
+// JSON Creates a JSON file of the SIL file
+func (s *SIL) JSON(filename string) error {
+	f, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+
+	w := bufio.NewWriter(f)
+	err = json.NewEncoder(w).Encode(s)
+	if err != nil {
+		return err
+	}
+	w.Flush()
 	return nil
 }
