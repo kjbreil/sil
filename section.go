@@ -8,19 +8,28 @@ import (
 // section is a view
 type section []row
 
-func split(rows []interface{}) map[int]section {
+// spit needs to be reworked it currently will combine two parts as the same because its based on number of
+// elements instead of what elements are contained.
+func split(rows []interface{}) map[string]section {
 	var ssec section
 
+	// take every row and reflect it
 	for i := range rows {
 		var r row
 		r.make(rows[i], false)
 		ssec = append(ssec, r)
 	}
 
-	secs := make(map[int]section)
+	secs := make(map[string]section)
 
 	for i := range ssec {
-		secs[len(ssec[i].elems)] = append(secs[len(ssec[i].elems)], ssec[i])
+		// make the name of the section for the map based on the fields
+		var key string
+		for x := range ssec[i].elems {
+			key = key + fmt.Sprintf("%s", *ssec[i].elems[x].name)
+		}
+
+		secs[key] = append(secs[key], ssec[i])
 	}
 
 	return secs
