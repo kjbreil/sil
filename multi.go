@@ -45,6 +45,6 @@ func (m Multi) AppendView(name string, data interface{}) {
 // SetHeaders sets all the headers in a sil file to the same name
 func (m Multi) SetHeaders(name string) {
 	for _, s := range m {
-		s.Header.F913 = name
+		s.Header.Description = name
 	}
 }
