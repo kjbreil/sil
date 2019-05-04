@@ -3,8 +3,6 @@ package sil
 import (
 	"math/rand"
 	"time"
-
-	"github.com/kjbreil/sil/loc"
 )
 
 // Multi holds an array of SIL's and methods to work with them
@@ -33,7 +31,7 @@ func (m Multi) Marshal() (data []byte, err error) {
 func (m Multi) Make(name string, definition interface{}) {
 	// should check if it exists yet because this will overwrite a previously
 	// made SIL
-	m[name] = Make(name, loc.OBJ{})
+	m[name] = Make(name, definition)
 }
 
 // AppendView appends data to the view
