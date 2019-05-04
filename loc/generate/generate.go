@@ -207,7 +207,7 @@ func isRequired(silCode string) bool {
 		"F1031",
 		"F1033",
 		"F1034",
-		"F1056",
+		// "F1056",
 		"F1264",
 		"F2845",
 		"F2846",

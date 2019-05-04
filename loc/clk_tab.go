@@ -4,7 +4,7 @@ package loc
 type ClkTab struct {
 	TargetIDentifier      string  `sil:"F1000" default:"PAL"`
 	RecordStatus          int     `sil:"F1001" default:"1"`
-	TerminalStore         string  `sil:"F1056"`
+	TerminalStore         *string `sil:"F1056"`
 	UserNumber            *int    `sil:"F1126"`
 	UserShortName         *string `sil:"F1127"`
 	UserSecretNumber      *string `sil:"F1141"`
