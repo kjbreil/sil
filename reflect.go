@@ -20,12 +20,15 @@ type elem struct {
 	data *string
 }
 
-func (r *row) make(rowType interface{}, include bool) {
+func (r *row) make(rowType interface{}, include bool) error {
 	values, fields := reflect.ValueOf(rowType), reflect.TypeOf(rowType)
 	// loop over the fields
 	for i := 0; i < fields.NumField(); i++ {
 		// get the value, name and if its a pointer
-		val, name, ptr, _ := value(values.Field(i), fields.Field(i))
+		val, name, ptr, err := value(values.Field(i), fields.Field(i))
+		if err != nil {
+			return err
+		}
 		switch {
 		case !*ptr && *val == "": // panic if its a required field without any data
 			log.Panicf("the element %s does not contain any data and is required", *name)
@@ -44,6 +47,7 @@ func (r *row) make(rowType interface{}, include bool) {
 			})
 		}
 	}
+	return nil
 }
 
 func rowBytes(rowType interface{}) []byte {
