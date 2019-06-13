@@ -38,17 +38,19 @@ func split(rows []interface{}) map[string]section {
 
 // create makes the sil structure for each section
 func (sec section) create(table string) (data []byte) {
-	na, sa := sec[0].array()
-
+	// get the name array of the first section, all sections "should" match
+	na, _ := sec[0].array()
+	// join the names together with ,
 	names := strings.Join(na, ",")
-	// #nosec
+	// #nosec - ignore sql injection possibility error
 	d := []byte(fmt.Sprintf("CREATE VIEW %s_CHG AS SELECT %s FROM %s_DCT;%s%s", table, names, table, crlf, crlf))
 
-	// #nosec
+	// #nosec  - ignore sql injection possibility error
 	d = append(d, []byte(fmt.Sprintf("INSERT INTO %s_CHG VALUES%s", table, crlf))...)
 
+	// create each line of the batch
 	for _, r := range sec {
-		_, sa = r.array()
+		_, sa := r.array()
 		d = append(d, []byte(fmt.Sprintf("(%s)%s", strings.Join(sa, ","), crlf))...)
 	}
 	// remove the last CRLF, 2 bytes
