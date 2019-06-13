@@ -2,6 +2,8 @@
 
 ## Create a SIL File in Go
 
+README Needs updating and is outdated right now
+
 Changing fairly often right now but starting to stabilize on needed API. 
 High level goal is to have a type define the SIL structure and add data and get []bytes representing a complete SIL file that processes without errors.
 
