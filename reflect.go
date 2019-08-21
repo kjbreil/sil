@@ -2,6 +2,7 @@ package sil
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 	"strconv"
 	"strings"
@@ -19,19 +20,25 @@ type elem struct {
 	data *string
 }
 
-func (r *row) make(rowType interface{}, include bool) {
+func (r *row) make(rowType interface{}, include bool) error {
 	values, fields := reflect.ValueOf(rowType), reflect.TypeOf(rowType)
 	// loop over the fields
 	for i := 0; i < fields.NumField(); i++ {
-		val, name, ptr, _ := value(values.Field(i), fields.Field(i))
+		// get the value, name and if its a pointer
+		val, name, ptr, err := value(values.Field(i), fields.Field(i))
+		if err != nil {
+			return err
+		}
 		switch {
+		case !*ptr && *val == "": // panic if its a required field without any data
+			log.Panicf("the element %s does not contain any data and is required", *name)
 		case include && *ptr && *val == "":
 			var v string
 			r.elems = append(r.elems, elem{
 				name: name,
 				data: &v,
 			})
-		case !include && *ptr && *val == "":
+		case !include && *ptr && *val == "": // if we are not including pointers and it is a pointer and does not have a value contiue (skip)
 			continue
 		default:
 			r.elems = append(r.elems, elem{
@@ -40,6 +47,7 @@ func (r *row) make(rowType interface{}, include bool) {
 			})
 		}
 	}
+	return nil
 }
 
 func rowBytes(rowType interface{}) []byte {
@@ -58,23 +66,22 @@ func rowBytes(rowType interface{}) []byte {
 
 func value(v reflect.Value, f reflect.StructField) (*string, *string, *bool, error) {
 	// get the silTag
-	_, err := getSilTag(&f)
+	t, pad, err := getSilTag(&f)
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	// get the name of the object
-	name := f.Name
 
 	// get default tag
 	dt := defaultTag(&f)
 
 	// return bytes depending on kind
 	bytes, pointer := kind(&v, &dt)
-	switch name {
-	case "F01":
+
+	if pad {
 		bytes = fmt.Sprintf("'%013v'", bytes[1:len(bytes)-1])
 	}
-	return &bytes, &name, &pointer, nil
+
+	return &bytes, &t.name, &pointer, nil
 }
 
 func defaultTag(f *reflect.StructField) string {

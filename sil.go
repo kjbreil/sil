@@ -39,7 +39,7 @@ func (s *SIL) Marshal() (data []byte, err error) {
 	secs := split(s.View.Data)
 	for _, sec := range secs {
 		// Create the Header insert
-		s.Header.F902 = batchNum(s.prefix)
+		s.Header.Identifier = batchNum(s.prefix)
 		data = append(data, s.Header.insert()...)
 		data = append(data, s.Header.row()...)
 
