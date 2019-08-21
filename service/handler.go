@@ -17,7 +17,7 @@ func (p *program) makeOBJ(w http.ResponseWriter, r *http.Request) {
 
 	p.logger.Infof("got request\n")
 
-	var obj loc.OBJ
+	var obj loc.ObjTab
 
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
@@ -135,7 +135,7 @@ func (p *program) add(w http.ResponseWriter, r *http.Request) {
 	switch s.View.Name {
 	case "OBJ":
 		// assign v the object type
-		var v loc.OBJ
+		var v loc.ObjTab
 		err = json.Unmarshal(body, &v)
 		p.returnErr(w, err)
 		s.View.Data = append(s.View.Data, v)
