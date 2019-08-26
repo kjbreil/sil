@@ -48,7 +48,7 @@ func main() {
 
 	go func() {
 		for {
-			err := <-errs
+			var err = <-errs
 			if err != nil {
 				log.Print(err)
 			}
@@ -56,7 +56,7 @@ func main() {
 	}()
 
 	if len(*svcFlag) != 0 {
-		err := service.Control(s, *svcFlag)
+		err = service.Control(s, *svcFlag)
 		if err != nil {
 			log.Printf("Valid actions: %q\n", service.ControlAction)
 			log.Fatal(err)
@@ -65,15 +65,15 @@ func main() {
 	}
 	err = s.Run()
 	if err != nil {
-		p.logger.Error(err)
+		_ = p.logger.Error(err)
 	}
 }
 
 func (p *program) Start(s service.Service) error {
 	if service.Interactive() {
-		p.logger.Info("Running in terminal.")
+		_ = p.logger.Info("Running in terminal.")
 	} else {
-		p.logger.Info("Running under service manager.")
+		_ = p.logger.Info("Running under service manager.")
 	}
 	p.exit = make(chan struct{})
 
@@ -81,8 +81,8 @@ func (p *program) Start(s service.Service) error {
 	go p.run()
 	return nil
 }
-func (p *program) run() error {
-	p.logger.Infof("Start SIL API Service")
+func (p *program) run() {
+	_ = p.logger.Infof("Start SIL API Service")
 
 	router := p.NewRouter()
 
@@ -100,12 +100,11 @@ func (p *program) run() error {
 	// 		return nil
 	// 	}
 	// }
-	return nil
 }
 
 func (p *program) Stop(s service.Service) error {
 	// Any work in Stop should be quick, usually a few seconds at most.
-	p.logger.Info("I'm Stopping!")
+	_ = p.logger.Info("I'm Stopping!")
 	close(p.exit)
 	return nil
 }
