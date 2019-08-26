@@ -14,7 +14,7 @@ Like JSON or XML tags are being used to define the structure of the SIL using a 
 	- [x] Marshal function
 	- [ ] Unmarshal function
 	- [x] Allow pointers to be used for optional elements
-	- [x] single quote for most data types and no quotes for integers
+	- [] single quote for most data types and no quotes for integers
 		- [] confirm data is integer for integer types
 	- [ ] Validate that element name is a proper SIL type
 	- [ ] Validate that data passed for Rows matches type used for Make
@@ -31,48 +31,8 @@ Like JSON or XML tags are being used to define the structure of the SIL using a 
 		- [x] Only insert optional elements into SIL file when they are used.
 
 ### Eventuals
-- [ ] Read SQL structure to create Go Types for tables automagically
+- [x] Read SQL structure to create Go Types for tables automagically
 
 
 ## Example
-
-```Go
-package main
-
-// Define type of batch - incomplete example, OBJ table has more required fields
-type OBJ struct {
-	F01 string `sil:"CHAR(13)"` // Product code, max 13 digits but is stored as text in LOC
-	F16 int    `sil:"INTEGER"`
-	F17 *int   `sil:"INTEGER"`
-}
-
-func main() {
-	// Need to pass the name along with the type of data that will be passed
-	s := Make("OBJ", OBJ{})
-
-	// this will be a pointer so assigning now to point to later
-	n := 1
-
-	// assign a value with data in the pointer
-	s.View.Data = append(s.View.Data, OBJ{
-		F01: "0000000009087",
-		F16: 17,
-		F17: &n,
-	})
-
-	// leave the pointer out, a row will still be inserted
-	s.View.Data = append(s.View.Data, OBJ{
-		F01: "0000000009902",
-		F16: 17,
-	})
-
-	// return []bytes of the sil file
-	b, err := s.Bytes()
-	if err != nil {
-		fmt.Println(err)
-	}
-	
-	// print the SIL file to console
-	fmt.Println(string(b))
-}
-```
+Needs to be re-written
