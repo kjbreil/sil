@@ -15,7 +15,7 @@ import (
 
 func (p *program) makeOBJ(w http.ResponseWriter, r *http.Request) {
 
-	p.logger.Infof("got request\n")
+	_ = p.logger.Infof("got request\n")
 
 	var obj loc.ObjTab
 
@@ -23,16 +23,16 @@ func (p *program) makeOBJ(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	if err := r.Body.Close(); err != nil {
+	if err = r.Body.Close(); err != nil {
 		panic(err)
 	}
 
 	err = json.Unmarshal(body, &obj)
 	if err != nil {
-		p.logger.Info(err)
+		_ = p.logger.Info(err)
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(422) // unprocessable entity
-		err := json.NewEncoder(w).Encode(err)
+		err = json.NewEncoder(w).Encode(err)
 		if err != nil {
 			panic(err)
 		}
@@ -44,13 +44,16 @@ func (p *program) makeOBJ(w http.ResponseWriter, r *http.Request) {
 
 	s.View.Data = append(s.View.Data, obj)
 
-	s.Write("out.sil")
+	err = s.Write("out.sil")
+	if err != nil {
+		_ = p.logger.Errorf("sil file could not be written: %v", err)
+	}
 }
 
 // makeSil is used to create the base sil type
 func (p *program) makeSIL(w http.ResponseWriter, r *http.Request) {
 
-	p.logger.Infof("Got POST for new SIL file creation\n")
+	_ = p.logger.Infof("Got POST for new SIL file creation\n")
 
 	// create the SIL file
 	var s sil.SIL
@@ -59,7 +62,7 @@ func (p *program) makeSIL(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	if err := r.Body.Close(); err != nil {
+	if err = r.Body.Close(); err != nil {
 		panic(err)
 	}
 
@@ -67,12 +70,12 @@ func (p *program) makeSIL(w http.ResponseWriter, r *http.Request) {
 	// Un marshalling the header into the sil
 	err = json.Unmarshal(body, &s.Header)
 	if err != nil {
-		p.logger.Infof("unmarshal failed with: %v", err)
+		_ = p.logger.Infof("unmarshal failed with: %v", err)
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(422) // unprocessable entity
-		err := json.NewEncoder(w).Encode(err)
+		err = json.NewEncoder(w).Encode(err)
 		if err != nil {
-			p.logger.Infof("error marshal failed with: %v", err)
+			_ = p.logger.Infof("error marshal failed with: %v", err)
 		}
 	}
 	vars := mux.Vars(r)
@@ -92,12 +95,12 @@ func (p *program) makeSIL(w http.ResponseWriter, r *http.Request) {
 
 	// error if n = -1
 	if n == -1 {
-		p.logger.Infof("no more active sets in service, something is wrong, restart service")
+		_ = p.logger.Infof("no more active sets in service, something is wrong, restart service")
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(422) // unprocessable entity
-		err := json.NewEncoder(w).Encode("no more active sets in service, something is wrong, restart service")
+		err = json.NewEncoder(w).Encode("no more active sets in service, something is wrong, restart service")
 		if err != nil {
-			p.logger.Infof("error marshal failed with: %v", err)
+			_ = p.logger.Infof("error marshal failed with: %v", err)
 		}
 	}
 
@@ -106,7 +109,7 @@ func (p *program) makeSIL(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	err = json.NewEncoder(w).Encode(n)
 	if err != nil {
-		p.logger.Infof("error marshal failed with: %v", err)
+		_ = p.logger.Infof("error marshal failed with: %v", err)
 	}
 }
 
@@ -128,7 +131,7 @@ func (p *program) add(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	if err := r.Body.Close(); err != nil {
+	if err = r.Body.Close(); err != nil {
 		panic(err)
 	}
 
@@ -145,12 +148,12 @@ func (p *program) add(w http.ResponseWriter, r *http.Request) {
 
 func (p *program) returnErr(w http.ResponseWriter, err error) {
 	if err != nil {
-		p.logger.Infof("unmarshal failed with: %v", err)
+		_ = p.logger.Infof("unmarshal failed with: %v", err)
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(422) // unprocessable entity
-		err := json.NewEncoder(w).Encode(err)
+		err = json.NewEncoder(w).Encode(err)
 		if err != nil {
-			p.logger.Infof("error marshal failed with: %v", err)
+			_ = p.logger.Infof("error marshal failed with: %v", err)
 		}
 	}
 }
@@ -169,6 +172,8 @@ func (p *program) write(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.Write(fmt.Sprintf("%08d.sil", id))
-
+	err := s.Write(fmt.Sprintf("%08d.sil", id))
+	if err != nil {
+		_ = p.logger.Errorf("sil file could not be written: %v", err)
+	}
 }
