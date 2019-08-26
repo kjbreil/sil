@@ -16,7 +16,8 @@ func split(rows []interface{}) map[string]section {
 	// take every row and reflect it
 	for i := range rows {
 		var r row
-		r.make(rows[i], false)
+		// TODO: Handle this error but split needs to return an error then
+		_ = r.make(rows[i], false)
 		ssec = append(ssec, r)
 	}
 
@@ -26,7 +27,7 @@ func split(rows []interface{}) map[string]section {
 		// make the name of the section for the map based on the fields
 		var key string
 		for x := range ssec[i].elems {
-			key = key + fmt.Sprintf("%s", *ssec[i].elems[x].name)
+			key = key + *ssec[i].elems[x].name
 		}
 
 		secs[key] = append(secs[key], ssec[i])

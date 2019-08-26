@@ -36,6 +36,9 @@ func (s *SIL) JSON(filename string) error {
 	if err != nil {
 		return err
 	}
-	w.Flush()
+	err = w.Flush()
+	if err != nil {
+		return err
+	}
 	return nil
 }

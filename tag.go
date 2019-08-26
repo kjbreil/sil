@@ -63,7 +63,3 @@ func (st *silTag) get() error {
 
 	return nil
 }
-
-func silArguments(args []string) {
-
-}
