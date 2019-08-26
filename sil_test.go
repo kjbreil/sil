@@ -3,7 +3,7 @@ package sil
 import (
 	"testing"
 
-	"github.com/kjbreil/sil/loc"
+	"github.com/locug/sil/loc"
 )
 
 // OBJ will probably not work for an actual SIL file, this is for testing

@@ -9,8 +9,8 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/kjbreil/sil"
-	"github.com/kjbreil/sil/loc"
+	"github.com/locug/sil"
+	"github.com/locug/sil/loc"
 )
 
 func (p *program) makeOBJ(w http.ResponseWriter, r *http.Request) {

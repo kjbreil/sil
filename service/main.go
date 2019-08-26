@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/kardianos/service"
-	"github.com/kjbreil/sil"
+	"github.com/logug/sil"
 )
 
 // Program structures.
@@ -81,6 +81,7 @@ func (p *program) Start(s service.Service) error {
 	go p.run()
 	return nil
 }
+
 func (p *program) run() {
 	_ = p.logger.Infof("Start SIL API Service")
 

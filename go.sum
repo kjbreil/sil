@@ -6,4 +6,6 @@ github.com/kardianos/service v1.0.0 h1:HgQS3mFfOlyntWX8Oke98JcJLqt1DBcHR4kxShpYe
 github.com/kardianos/service v1.0.0/go.mod h1:8CzDhVuCuugtsHyZoTvsOBuvonN/UDBvl0kH+BUxvbo=
 github.com/kjbreil/sil v0.0.0-20190613154005-16253f6cfc4e h1:e/Od+VPzlpfhK327FZHpUKr7oRrsGn3uOFSsNddt3go=
 github.com/kjbreil/sil v0.0.0-20190613154005-16253f6cfc4e/go.mod h1:4rxwyaf9S8jusOUHS6L9Y8gLWvhtz0WBcV3aJ4zVaow=
+github.com/locug/sil v0.0.0-20190826175946-f4f7185868df h1:73BXiQ2gTiz+t+2bMGTKd11IrVc3/hcGV91Dcwqcyyk=
+github.com/locug/sil v0.0.0-20190826175946-f4f7185868df/go.mod h1:+wAt4mBey9oqXKiCVq2KVTxwPiPVLvFZ/t6V4tbfhlk=
 golang.org/x/sys v0.0.0-20190204203706-41f3e6584952/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
