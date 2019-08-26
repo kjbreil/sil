@@ -113,7 +113,7 @@ func (p *program) makeSIL(w http.ResponseWriter, r *http.Request) {
 // add adds data to the sil file
 // WARNING NO VALIDATION RIGHT NOW
 func (p *program) add(w http.ResponseWriter, r *http.Request) {
-
+	fmt.Println("Got Post for addition to sil")
 	vars := mux.Vars(r)
 
 	id, _ := strconv.Atoi(vars["silID"])
