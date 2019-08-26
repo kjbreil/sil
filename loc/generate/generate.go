@@ -226,7 +226,11 @@ func isRequired(silCode string) bool {
 func (tf *TypeFile) write() {
 	filename := fmt.Sprintf("./gen/%s.go", tf.FileName)
 
-	ioutil.WriteFile(filename, tf.marshal(), 0666)
+	err := ioutil.WriteFile(filename, tf.marshal(), 0666)
+	if err != nil {
+		log.Fatalf("error writing file: %v", err)
+
+	}
 }
 
 func hasDefault(silCode string) string {
