@@ -27,6 +27,24 @@ func (p *program) NewRouter() *mux.Router {
 			"/obj",
 			p.makeOBJ,
 		},
+		Route{
+			"CLT",
+			"POST",
+			"/clt",
+			p.makeCLT,
+		},
+		Route{
+			"CLL",
+			"POST",
+			"/cll",
+			p.makeCLL,
+		},
+		Route{
+			"OFR",
+			"POST",
+			"/cll",
+			p.makeOFR,
+		},
 	}
 
 	router := mux.NewRouter().StrictSlash(true)
