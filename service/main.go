@@ -109,13 +109,3 @@ func (p *program) Stop(s service.Service) error {
 	close(p.exit)
 	return nil
 }
-
-func (p *program) next() int {
-	for i := 0; i < 10; i++ {
-		_, ok := p.active[i]
-		if !ok {
-			return i
-		}
-	}
-	return -1
-}

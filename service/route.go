@@ -22,28 +22,10 @@ func (p *program) NewRouter() *mux.Router {
 	// make routes
 	var routes = Routes{
 		Route{
-			"SIL",
-			"POST",
-			"/sil/{silType}",
-			p.makeSIL,
-		},
-		Route{
 			"OBJ",
 			"POST",
 			"/obj",
 			p.makeOBJ,
-		},
-		Route{
-			"ADD",
-			"POST",
-			"/add/{silID}",
-			p.add,
-		},
-		Route{
-			"WRITE",
-			"POST",
-			"/write/{silID}",
-			p.write,
 		},
 	}
 
