@@ -55,7 +55,6 @@ func (st *silTag) get() error {
 		}
 		if len(options) > 0 {
 			st.options = options
-			return nil
 		}
 	}
 
