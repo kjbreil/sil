@@ -25,25 +25,25 @@ func (p *program) NewRouter() *mux.Router {
 			"OBJ",
 			"POST",
 			"/obj",
-			p.makeOBJ,
+			p.postOBJ,
 		},
 		Route{
 			"CLT",
 			"POST",
 			"/clt",
-			p.makeCLT,
+			p.postCLT,
 		},
 		Route{
 			"CLL",
 			"POST",
 			"/cll",
-			p.makeCLL,
+			p.postCLL,
 		},
 		Route{
 			"OFR",
 			"POST",
 			"/cll",
-			p.makeOFR,
+			p.postOFR,
 		},
 	}
 

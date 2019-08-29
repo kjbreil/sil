@@ -13,136 +13,19 @@ import (
 	"github.com/locug/sil/loc"
 )
 
-func (p *program) makeOBJ(w http.ResponseWriter, r *http.Request) {
-	// make types to unmarshal obj table into
-	// have to directly call the data type
-	// will convert into a SIL down the line
-	type View struct {
-		Name     string
-		Required bool
-		Data     []loc.ObjTab
-	}
-	type SIL struct {
-		Header sil.Header
-		View   View
-		Footer sil.Footer
-	}
-
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
-	if err != nil {
-		log.Panicf("error reading body: %v", err)
-
-	}
-	if err = r.Body.Close(); err != nil {
-		log.Panicf("error closing the body: %v", err)
-	}
-
-	var ts SIL
-
-	err = json.Unmarshal(body, &ts)
-	if err != nil {
-		_ = p.logger.Info(err)
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(422) // unprocessable entity
-		err = json.NewEncoder(w).Encode(err)
-		if err != nil {
-			log.Panicf("error encoding JSON: %v", err)
-		}
-	}
-
-	var v sil.View
-
-	v.Name = "OBJ"
-
-	for _, eachData := range ts.View.Data {
-		v.Data = append(v.Data, eachData)
-	}
-
-	s := sil.SIL{
-		Header:    ts.Header,
-		View:      v,
-		Footer:    ts.Footer,
-		TableType: loc.ObjTab{},
-	}
-
-	err = s.Write(fmt.Sprintf("%s_%d.sil", s.View.Name, time.Now().Nanosecond()))
-	if err != nil {
-		_ = p.logger.Errorf("sil file could not be written: %v", err)
-	}
+type errReturn struct {
+	Error errReturnBody
+}
+type errReturnBody struct {
+	ID      int
+	Message string
 }
 
-func (p *program) makeCLT(w http.ResponseWriter, r *http.Request) {
-	// make types to unmarshal obj table into
-	// have to directly call the data type
-	// will convert into a SIL down the line
-	type View struct {
-		Name     string
-		Required bool
-		Data     []loc.CltTab
-	}
-	type SIL struct {
-		Header sil.Header
-		View   View
-		Footer sil.Footer
-	}
-
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
-	if err != nil {
-		log.Panicf("error reading body: %v", err)
-
-	}
-	if err = r.Body.Close(); err != nil {
-		log.Panicf("error closing the body: %v", err)
-	}
-
-	var ts SIL
-
-	err = json.Unmarshal(body, &ts)
-	if err != nil {
-		_ = p.logger.Info(err)
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(422) // unprocessable entity
-		err = json.NewEncoder(w).Encode(err)
-		if err != nil {
-			log.Panicf("error encoding JSON: %v", err)
-		}
-	}
-
-	var v sil.View
-
-	v.Name = "CLT"
-
-	for _, eachData := range ts.View.Data {
-		v.Data = append(v.Data, eachData)
-	}
-
-	s := sil.SIL{
-		Header:    ts.Header,
-		View:      v,
-		Footer:    ts.Footer,
-		TableType: loc.CltTab{},
-	}
-
-	err = s.Write(fmt.Sprintf("%s_%d.sil", s.View.Name, time.Now().Nanosecond()))
-	if err != nil {
-		_ = p.logger.Errorf("sil file could not be written: %v", err)
-	}
+type sucReturn struct {
+	Status string
 }
 
-func (p *program) makeCLL(w http.ResponseWriter, r *http.Request) {
-	// make types to unmarshal obj table into
-	// have to directly call the data type
-	// will convert into a SIL down the line
-	type View struct {
-		Name     string
-		Required bool
-		Data     []loc.CllTab
-	}
-	type SIL struct {
-		Header sil.Header
-		View   View
-		Footer sil.Footer
-	}
+func readBody(r *http.Request) []byte {
 
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
@@ -152,95 +35,142 @@ func (p *program) makeCLL(w http.ResponseWriter, r *http.Request) {
 	if err = r.Body.Close(); err != nil {
 		log.Panicf("error closing the body: %v", err)
 	}
-
-	var ts SIL
-
-	err = json.Unmarshal(body, &ts)
-	if err != nil {
-		_ = p.logger.Info(err)
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(422) // unprocessable entity
-		err = json.NewEncoder(w).Encode(err)
-		if err != nil {
-			log.Panicf("error encoding JSON: %v", err)
-		}
-	}
-
-	var v sil.View
-
-	v.Name = "CLL"
-
-	for _, eachData := range ts.View.Data {
-		v.Data = append(v.Data, eachData)
-	}
-
-	s := sil.SIL{
-		Header:    ts.Header,
-		View:      v,
-		Footer:    ts.Footer,
-		TableType: loc.CllTab{},
-	}
-
-	err = s.Write(fmt.Sprintf("%s_%d.sil", s.View.Name, time.Now().Nanosecond()))
-	if err != nil {
-		_ = p.logger.Errorf("sil file could not be written: %v", err)
-	}
+	return body
 }
 
-func (p *program) makeOFR(w http.ResponseWriter, r *http.Request) {
-	// make types to unmarshal obj table into
-	// have to directly call the data type
-	// will convert into a SIL down the line
-	type View struct {
-		Name     string
-		Required bool
-		Data     []loc.OfrTab
+func (p *program) returnError(w http.ResponseWriter, err error) {
+	// put the error into error type and convert to JSON
+	e := errReturn{
+		Error: errReturnBody{
+			ID:      422,
+			Message: err.Error(),
+		},
 	}
-	type SIL struct {
-		Header sil.Header
-		View   View
-		Footer sil.Footer
-	}
+	_ = p.logger.Info(err)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(422) // unprocessable entity
+	// send the error string to the client
+	// this wont error because we are just encoding the base error string
+	_ = json.NewEncoder(w).Encode(e)
+}
 
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+func returnSuccess(w http.ResponseWriter) {
+	s := sucReturn{Status: "success"}
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	_ = json.NewEncoder(w).Encode(s)
+}
+
+// post header puts the header information for a post
+// most of these are defaults in the sil package
+func postHeader(s *sil.SIL) {
+	s.Header.ActionType = sil.ADDRPL
+	s.Header.Description = fmt.Sprintf("%s update from API", s.View.Name)
+}
+
+func (p *program) postOBJ(w http.ResponseWriter, r *http.Request) {
+	body := readBody(r)
+
+	var objs []loc.ObjTab
+
+	err := json.Unmarshal(body, &objs)
 	if err != nil {
-		log.Panicf("error reading body: %v", err)
-
-	}
-	if err = r.Body.Close(); err != nil {
-		log.Panicf("error closing the body: %v", err)
+		p.returnError(w, err)
+		return
 	}
 
-	var ts SIL
-
-	err = json.Unmarshal(body, &ts)
-	if err != nil {
-		_ = p.logger.Info(err)
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(422) // unprocessable entity
-		err = json.NewEncoder(w).Encode(err)
-		if err != nil {
-			log.Panicf("error encoding JSON: %v", err)
-		}
+	var s sil.SIL
+	s.View.Name = "OBJ"
+	for _, each := range objs {
+		s.View.Data = append(s.View.Data, each)
 	}
 
-	var v sil.View
-
-	v.Name = "OFR"
-
-	for _, eachData := range ts.View.Data {
-		v.Data = append(v.Data, eachData)
-	}
-
-	s := sil.SIL{
-		Header:    ts.Header,
-		View:      v,
-		Footer:    ts.Footer,
-		TableType: loc.OfrTab{},
-	}
+	postHeader(&s)
 
 	err = s.Write(fmt.Sprintf("%s_%d.sil", s.View.Name, time.Now().Nanosecond()))
 	if err != nil {
-		_ = p.logger.Errorf("sil file could not be written: %v", err)
+		p.returnError(w, err)
+		return
 	}
+	returnSuccess(w)
+}
+
+func (p *program) postCLT(w http.ResponseWriter, r *http.Request) {
+	body := readBody(r)
+
+	var clts []loc.CltTab
+
+	err := json.Unmarshal(body, &clts)
+	if err != nil {
+		p.returnError(w, err)
+		return
+	}
+
+	var s sil.SIL
+	s.View.Name = "OBJ"
+	for _, each := range clts {
+		s.View.Data = append(s.View.Data, each)
+	}
+
+	postHeader(&s)
+
+	err = s.Write(fmt.Sprintf("%s_%d.sil", s.View.Name, time.Now().Nanosecond()))
+	if err != nil {
+		p.returnError(w, err)
+		return
+	}
+	returnSuccess(w)
+}
+
+func (p *program) postCLL(w http.ResponseWriter, r *http.Request) {
+	body := readBody(r)
+
+	var clls []loc.CllTab
+
+	err := json.Unmarshal(body, &clls)
+	if err != nil {
+		p.returnError(w, err)
+		return
+	}
+
+	var s sil.SIL
+	s.View.Name = "CLL"
+	for _, each := range clls {
+		s.View.Data = append(s.View.Data, each)
+	}
+
+	postHeader(&s)
+
+	err = s.Write(fmt.Sprintf("%s_%d.sil", s.View.Name, time.Now().Nanosecond()))
+	if err != nil {
+		p.returnError(w, err)
+		return
+	}
+	returnSuccess(w)
+}
+
+func (p *program) postOFR(w http.ResponseWriter, r *http.Request) {
+	body := readBody(r)
+
+	var ofrs []loc.OfrTab
+
+	err := json.Unmarshal(body, &ofrs)
+	if err != nil {
+		p.returnError(w, err)
+		return
+	}
+
+	var s sil.SIL
+	s.View.Name = "OFR"
+	for _, each := range ofrs {
+		s.View.Data = append(s.View.Data, each)
+	}
+
+	postHeader(&s)
+
+	err = s.Write(fmt.Sprintf("%s_%d.sil", s.View.Name, time.Now().Nanosecond()))
+	if err != nil {
+		p.returnError(w, err)
+		return
+	}
+	returnSuccess(w)
 }
