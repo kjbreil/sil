@@ -35,6 +35,10 @@ func Make(name string, definition interface{}) *SIL {
 
 // Marshal creates the SIL structure from the information in the SIL type
 func (s *SIL) Marshal() (data []byte, err error) {
+	// check to make sure the view.Name has been set
+	if s.View.Name == "" {
+		return data, fmt.Errorf("view name not set")
+	}
 	// get the multiple sections
 	secs := split(s.View.Data)
 	for _, sec := range secs {
