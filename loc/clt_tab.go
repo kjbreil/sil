@@ -4,7 +4,7 @@ package loc
 type CltTab struct {
 	TargetIDentifier          string  `sil:"F1000" default:"PAL"`
 	RecordStatus              int     `sil:"F1001" default:"1"`
-	CustomerID                *string `sil:"F1148"`
+	CustomerID                string  `sil:"F1148"`
 	CustFirstName             *string `sil:"F1149"`
 	CustLastName              *string `sil:"F1150"`
 	CustPosComment            *string `sil:"F1151"`
