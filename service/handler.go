@@ -86,7 +86,7 @@ func (p *program) postOBJ(w http.ResponseWriter, r *http.Request) {
 
 	postHeader(&s)
 
-	err = s.Write(fmt.Sprintf("%s_%d.sil", s.View.Name, time.Now().Nanosecond()))
+	err = s.Write(fmt.Sprintf("%s_%d.sil", s.View.Name, time.Now().Nanosecond()), true)
 	if err != nil {
 		p.returnError(w, err)
 		return
@@ -113,7 +113,7 @@ func (p *program) postCLT(w http.ResponseWriter, r *http.Request) {
 
 	postHeader(&s)
 
-	err = s.Write(fmt.Sprintf("%s_%d.sil", s.View.Name, time.Now().Nanosecond()))
+	err = s.Write(fmt.Sprintf("%s_%d.sil", s.View.Name, time.Now().Nanosecond()), true)
 	if err != nil {
 		p.returnError(w, err)
 		return
@@ -140,7 +140,7 @@ func (p *program) postCLL(w http.ResponseWriter, r *http.Request) {
 
 	postHeader(&s)
 
-	err = s.Write(fmt.Sprintf("%s_%d.sil", s.View.Name, time.Now().Nanosecond()))
+	err = s.Write(fmt.Sprintf("%s_%d.sil", s.View.Name, time.Now().Nanosecond()), true)
 	if err != nil {
 		p.returnError(w, err)
 		return
@@ -167,7 +167,7 @@ func (p *program) postOFR(w http.ResponseWriter, r *http.Request) {
 
 	postHeader(&s)
 
-	err = s.Write(fmt.Sprintf("%s_%d.sil", s.View.Name, time.Now().Nanosecond()))
+	err = s.Write(fmt.Sprintf("%s_%d.sil", s.View.Name, time.Now().Nanosecond()), true)
 	if err != nil {
 		p.returnError(w, err)
 		return
