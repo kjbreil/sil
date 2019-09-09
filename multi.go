@@ -18,7 +18,7 @@ func (m Multi) Marshal() (data []byte, err error) {
 		// assign that prefix to the local SIL
 		s.prefix = prefix
 
-		b, err := s.Marshal()
+		b, err := s.Marshal(false)
 		if err != nil {
 			return data, err
 		}

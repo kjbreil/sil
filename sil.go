@@ -34,13 +34,13 @@ func Make(name string, definition interface{}) *SIL {
 }
 
 // Marshal creates the SIL structure from the information in the SIL type
-func (s *SIL) Marshal() (data []byte, err error) {
+func (s *SIL) Marshal(include bool) (data []byte, err error) {
 	// check to make sure the view.Name has been set
 	if s.View.Name == "" {
 		return data, fmt.Errorf("view name not set")
 	}
 	// get the multiple sections
-	secs := split(s.View.Data)
+	secs := split(s.View.Data, include)
 	for _, sec := range secs {
 		// Create the Header insert
 		s.Header.Identifier = batchNum(s.prefix)

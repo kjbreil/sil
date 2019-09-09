@@ -9,9 +9,9 @@ import (
 )
 
 // Write writes a SIL to a file
-func (s *SIL) Write(filename string) error {
+func (s *SIL) Write(filename string, include bool) error {
 	// create the bytes of the SIL file
-	d, err := s.Marshal()
+	d, err := s.Marshal(include)
 	if err != nil {
 		return fmt.Errorf("sil bytes conversion error: %v", err)
 	}
