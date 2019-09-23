@@ -16,7 +16,7 @@ func (s *SIL) Write(filename string, include bool) error {
 		return fmt.Errorf("sil bytes conversion error: %v", err)
 	}
 
-	err = ioutil.WriteFile(filename, d, 0777)
+	err = ioutil.WriteFile(filename, d, 0666)
 	// return the error details
 	if err != nil {
 		return fmt.Errorf("ioutil error: %v", err)
