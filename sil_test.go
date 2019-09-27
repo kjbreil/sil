@@ -1,7 +1,10 @@
 package sil
 
 import (
+	"fmt"
+	"io/ioutil"
 	"testing"
+	"time"
 
 	"github.com/locug/sil/loc"
 )
@@ -45,5 +48,12 @@ func TestMake(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	err = ioutil.WriteFile(fmt.Sprintf("%d.sil", time.Now().Nanosecond()), b, 0666)
+	// return the error details
+	if err != nil {
+		t.Fatalf("ioutil error: %v", err)
+	}
+
 	t.Fatalf(string(b))
 }
