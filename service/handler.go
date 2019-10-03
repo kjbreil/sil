@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/locug/sil"
-	"github.com/locug/sil/loc"
+	"github.com/kjbreil/sil"
+	"github.com/kjbreil/sil/loc"
 )
 
 type errReturn struct {

@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/kardianos/service"
-	"github.com/locug/sil"
+	"github.com/kjbreil/sil"
 )
 
 // Program structures.
