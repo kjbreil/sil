@@ -71,4 +71,5 @@ func (prsd parsed) getTable(s, e int) string {
 // getValues returns an array of string representing the values in a open/close
 func (prsd parsed) getValues(s, e int) []string {
 
+	return []string{}
 }
