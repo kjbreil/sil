@@ -1,20 +1,21 @@
 package sil
 
-import "syscall"
+import (
+	"syscall"
+)
 
-func unsetArchiveBit(p string) error {
-
-	nameptr, err := windows.UTF16PtrFromString(p)
+func setArchive(filename string) error {
+	pointer, err := syscall.UTF16PtrFromString(filename)
 	if err != nil {
 		return err
 	}
+	return syscall.SetFileAttributes(pointer, syscall.FILE_ATTRIBUTE_ARCHIVE)
+}
 
-	// Do whatever windows calls are needed to change
-	// the file into a hidden file; something like
-	err = syscall.SetFileAttributes(nameptr, syscall.FILE_ATTRIBUTE_NORMAL)
+func unsetArchive(filename string) error {
+	pointer, err := syscall.UTF16PtrFromString(filename)
 	if err != nil {
 		return err
 	}
-
-	return nil
+	return syscall.SetFileAttributes(pointer, syscall.FILE_ATTRIBUTE_NORMAL)
 }

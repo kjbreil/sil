@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/locug/sil/loc"
+	"github.com/kjbreil/sil/loc"
 )
 
 // OBJ will probably not work for an actual SIL file, this is for testing
@@ -56,4 +56,20 @@ func TestMake(t *testing.T) {
 	}
 
 	t.Fatalf(string(b))
+}
+
+func TestSingle(t *testing.T) {
+	var s SIL
+
+	s.View.Name = "OBJ"
+
+	s.View.Data = append(s.View.Data, loc.ObjTab{
+		UPCCode: "9902",
+	})
+
+	err := s.Write(fmt.Sprintf("%d.sil", time.Now().Nanosecond()), true, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Fail()
 }

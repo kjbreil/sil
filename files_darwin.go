@@ -1,8 +1,9 @@
 package sil
 
-import "log"
+func setArchive(filename string) error {
+	return nil
+}
 
-func unsetArchiveBit(p string) error {
-	log.Println("Not running on windows system, cannot unset archive bit")
+func unsetArchive(filename string) error {
 	return nil
 }
