@@ -40,7 +40,11 @@ func (s *SIL) Marshal(include bool) (data []byte, err error) {
 		return data, fmt.Errorf("view name not set")
 	}
 	// get the multiple sections
-	secs := split(s.View.Data, include)
+	secs, err := split(s.View.Data, include)
+	if err != nil {
+
+		return []byte{}, err
+	}
 	for _, sec := range secs {
 		// Create the Header insert
 		s.Header.Identifier = batchNum(s.prefix)

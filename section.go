@@ -10,14 +10,17 @@ type section []row
 
 // spit needs to be reworked it currently will combine two parts as the same because its based on number of
 // elements instead of what elements are contained.
-func split(rows []interface{}, include bool) map[string]section {
+func split(rows []interface{}, include bool) (map[string]section, error) {
 	var ssec section
 
 	// take every row and reflect it
 	for i := range rows {
 		var r row
 		// TODO: Handle this error but split needs to return an error then
-		_ = r.make(rows[i], include)
+		err := r.make(rows[i], include)
+		if err != nil {
+			return nil, err
+		}
 		ssec = append(ssec, r)
 	}
 
@@ -33,7 +36,7 @@ func split(rows []interface{}, include bool) map[string]section {
 		secs[key] = append(secs[key], ssec[i])
 	}
 
-	return secs
+	return secs, nil
 
 }
 

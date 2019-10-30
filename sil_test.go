@@ -48,7 +48,7 @@ func TestMake(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
+	//
 	err = ioutil.WriteFile(fmt.Sprintf("%d.sil", time.Now().Nanosecond()), b, 0666)
 	// return the error details
 	if err != nil {
@@ -64,7 +64,8 @@ func TestSingle(t *testing.T) {
 	s.View.Name = "OBJ"
 
 	s.View.Data = append(s.View.Data, loc.ObjTab{
-		UPCCode: "9902",
+		RecordStatus: 1,
+		// UPCCode:      "9087",
 	})
 
 	err := s.Write(fmt.Sprintf("%d.sil", time.Now().Nanosecond()), true, true)
@@ -72,4 +73,5 @@ func TestSingle(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Fail()
+
 }

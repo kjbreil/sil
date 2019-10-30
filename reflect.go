@@ -2,7 +2,6 @@ package sil
 
 import (
 	"fmt"
-	"log"
 	"reflect"
 	"strconv"
 	"strings"
@@ -31,7 +30,8 @@ func (r *row) make(rowType interface{}, include bool) error {
 		}
 		switch {
 		case !*ptr && *val == "": // panic if its a required field without any data
-			log.Panicf("the element %s does not contain any data and is required", *name)
+			// log.Panicf("the element %s does not contain any data and is required", *name)
+			return fmt.Errorf("the element %s does not contain any data and is required", *name)
 		case include && *ptr && *val == "":
 			var v string
 			r.elems = append(r.elems, elem{
@@ -77,7 +77,7 @@ func value(v reflect.Value, f reflect.StructField) (*string, *string, *bool, err
 	// return bytes depending on kind
 	bytes, pointer := kind(&v, &dt)
 
-	if pad {
+	if pad && len(bytes) > 0 {
 		bytes = fmt.Sprintf("'%013v'", bytes[1:len(bytes)-1])
 	}
 
