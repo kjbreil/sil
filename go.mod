@@ -7,5 +7,5 @@ require (
 	github.com/iancoleman/strcase v0.0.0-20190422225806-e506e3ef7365
 	github.com/kardianos/service v1.0.0
 	github.com/locug/sil v0.0.0-20190829180013-308850ce249c
-	golang.org/x/sys v0.0.0-20191018095205-727590c5006e
+	golang.org/x/sys v0.0.0-20191018095205-727590c5006e // indirect
 )
