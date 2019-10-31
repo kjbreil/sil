@@ -20,6 +20,8 @@ func (s *SIL) Write(filename string, include bool, archive bool) error {
 		return fmt.Errorf("could not create file %s with err: %v", filename, err)
 	}
 	// if we are manipulating the archive bit first SET archive bit
+	// This really might not be needed but needs to be tested over UNC paths
+	// the file might need to be closed first to allow the system to set the bit properly
 	if archive {
 		err = setArchive(filename)
 		if err != nil {
@@ -35,8 +37,14 @@ func (s *SIL) Write(filename string, include bool, archive bool) error {
 	} else if i != len(d) {
 		return fmt.Errorf("number of bytes writte to %s did not match length of sil bytes", filename)
 	}
+	// Close the file, otherwise the the archive bit cannot be unset
+	err = f.Close()
+	if err != nil {
+		return fmt.Errorf("error closing the file %s", filename)
+	}
 	// if we are manipulating the archive bit unset the archive bit
 	if archive {
+		fmt.Println("unsetting archive")
 		err = unsetArchive(filename)
 		if err != nil {
 			return fmt.Errorf("error trying to set archive bit for %s with err: %v", filename, err)

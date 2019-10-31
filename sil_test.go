@@ -59,19 +59,14 @@ func TestMake(t *testing.T) {
 }
 
 func TestSingle(t *testing.T) {
+	// First test is to make sure you get an error when missing a required non defaulted field
 	var s SIL
-
 	s.View.Name = "OBJ"
-
 	s.View.Data = append(s.View.Data, loc.ObjTab{
 		RecordStatus: 1,
-		// UPCCode:      "9087",
 	})
-
-	err := s.Write(fmt.Sprintf("%d.sil", time.Now().Nanosecond()), true, true)
-	if err != nil {
-		t.Fatal(err)
+	_, err := s.Marshal(true)
+	if err == nil {
+		t.Fatalf("sil marshaling did not error when missing a required field")
 	}
-	t.Fail()
-
 }
