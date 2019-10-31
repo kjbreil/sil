@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/locug/sil/loc"
+	"github.com/kjbreil/sil/loc"
 )
 
 func TestUnmarshal(t *testing.T) {
