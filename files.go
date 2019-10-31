@@ -44,7 +44,6 @@ func (s *SIL) Write(filename string, include bool, archive bool) error {
 	}
 	// if we are manipulating the archive bit unset the archive bit
 	if archive {
-		fmt.Println("unsetting archive")
 		err = unsetArchive(filename)
 		if err != nil {
 			return fmt.Errorf("error trying to set archive bit for %s with err: %v", filename, err)
