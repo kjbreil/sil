@@ -20,3 +20,4 @@ loc/generate/RB_FIELDS.csv
 
 # Ingore intellij IDEA folders
 .idea/**
+.vscode/**
