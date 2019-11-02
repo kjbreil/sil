@@ -119,7 +119,7 @@ func (d *decoder) checkInsert(s int) int {
 			e := d.p.nextCRLF(s)
 			// TODO: Properly announce which token is wrong rather than current error
 			if d.p[s].tok != OPEN || d.p[e-2].tok != CLOSE || d.p[e-1].tok != SEMICOLON {
-				d.err = fmt.Errorf("HEADER data row invalid, got %s%s%s want ();\n", d.p[s].val, d.p[e-2].val, d.p[e-1].val)
+				d.err = fmt.Errorf("row for HEADER invalid, got %s%s%s want \"();\"", d.p[s].val, d.p[e-2].val, d.p[e-1].val)
 				// since there was an error return s
 				return s
 			}
