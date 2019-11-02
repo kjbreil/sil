@@ -50,6 +50,11 @@ func (s *scanner) scan() *part {
 			tok: CLOSE,
 			val: ")",
 		}
+	case ';':
+		return &part{
+			tok: SEMICOLON,
+			val: ";",
+		}
 	case '\r': // crlf newline detection, scans ahead to look for a newline
 		ch = s.read()
 		if ch != '\n' {
