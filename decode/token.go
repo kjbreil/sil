@@ -13,9 +13,7 @@ const (
 	COMMA
 	OPEN
 	CLOSE
+	SEMICOLON
 
 	CRLF
-
-	INSERT
-	CREATE
 )
