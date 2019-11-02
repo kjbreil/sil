@@ -170,6 +170,7 @@ func (d *decoder) checkCreate(s int) int {
 	switch name {
 	case "OBJ":
 		d.s.TableType = "OBJ"
+		d.s.View.Name = "OBJ"
 	default:
 		d.err = append(d.err, fmt.Errorf("table type %s not reconized yet", name))
 		return s
