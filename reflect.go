@@ -92,6 +92,8 @@ func defaultTag(f *reflect.StructField) string {
 	case "":
 		return ""
 	case "NOW":
+		return JulianNow()
+	case "NOWTIME":
 		return JulianTimeNow()
 	default:
 		return def
