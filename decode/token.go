@@ -16,6 +16,7 @@ const (
 	OPEN
 	CLOSE
 	SEMICOLON
+	SINGLE
 
 	CRLF
 )
