@@ -119,6 +119,7 @@ func kind(v *reflect.Value, dt *string) (value string, pointer bool) {
 	}
 }
 
+// test
 func reflectString(v *reflect.Value, dt *string, hd *bool) string {
 	switch {
 	case v.Len() == 0 && *hd: // empty string with default
