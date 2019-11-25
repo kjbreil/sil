@@ -34,7 +34,7 @@ func (prsd parsed) decode() error {
 		i = ni
 	}
 
-	fmt.Println(d.p[i], i)
+	fmt.Println(d.p[i], i, d.fcodes)
 
 	fmt.Println("Parser got here")
 
@@ -49,7 +49,7 @@ func (d *decoder) identifyLine(s int) int {
 	case CRLF:
 		return s + 1
 	case OPEN:
-		// prsd.(s)
+		d.readInsertLine(s)
 
 	}
 
@@ -63,6 +63,19 @@ func (d *decoder) identifyLine(s int) int {
 	}
 
 	fmt.Println(d.p[s])
+
+	return s
+}
+
+func (d *decoder) readInsertLine(s int) int {
+
+	fmt.Println(d.p[s+1])
+
+	// switch to make
+	switch {
+	case d.p[s+1].tok == SINGLE:
+		return s
+	}
 
 	return s
 }
@@ -169,8 +182,8 @@ func (prsd parsed) isInsert(s, e int, table string) bool {
 		return false
 	case prsd[s+2].val != "INTO":
 		return false
-	// case !strings.Contains(prsd[s+4].val, "_DCT"):
-	// 	return false
+	case !strings.Contains(prsd[s+4].val, table):
+		return false
 	case prsd[s+4].val != table:
 		return false
 	case prsd[s+6].val != "VALUES":
