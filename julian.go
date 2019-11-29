@@ -10,6 +10,11 @@ func JulianDate(t time.Time) string {
 	return fmt.Sprintf("%04d%03d", t.Year(), t.YearDay())
 }
 
+// JulianDateTime takes a time.Time and turns it into a julian date and time
+func JulianDateTime(t time.Time) string {
+	return fmt.Sprintf("%s %s", JulianDate(t), JulianTimePart(t))
+}
+
 // JulianNow returns the julian date for right now
 func JulianNow() string {
 	return JulianDate(time.Now())
