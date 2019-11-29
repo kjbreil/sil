@@ -51,7 +51,7 @@ func (s *SIL) Marshal(include bool) (data []byte, err error) {
 		data = append(data, s.Header.insert()...)
 		data = append(data, s.Header.row()...)
 
-		data = append(data, sec.create(s.View.Name)...)
+		data = append(data, sec.create(&s.View)...)
 
 		data = append(data, []byte(crlf)...)
 	}

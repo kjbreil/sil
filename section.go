@@ -41,16 +41,16 @@ func split(rows []interface{}, include bool) (map[string]section, error) {
 }
 
 // create makes the sil structure for each section
-func (sec section) create(table string) (data []byte) {
+func (sec section) create(view *View) (data []byte) {
 	// get the name array of the first section, all sections "should" match
 	na, _ := sec[0].array()
 	// join the names together with ,
 	names := strings.Join(na, ",")
 	// #nosec - ignore sql injection possibility error
-	d := []byte(fmt.Sprintf("CREATE VIEW %s_CHG AS SELECT %s FROM %s_DCT;%s%s", table, names, table, crlf, crlf))
+	d := []byte(fmt.Sprintf("CREATE VIEW %s AS SELECT %s FROM %s_DCT;%s%s", view.action(), names, view.action(), crlf, crlf))
 
 	// #nosec  - ignore sql injection possibility error
-	d = append(d, []byte(fmt.Sprintf("INSERT INTO %s_CHG VALUES%s", table, crlf))...)
+	d = append(d, []byte(fmt.Sprintf("INSERT INTO %s_CHG VALUES%s", view.action(), crlf))...)
 
 	// create each line of the batch
 	for _, r := range sec {

@@ -6,5 +6,15 @@ package sil
 type View struct {
 	Name     string
 	Required bool
+	Action   string
 	Data     []interface{}
+}
+
+func (v *View) action() string {
+	// 	if action is not set default to chg
+	if v.Name == "" {
+		return v.Name + "_CHG"
+	}
+
+	return v.Name + "_" + v.Action
 }
