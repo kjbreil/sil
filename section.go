@@ -47,10 +47,10 @@ func (sec section) create(view *View) (data []byte) {
 	// join the names together with ,
 	names := strings.Join(na, ",")
 	// #nosec - ignore sql injection possibility error
-	d := []byte(fmt.Sprintf("CREATE VIEW %s AS SELECT %s FROM %s_DCT;%s%s", view.action(), names, view.action(), crlf, crlf))
+	d := []byte(fmt.Sprintf("CREATE VIEW %s AS SELECT %s FROM %s_DCT;%s%s", view.action(), names, view.Name, crlf, crlf))
 
 	// #nosec  - ignore sql injection possibility error
-	d = append(d, []byte(fmt.Sprintf("INSERT INTO %s_CHG VALUES%s", view.action(), crlf))...)
+	d = append(d, []byte(fmt.Sprintf("INSERT INTO %s VALUES%s", view.action(), crlf))...)
 
 	// create each line of the batch
 	for _, r := range sec {
