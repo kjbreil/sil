@@ -12,7 +12,7 @@ type View struct {
 
 func (v *View) action() string {
 	// 	if action is not set default to chg
-	if v.Name == "" {
+	if v.Action == "" {
 		return v.Name + "_CHG"
 	}
 
