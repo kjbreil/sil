@@ -21,11 +21,6 @@ func Unmarshal(b []byte, v interface{}) {
 	// prsd is the parsed file token parts
 	prsd := p.parse()
 
-	// just displaying the parts for now
-	// for _, ep := range *prsd {
-	// 	fmt.Println(ep)
-	// }
-
 	d := prsd.decode()
 	if len(d.err) > 0 {
 		log.Fatalf("could not decode the parsed sil file: %v\n", d.err)

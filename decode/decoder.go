@@ -11,6 +11,7 @@ type decoder struct {
 	fcodes    []string
 	tableName string
 	view      bool // has reached the view data so reading data from now on
+	header    []string
 	data      [][]string
 }
 
@@ -26,9 +27,6 @@ func (prsd parsed) decode() *decoder {
 		ni := d.identifyLine(i)
 		// if the new i matches the old i break out since processing failed
 		if ni == i {
-			// if d.err != nil {
-			// 	return nil
-			// }
 			break
 		}
 		if ni > len(d.p)-1 {
@@ -37,8 +35,6 @@ func (prsd parsed) decode() *decoder {
 		i = ni
 	}
 
-	// fmt.Println("Parser got here")
-
 	return &d
 }
 
@@ -46,7 +42,10 @@ func (prsd parsed) decode() *decoder {
 func (d *decoder) identifyLine(s int) int {
 	// view has been reached, reading data
 	if d.view {
-		return d.readDataLine(s)
+		var lineData []string
+		lineData, s = d.readDataLine(s, len(d.fcodes))
+		d.data = append(d.data, lineData)
+		return s
 	}
 
 	// switch over the tokens first for faster matching for line time
@@ -70,53 +69,50 @@ func (d *decoder) identifyLine(s int) int {
 	return s
 }
 
-func (d *decoder) readDataLine(s int) int {
+func (d *decoder) readDataLine(s int, columns int) ([]string, int) {
 	var lineData []string
 
 	// read the first semicolin
-	if d.p[s].tok != 5 {
+	if d.p[s].tok != OPEN {
 		d.err = append(d.err, fmt.Errorf("data does not start with ("))
 	}
 	s++
 	// the number of columns should equal the number of fcodes
-	columns := len(d.fcodes)
 
 	for i := 0; i < columns; i++ {
 		var data string
 		data, s = d.readData(s)
 
-		if d.p[s].tok != 4 && i != columns-1 {
+		if d.p[s].tok != COMMA && i != columns-1 && data != "" {
 			d.err = append(d.err, fmt.Errorf("data does not end with ,"))
-		} else if d.p[s].tok == 4 {
+		} else if d.p[s].tok == COMMA && data != "" {
 			s++
 		}
 		lineData = append(lineData, data)
 	}
 
-	if d.p[s].tok == 6 {
+	if d.p[s].tok == CLOSE {
 		s++
 	} else {
 		d.err = append(d.err, fmt.Errorf("data does not end with )"))
 	}
 
 	// end of data grabbing
-	if d.p[s].tok == 7 {
+	if d.p[s].tok == SEMICOLON {
 		d.view = false
 		s++
+		s++
+		return lineData, s
 	}
 
 	// endline
-	if d.p[s].tok == 9 {
+	if d.p[s].tok == CRLF {
 		s++
 	} else {
 		d.err = append(d.err, fmt.Errorf("no endline at end of data"))
 	}
 
-	d.data = append(d.data, lineData)
-
-	// fmt.Println("the data: ", lineData, d.p[s].tok)
-
-	return s
+	return lineData, s
 }
 
 func (d *decoder) readData(s int) (string, int) {
@@ -132,7 +128,11 @@ func (d *decoder) readData(s int) (string, int) {
 	}
 
 	// the data
-	if d.p[s].tok != 3 {
+	if d.p[s].tok == COMMA {
+		data = ""
+		s++
+		return data, s
+	} else if d.p[s].tok != 3 {
 		d.err = append(d.err, fmt.Errorf("data is of another token type"))
 	} else {
 		data = d.p[s].val
@@ -219,7 +219,10 @@ func (d *decoder) checkInsert(s int) int {
 				// since there was an error return s
 				return s
 			}
-			return e + 1
+
+			d.header, s = d.readDataLine(s, 21)
+
+			return s
 		}
 	}
 
