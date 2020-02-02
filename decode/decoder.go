@@ -134,10 +134,18 @@ func (d *decoder) readData(s int) (string, int) {
 		return data, s
 	} else if d.p[s].tok != 3 {
 		d.err = append(d.err, fmt.Errorf("data is of another token type"))
+		s++
 	} else {
-		data = d.p[s].val
+		// if the next token is whitespace add it
+		for {
+			if d.p[s].tok == SINGLE || d.p[s].tok == COMMA || d.p[s].tok == CLOSE {
+				break
+			}
+			data = data + d.p[s].val
+			s++
+		}
+		// data = d.p[s].val
 	}
-	s++
 	// temp for now expect a ' but need to conditionally look for and skip
 	if d.p[s].tok == 8 {
 		if single {
