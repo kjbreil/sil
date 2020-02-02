@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/kjbreil/sil"
 )
 
 // Unmarshal SIL bytes into a interface{}
@@ -41,6 +43,20 @@ func Unmarshal(b []byte, v interface{}) {
 		}
 		fieldMap = append(fieldMap, fieldIndex)
 	}
+
+	s := d.SIL(v, fieldMap)
+
+	err := s.Write("test.sil", false, false)
+	if err != nil {
+		log.Println(err)
+	}
+
+}
+
+func (d *decoder) SIL(v interface{}, fieldMap []int) (s sil.SIL) {
+
+	s.TableType = d.tableName
+	s.View.Name = d.tableName
 
 	for i := range d.data {
 
@@ -85,13 +101,11 @@ func Unmarshal(b []byte, v interface{}) {
 		// set data to the elem() of the newIndirect (so direct)
 		data := newIndirect.Elem().Interface()
 
-		d.s.View.Data = append(d.s.View.Data, data)
+		s.View.Data = append(s.View.Data, data)
 
 	}
-	err := d.s.Write("test.sil", false, false)
-	if err != nil {
-		log.Println(err)
-	}
+
+	return
 }
 
 func findFieldIndex(fcode string, v interface{}) int {

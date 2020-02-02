@@ -3,17 +3,15 @@ package decode
 import (
 	"fmt"
 	"strings"
-
-	"github.com/kjbreil/sil"
 )
 
 type decoder struct {
-	p      parsed
-	err    []error
-	s      sil.SIL
-	fcodes []string
-	view   bool // has reached the view data so reading data from now on
-	data   [][]string
+	p         parsed
+	err       []error
+	fcodes    []string
+	tableName string
+	view      bool // has reached the view data so reading data from now on
+	data      [][]string
 }
 
 func (prsd parsed) decode() *decoder {
@@ -169,8 +167,7 @@ func (d *decoder) checkCreate(s int) int {
 	name := d.p.getTable(s)
 	switch name {
 	case "OBJ":
-		d.s.TableType = "OBJ"
-		d.s.View.Name = "OBJ"
+		d.tableName = "OBJ"
 	default:
 		d.err = append(d.err, fmt.Errorf("table type %s not reconized yet", name))
 		return s
@@ -226,7 +223,7 @@ func (d *decoder) checkInsert(s int) int {
 		}
 	}
 
-	if d.p.isInsert(s, d.p.nextCRLF(s), fmt.Sprintf("%s_CHG", d.s.TableType)) {
+	if d.p.isInsert(s, d.p.nextCRLF(s), fmt.Sprintf("%s_CHG", d.tableName)) {
 		// the insert has been read and validated, time to read the data
 		d.view = true
 		return d.p.nextLine(s)
