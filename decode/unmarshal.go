@@ -2,6 +2,7 @@ package decode
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 )
 
@@ -21,9 +22,13 @@ func Unmarshal(b []byte, v interface{}) {
 	// 	fmt.Println(ep)
 	// }
 
-	err := prsd.decode()
-
-	if err != nil {
-		log.Fatalf("could not decode the parsed sil file: %v\n", err)
+	d := prsd.decode()
+	if len(d.err) > 0 {
+		log.Fatalf("could not decode the parsed sil file: %v\n", d.err)
 	}
+
+	fmt.Println(d.p[len(d.p)-1], len(d.p), d.fcodes)
+
+	fmt.Println(d)
+
 }

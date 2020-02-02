@@ -8,13 +8,15 @@ import (
 )
 
 type decoder struct {
-	p      parsed
-	err    error
-	s      sil.SIL
-	fcodes []string
+	p       parsed
+	err     []error
+	s       sil.SIL
+	fcodes  []string
+	view    bool // has reached the view data so reading data from now on
+	inserts []string
 }
 
-func (prsd parsed) decode() error {
+func (prsd parsed) decode() *decoder {
 
 	// make a new decoder, put the parsed into it
 	var d decoder
@@ -27,22 +29,25 @@ func (prsd parsed) decode() error {
 		// if the new i matches the old i break out since processing failed
 		if ni == i {
 			if d.err != nil {
-				return d.err
+				return nil
 			}
 			break
 		}
 		i = ni
 	}
 
-	fmt.Println(d.p[i], i, d.fcodes)
+	// fmt.Println("Parser got here")
 
-	fmt.Println("Parser got here")
-
-	return nil
+	return &d
 }
 
 // itendifyLine identifys and works on the line returning the i of the next line
 func (d *decoder) identifyLine(s int) int {
+	// view has been reached, reading data
+	if d.view {
+		return d.readData(s)
+	}
+
 	// switch over the tokens first for faster matching for line time
 	switch d.p[s].tok {
 	// End of Line so Advance one
@@ -50,7 +55,6 @@ func (d *decoder) identifyLine(s int) int {
 		return s + 1
 	case OPEN:
 		d.readInsertLine(s)
-
 	}
 
 	// detect line type based on the value
@@ -62,9 +66,14 @@ func (d *decoder) identifyLine(s int) int {
 		return d.checkCreate(s)
 	}
 
-	fmt.Println(d.p[s])
-
 	return s
+}
+
+func (d *decoder) readData(s int) int {
+	if d.p[s].tok != 5 {
+		d.err = append(d.err, fmt.Errorf("data does not start with ("))
+	}
+	return s + 1
 }
 
 func (d *decoder) readInsertLine(s int) int {
@@ -86,7 +95,7 @@ func (d *decoder) checkCreate(s int) int {
 	case "OBJ":
 		d.s.TableType = "OBJ"
 	default:
-		d.err = fmt.Errorf("table type %s not reconized yet", name)
+		d.err = append(d.err, fmt.Errorf("table type %s not reconized yet", name))
 		return s
 	}
 
@@ -104,12 +113,12 @@ forStart:
 		case COMMA:
 			fs++
 		default:
-			d.err = fmt.Errorf("f code parsing error")
+			d.err = append(d.err, fmt.Errorf("f code parsing error"))
 			break forStart
 		}
 	}
 	if d.p[fs+4].tok != SEMICOLON {
-		d.err = fmt.Errorf("no semicolin at end of CREATE")
+		d.err = append(d.err, fmt.Errorf("no semicolin at end of CREATE"))
 		return s
 	}
 	if d.p[fs+5].tok == CRLF {
@@ -132,7 +141,7 @@ func (d *decoder) checkInsert(s int) int {
 			e := d.p.nextCRLF(s)
 			// TODO: Properly announce which token is wrong rather than current error
 			if d.p[s].tok != OPEN || d.p[e-2].tok != CLOSE || d.p[e-1].tok != SEMICOLON {
-				d.err = fmt.Errorf("row for HEADER invalid, got %s%s%s want \"();\"", d.p[s].val, d.p[e-2].val, d.p[e-1].val)
+				d.err = append(d.err, fmt.Errorf("row for HEADER invalid, got %s%s%s want \"();\"", d.p[s].val, d.p[e-2].val, d.p[e-1].val))
 				// since there was an error return s
 				return s
 			}
@@ -141,10 +150,12 @@ func (d *decoder) checkInsert(s int) int {
 	}
 
 	if d.p.isInsert(s, d.p.nextCRLF(s), fmt.Sprintf("%s_CHG", d.s.TableType)) {
+		// the insert has been read and validated, time to read the data
+		d.view = true
 		return d.p.nextLine(s)
 	}
 
-	d.err = fmt.Errorf("table type for INSERT does not match CREATE")
+	d.err = append(d.err, fmt.Errorf("table type for INSERT does not match CREATE"))
 	return s
 }
 
