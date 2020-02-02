@@ -100,6 +100,49 @@ func (d *decoder) SIL(v interface{}, fieldMap []int) (s sil.SIL) {
 
 	}
 
+	// get ints for ending and active date/times
+	endingDateInt, err := strconv.Atoi(d.header[6])
+	if err != nil {
+		log.Panicf("header ending date did not convert to int %s", d.header[6])
+	}
+	endingTimeInt, err := strconv.Atoi(d.header[7])
+	if err != nil {
+		log.Panicf("header ending time did not convert to int %s", d.header[7])
+	}
+	activeDateInt, err := strconv.Atoi(d.header[8])
+	if err != nil {
+		log.Panicf("header active date did not convert to int %s", d.header[8])
+	}
+	activeTimeInt, err := strconv.Atoi(d.header[9])
+	if err != nil {
+		log.Panicf("header active time did not convert to int %s", d.header[9])
+	}
+
+	s.Header = sil.Header{
+		Type:              d.header[0],
+		Identifier:        d.header[1],
+		Creator:           d.header[2],
+		Destination:       d.header[3],
+		AuditFile:         d.header[4],
+		ResponseFile:      d.header[5],
+		EndingDate:        endingDateInt,
+		EndingTime:        endingTimeInt,
+		ActiveDate:        activeDateInt,
+		ActiveTime:        activeTimeInt,
+		PurgeDate:         d.header[10],
+		ActionType:        d.header[11],
+		Description:       d.header[12],
+		UserOneState:      d.header[13],
+		MaximumErrorCount: d.header[14],
+		FileVersion:       d.header[15],
+		CreatorVersion:    d.header[16],
+		PrimaryKey:        d.header[17],
+		SpecificCommand:   d.header[18],
+		TagType:           d.header[19],
+		ExecutionPriority: d.header[20],
+		LongDescription:   "",
+	}
+
 	return
 }
 
