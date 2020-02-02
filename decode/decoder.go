@@ -8,12 +8,12 @@ import (
 )
 
 type decoder struct {
-	p       parsed
-	err     []error
-	s       sil.SIL
-	fcodes  []string
-	view    bool // has reached the view data so reading data from now on
-	inserts []string
+	p      parsed
+	err    []error
+	s      sil.SIL
+	fcodes []string
+	view   bool // has reached the view data so reading data from now on
+	data   [][]string
 }
 
 func (prsd parsed) decode() *decoder {
@@ -28,9 +28,12 @@ func (prsd parsed) decode() *decoder {
 		ni := d.identifyLine(i)
 		// if the new i matches the old i break out since processing failed
 		if ni == i {
-			if d.err != nil {
-				return nil
-			}
+			// if d.err != nil {
+			// 	return nil
+			// }
+			break
+		}
+		if ni > len(d.p)-1 {
 			break
 		}
 		i = ni
@@ -45,7 +48,7 @@ func (prsd parsed) decode() *decoder {
 func (d *decoder) identifyLine(s int) int {
 	// view has been reached, reading data
 	if d.view {
-		return d.readData(s)
+		return d.readDataLine(s)
 	}
 
 	// switch over the tokens first for faster matching for line time
@@ -69,11 +72,84 @@ func (d *decoder) identifyLine(s int) int {
 	return s
 }
 
-func (d *decoder) readData(s int) int {
+func (d *decoder) readDataLine(s int) int {
+	var lineData []string
+
+	// read the first semicolin
 	if d.p[s].tok != 5 {
 		d.err = append(d.err, fmt.Errorf("data does not start with ("))
 	}
-	return s + 1
+	s++
+	// the number of columns should equal the number of fcodes
+	columns := len(d.fcodes)
+
+	for i := 0; i < columns; i++ {
+		var data string
+		data, s = d.readData(s)
+
+		if d.p[s].tok != 4 && i != columns-1 {
+			d.err = append(d.err, fmt.Errorf("data does not end with ,"))
+		} else if d.p[s].tok == 4 {
+			s++
+		}
+		lineData = append(lineData, data)
+	}
+
+	if d.p[s].tok == 6 {
+		s++
+	} else {
+		d.err = append(d.err, fmt.Errorf("data does not end with )"))
+	}
+
+	// end of data grabbing
+	if d.p[s].tok == 7 {
+		d.view = false
+		s++
+	}
+
+	// endline
+	if d.p[s].tok == 9 {
+		s++
+	} else {
+		d.err = append(d.err, fmt.Errorf("no endline at end of data"))
+	}
+
+	d.data = append(d.data, lineData)
+
+	// fmt.Println("the data: ", lineData, d.p[s].tok)
+
+	return s
+}
+
+func (d *decoder) readData(s int) (string, int) {
+	var single bool
+
+	var data string
+
+	// if there is a single quote advance one and set single to be true
+	if d.p[s].tok == 8 {
+		single = true
+		s++
+		// d.err = append(d.err, fmt.Errorf("data does not start with '"))
+	}
+
+	// the data
+	if d.p[s].tok != 3 {
+		d.err = append(d.err, fmt.Errorf("data is of another token type"))
+	} else {
+		data = d.p[s].val
+	}
+	s++
+	// temp for now expect a ' but need to conditionally look for and skip
+	if d.p[s].tok == 8 {
+		if single {
+			s++
+		} else {
+			d.err = append(d.err, fmt.Errorf("data ends with ' but did not start with one"))
+		}
+	}
+
+	return data, s
 }
 
 func (d *decoder) readInsertLine(s int) int {

@@ -27,8 +27,8 @@ func Unmarshal(b []byte, v interface{}) {
 		log.Fatalf("could not decode the parsed sil file: %v\n", d.err)
 	}
 
-	fmt.Println(d.p[len(d.p)-1], len(d.p), d.fcodes)
+	fmt.Println(d.data)
 
-	fmt.Println(d)
+	// fmt.Println(d.p[len(d.p)-1], len(d.p), d.fcodes)
 
 }
