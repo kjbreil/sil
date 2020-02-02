@@ -1,4 +1,4 @@
-package decode
+package silread
 
 // token is an identifier for a given token
 type token int
