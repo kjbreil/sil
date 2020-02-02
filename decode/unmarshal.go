@@ -77,7 +77,7 @@ func Unmarshal(b []byte, v interface{}) {
 				}
 			}
 		}
-		// comment
+
 		indirect := reflect.Indirect(reflect.ValueOf(v))
 		newIndirect := reflect.New(indirect.Type())
 		// set the value of newIndirect to the value of indirect which is inturn the value of v
