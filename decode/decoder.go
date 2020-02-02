@@ -207,7 +207,7 @@ func (d *decoder) checkInsert(s int) int {
 		// we don't care about the HEADER_DCT information so skip those
 		// Still validate them if they exist
 
-		if d.p.isInsert(s, d.p.nextCRLF(s), "HEADER_DCT") {
+		if d.p.isInsert(s, "HEADER_DCT") {
 			// header row found so skip to next CRLF + 1
 			s = d.p.nextLine(s)
 			// since there was a header row there should be a single insert row, not doing much validation on it since LOC
@@ -223,7 +223,7 @@ func (d *decoder) checkInsert(s int) int {
 		}
 	}
 
-	if d.p.isInsert(s, d.p.nextCRLF(s), fmt.Sprintf("%s_CHG", d.tableName)) {
+	if d.p.isInsert(s, fmt.Sprintf("%s_CHG", d.tableName)) {
 		// the insert has been read and validated, time to read the data
 		d.view = true
 		return d.p.nextLine(s)
@@ -248,19 +248,8 @@ func (prsd parsed) nextLine(s int) int {
 	return prsd.nextCRLF(s) + 1
 }
 
-// string returns the string of the data between s and e
-func (prsd parsed) string(s, e int) string {
-
-	var strgs []string
-	for i := s; i <= e; i++ {
-		strgs = append(strgs, prsd[i].val)
-	}
-
-	return strings.Join(strgs, "")
-}
-
 // isInsert checks if a insert statement is valid, dct is the "table" to expect
-func (prsd parsed) isInsert(s, e int, table string) bool {
+func (prsd parsed) isInsert(s int, table string) bool {
 	// generic switch, if something fails the statement is not valid
 	switch {
 	case prsd[s].val != "INSERT":
@@ -289,10 +278,4 @@ func (prsd parsed) getTable(s int) string {
 	}
 
 	return "ERROR"
-}
-
-// getValues returns an array of string representing the values in a open/close
-func (prsd parsed) getValues(s, e int) []string {
-
-	return []string{}
 }

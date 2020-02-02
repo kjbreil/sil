@@ -53,12 +53,3 @@ func (p *parser) scan() (pt *part) {
 
 	return
 }
-
-// scanIgnoreWhitespace scans the next non-whitespace token.
-func (p *parser) scanIgnoreWhitespace() (pt *part) {
-	pt = p.scan()
-	if pt.tok == WS {
-		pt = p.scan()
-	}
-	return
-}

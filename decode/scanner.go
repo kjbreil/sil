@@ -88,7 +88,10 @@ func (s *scanner) read() rune {
 func (s *scanner) scanIdent() *part {
 	// Create a buffer and read the current character into it.
 	var buf bytes.Buffer
-	buf.WriteRune(s.read())
+	_, err := buf.WriteRune(s.read())
+	if err != nil {
+		log.Panicf("reading the character buffer faild %v", err)
+	}
 
 	// Read every subsequent ident character into the buffer.
 	// Non-ident characters and EOF will cause the loop to exit.
@@ -113,7 +116,10 @@ func (s *scanner) scanIdent() *part {
 func (s *scanner) scanWhitespace() *part {
 	// Create a buffer and read the current character into it.
 	var buf bytes.Buffer
-	buf.WriteRune(s.read())
+	_, err := buf.WriteRune(s.read())
+	if err != nil {
+		log.Panicf("reading the character buffer faild %v", err)
+	}
 
 	// Read every subsequent whitespace character into the buffer.
 	// Non-whitespace characters and EOF will cause the loop to exit.
@@ -124,7 +130,10 @@ func (s *scanner) scanWhitespace() *part {
 			s.unread()
 			break
 		} else {
-			buf.WriteRune(ch)
+			_, err := buf.WriteRune(s.read())
+			if err != nil {
+				log.Panicf("reading the character buffer faild %v", err)
+			}
 		}
 	}
 
