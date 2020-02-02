@@ -36,6 +36,9 @@ func Unmarshal(b []byte, v interface{}) {
 
 	for _, ef := range d.fcodes {
 		fieldIndex := findFieldIndex(ef, v)
+		if fieldIndex == -1 {
+			log.Panicf("field %s does not exist in type definition", ef)
+		}
 		fieldMap = append(fieldMap, fieldIndex)
 	}
 
@@ -44,6 +47,9 @@ func Unmarshal(b []byte, v interface{}) {
 		values := reflect.ValueOf(v).Elem()
 
 		for c := range d.data[i] {
+			if !values.Field(fieldMap[c]).CanSet() {
+				log.Panicln("cannot set")
+			}
 			if values.Field(fieldMap[c]).CanSet() {
 				switch values.Field(fieldMap[c]).Type().Name() {
 				case "string":
@@ -54,6 +60,20 @@ func Unmarshal(b []byte, v interface{}) {
 						log.Panicln(err)
 					}
 					values.Field(fieldMap[c]).SetInt(dataInt)
+				default:
+					// probably a pointer
+					switch values.Field(fieldMap[c]).Type().Elem().Name() {
+					case "string":
+						data := d.data[i][c]
+						values.Field(fieldMap[c]).Set(reflect.ValueOf(&data))
+					case "int":
+						dataInt, err := strconv.Atoi(d.data[i][c])
+						if err != nil {
+							log.Panicln(err)
+						}
+						values.Field(fieldMap[c]).Set(reflect.ValueOf(&dataInt))
+						// log.Panicf("cannot set %s type", values.Field(fieldMap[c]).Type().Name())
+					}
 				}
 			}
 		}
