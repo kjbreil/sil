@@ -2,6 +2,7 @@ package silread
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"reflect"
 	"strconv"
@@ -11,7 +12,7 @@ import (
 )
 
 // Unmarshal SIL bytes into a interface{}
-func Unmarshal(b []byte, v interface{}) {
+func Unmarshal(b []byte, v interface{}) (sil.SIL, error) {
 	// open a reader using the bytes as the start
 	// this can be improved to read directly from a file
 	r := bytes.NewReader(b)
@@ -39,16 +40,11 @@ func Unmarshal(b []byte, v interface{}) {
 		fieldMap = append(fieldMap, fieldIndex)
 	}
 
-	s := d.SIL(v, fieldMap)
-
-	err := s.Write("test.sil", false, false)
-	if err != nil {
-		log.Println(err)
-	}
+	return d.SIL(v, fieldMap)
 
 }
 
-func (d *decoder) SIL(v interface{}, fieldMap []int) (s sil.SIL) {
+func (d *decoder) SIL(v interface{}, fieldMap []int) (s sil.SIL, err error) {
 
 	s.TableType = d.tableName
 	s.View.Name = d.tableName
@@ -59,16 +55,19 @@ func (d *decoder) SIL(v interface{}, fieldMap []int) (s sil.SIL) {
 
 		for c := range d.data[i] {
 			if !values.Field(fieldMap[c]).CanSet() {
-				log.Panicln("cannot set")
+				err = fmt.Errorf("cannot set field @%d named %s", i, values.Field(fieldMap[c]).Type().Name())
+				return
 			}
 			if values.Field(fieldMap[c]).CanSet() {
 				switch values.Field(fieldMap[c]).Type().Name() {
 				case "string":
 					values.Field(fieldMap[c]).SetString(d.data[i][c])
 				case "int":
-					dataInt, err := strconv.ParseInt(d.data[i][c], 10, 64)
+					var dataInt int64
+					dataInt, err = strconv.ParseInt(d.data[i][c], 10, 64)
 					if err != nil {
-						log.Panicln(err)
+						err = fmt.Errorf("conversion of data type int did not convert from %s err: %v", d.data[i][c], err)
+						return
 					}
 					values.Field(fieldMap[c]).SetInt(dataInt)
 				default:
@@ -78,12 +77,13 @@ func (d *decoder) SIL(v interface{}, fieldMap []int) (s sil.SIL) {
 						data := d.data[i][c]
 						values.Field(fieldMap[c]).Set(reflect.ValueOf(&data))
 					case "int":
-						dataInt, err := strconv.Atoi(d.data[i][c])
+						var dataInt int
+						dataInt, err = strconv.Atoi(d.data[i][c])
 						if err != nil {
-							log.Panicln(err)
+							err = fmt.Errorf("conversion of data type int did not convert from %s err: %v", d.data[i][c], err)
+							return
 						}
 						values.Field(fieldMap[c]).Set(reflect.ValueOf(&dataInt))
-						// log.Panicf("cannot set %s type", values.Field(fieldMap[c]).Type().Name())
 					}
 				}
 			}
@@ -103,19 +103,23 @@ func (d *decoder) SIL(v interface{}, fieldMap []int) (s sil.SIL) {
 	// get ints for ending and active date/times
 	endingDateInt, err := strconv.Atoi(d.header[6])
 	if err != nil {
-		log.Panicf("header ending date did not convert to int %s", d.header[6])
+		err = fmt.Errorf("header ending date did not convert to int %s", d.header[6])
+		return
 	}
 	endingTimeInt, err := strconv.Atoi(d.header[7])
 	if err != nil {
-		log.Panicf("header ending time did not convert to int %s", d.header[7])
+		err = fmt.Errorf("header ending time did not convert to int %s", d.header[7])
+		return
 	}
 	activeDateInt, err := strconv.Atoi(d.header[8])
 	if err != nil {
-		log.Panicf("header active date did not convert to int %s", d.header[8])
+		err = fmt.Errorf("header active date did not convert to int %s", d.header[8])
+		return
 	}
 	activeTimeInt, err := strconv.Atoi(d.header[9])
 	if err != nil {
-		log.Panicf("header active time did not convert to int %s", d.header[9])
+		err = fmt.Errorf("header active time did not convert to int %s", d.header[9])
+		return
 	}
 
 	s.Header = sil.Header{
@@ -159,6 +163,7 @@ func findFieldIndex(fcode string, v interface{}) int {
 }
 
 // getSilTag takes the StructField and returns a silTag pointer along with bool for padding
+// needs to actuall reference the sil module function (which needs to be exported)
 func getSilTag(f *reflect.StructField) string {
 	silTag := strings.Split(f.Tag.Get("sil"), ",")
 
