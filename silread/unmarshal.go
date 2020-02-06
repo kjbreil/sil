@@ -12,7 +12,7 @@ import (
 )
 
 // Unmarshal SIL bytes into a interface{}
-func Unmarshal(b []byte, v interface{}) (sil.SIL, error) {
+func Unmarshal(b []byte, v interface{}) (s sil.SIL, err error) {
 	// open a reader using the bytes as the start
 	// this can be improved to read directly from a file
 	r := bytes.NewReader(b)
@@ -24,7 +24,8 @@ func Unmarshal(b []byte, v interface{}) (sil.SIL, error) {
 
 	d := prsd.decode()
 	if len(d.err) > 0 {
-		log.Fatalf("could not decode the parsed sil file: %v\n", d.err)
+		err = fmt.Errorf("could not decode the parsed sil file: %v\n", d.err)
+		return
 	}
 
 	// fmt.Println(d.data)
@@ -35,7 +36,8 @@ func Unmarshal(b []byte, v interface{}) (sil.SIL, error) {
 	for _, ef := range d.fcodes {
 		fieldIndex := findFieldIndex(ef, v)
 		if fieldIndex == -1 {
-			log.Panicf("field %s does not exist in type definition", ef)
+			err = fmt.Errorf("field %s does not exist in type definition", ef)
+			return
 		}
 		fieldMap = append(fieldMap, fieldIndex)
 	}
