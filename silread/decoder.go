@@ -146,8 +146,8 @@ func (d *decoder) readData(s int) (string, int) {
 		}
 		// data = d.p[s].val
 	}
-	// temp for now expect a ' but need to conditionally look for and skip
-	if d.p[s].tok == 8 {
+	// check if its a single quote check if it should be closing here and error if we shouldn't be closing
+	if d.p[s].tok == SINGLE {
 		if single {
 			s++
 		} else {
