@@ -11,7 +11,7 @@ func TestUnmarshal(t *testing.T) {
 
 	var obj loc.ObjTab
 
-	b, _ := ioutil.ReadFile("./751943000.sil")
+	b, _ := ioutil.ReadFile("./examples/single.sil")
 
 	Unmarshal(b, &obj)
 

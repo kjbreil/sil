@@ -3,18 +3,19 @@ package decode
 import (
 	"fmt"
 	"strings"
-
-	"github.com/kjbreil/sil"
 )
 
 type decoder struct {
-	p      parsed
-	err    error
-	s      sil.SIL
-	fcodes []string
+	p         parsed
+	err       []error
+	fcodes    []string
+	tableName string
+	view      bool // has reached the view data so reading data from now on
+	header    []string
+	data      [][]string
 }
 
-func (prsd parsed) decode() error {
+func (prsd parsed) decode() *decoder {
 
 	// make a new decoder, put the parsed into it
 	var d decoder
@@ -26,31 +27,34 @@ func (prsd parsed) decode() error {
 		ni := d.identifyLine(i)
 		// if the new i matches the old i break out since processing failed
 		if ni == i {
-			if d.err != nil {
-				return d.err
-			}
+			break
+		}
+		if ni > len(d.p)-1 {
 			break
 		}
 		i = ni
 	}
 
-	fmt.Println(d.p[i], i)
-
-	fmt.Println("Parser got here")
-
-	return nil
+	return &d
 }
 
 // itendifyLine identifys and works on the line returning the i of the next line
 func (d *decoder) identifyLine(s int) int {
+	// view has been reached, reading data
+	if d.view {
+		var lineData []string
+		lineData, s = d.readDataLine(s, len(d.fcodes))
+		d.data = append(d.data, lineData)
+		return s
+	}
+
 	// switch over the tokens first for faster matching for line time
 	switch d.p[s].tok {
 	// End of Line so Advance one
 	case CRLF:
 		return s + 1
 	case OPEN:
-		// prsd.(s)
-
+		d.readInsertLine(s)
 	}
 
 	// detect line type based on the value
@@ -62,7 +66,107 @@ func (d *decoder) identifyLine(s int) int {
 		return d.checkCreate(s)
 	}
 
-	fmt.Println(d.p[s])
+	return s
+}
+
+func (d *decoder) readDataLine(s int, columns int) ([]string, int) {
+	var lineData []string
+
+	// read the first semicolin
+	if d.p[s].tok != OPEN {
+		d.err = append(d.err, fmt.Errorf("data does not start with ("))
+	}
+	s++
+	// the number of columns should equal the number of fcodes
+
+	for i := 0; i < columns; i++ {
+		var data string
+		data, s = d.readData(s)
+
+		if d.p[s].tok != COMMA && i != columns-1 && data != "" {
+			d.err = append(d.err, fmt.Errorf("data does not end with ,"))
+		} else if d.p[s].tok == COMMA && data != "" {
+			s++
+		}
+		lineData = append(lineData, data)
+	}
+
+	if d.p[s].tok == CLOSE {
+		s++
+	} else {
+		d.err = append(d.err, fmt.Errorf("data does not end with )"))
+	}
+
+	// end of data grabbing
+	if d.p[s].tok == SEMICOLON {
+		d.view = false
+		s++
+		s++
+		return lineData, s
+	}
+
+	// endline
+	if d.p[s].tok == CRLF {
+		s++
+	} else {
+		d.err = append(d.err, fmt.Errorf("no endline at end of data"))
+	}
+
+	return lineData, s
+}
+
+func (d *decoder) readData(s int) (string, int) {
+	var single bool
+
+	var data string
+
+	// if there is a single quote advance one and set single to be true
+	if d.p[s].tok == 8 {
+		single = true
+		s++
+		// d.err = append(d.err, fmt.Errorf("data does not start with '"))
+	}
+
+	// the data
+	if d.p[s].tok == COMMA {
+		data = ""
+		s++
+		return data, s
+	} else if d.p[s].tok != 3 {
+		d.err = append(d.err, fmt.Errorf("data is of another token type"))
+		s++
+	} else {
+		// if the next token is whitespace add it
+		for {
+			if d.p[s].tok == SINGLE || d.p[s].tok == COMMA || d.p[s].tok == CLOSE {
+				break
+			}
+			data = data + d.p[s].val
+			s++
+		}
+		// data = d.p[s].val
+	}
+	// temp for now expect a ' but need to conditionally look for and skip
+	if d.p[s].tok == 8 {
+		if single {
+			s++
+		} else {
+			d.err = append(d.err, fmt.Errorf("data ends with ' but did not start with one"))
+		}
+	}
+
+	return data, s
+}
+
+func (d *decoder) readInsertLine(s int) int {
+
+	fmt.Println(d.p[s+1])
+
+	// switch to make
+	switch {
+	case d.p[s+1].tok == SINGLE:
+		return s
+	}
 
 	return s
 }
@@ -71,9 +175,9 @@ func (d *decoder) checkCreate(s int) int {
 	name := d.p.getTable(s)
 	switch name {
 	case "OBJ":
-		d.s.TableType = "OBJ"
+		d.tableName = "OBJ"
 	default:
-		d.err = fmt.Errorf("table type %s not reconized yet", name)
+		d.err = append(d.err, fmt.Errorf("table type %s not reconized yet", name))
 		return s
 	}
 
@@ -91,12 +195,12 @@ forStart:
 		case COMMA:
 			fs++
 		default:
-			d.err = fmt.Errorf("f code parsing error")
+			d.err = append(d.err, fmt.Errorf("f code parsing error"))
 			break forStart
 		}
 	}
 	if d.p[fs+4].tok != SEMICOLON {
-		d.err = fmt.Errorf("no semicolin at end of CREATE")
+		d.err = append(d.err, fmt.Errorf("no semicolin at end of CREATE"))
 		return s
 	}
 	if d.p[fs+5].tok == CRLF {
@@ -111,7 +215,7 @@ func (d *decoder) checkInsert(s int) int {
 		// we don't care about the HEADER_DCT information so skip those
 		// Still validate them if they exist
 
-		if d.p.isInsert(s, d.p.nextCRLF(s), "HEADER_DCT") {
+		if d.p.isInsert(s, "HEADER_DCT") {
 			// header row found so skip to next CRLF + 1
 			s = d.p.nextLine(s)
 			// since there was a header row there should be a single insert row, not doing much validation on it since LOC
@@ -119,19 +223,24 @@ func (d *decoder) checkInsert(s int) int {
 			e := d.p.nextCRLF(s)
 			// TODO: Properly announce which token is wrong rather than current error
 			if d.p[s].tok != OPEN || d.p[e-2].tok != CLOSE || d.p[e-1].tok != SEMICOLON {
-				d.err = fmt.Errorf("HEADER data row invalid, got %s%s%s want ();\n", d.p[s].val, d.p[e-2].val, d.p[e-1].val)
+				d.err = append(d.err, fmt.Errorf("row for HEADER invalid, got %s%s%s want \"();\"", d.p[s].val, d.p[e-2].val, d.p[e-1].val))
 				// since there was an error return s
 				return s
 			}
-			return e + 1
+
+			d.header, s = d.readDataLine(s, 21)
+
+			return s
 		}
 	}
 
-	if d.p.isInsert(s, d.p.nextCRLF(s), fmt.Sprintf("%s_CHG", d.s.TableType)) {
+	if d.p.isInsert(s, fmt.Sprintf("%s_CHG", d.tableName)) {
+		// the insert has been read and validated, time to read the data
+		d.view = true
 		return d.p.nextLine(s)
 	}
 
-	d.err = fmt.Errorf("table type for INSERT does not match CREATE")
+	d.err = append(d.err, fmt.Errorf("table type for INSERT does not match CREATE"))
 	return s
 }
 
@@ -150,27 +259,16 @@ func (prsd parsed) nextLine(s int) int {
 	return prsd.nextCRLF(s) + 1
 }
 
-// string returns the string of the data between s and e
-func (prsd parsed) string(s, e int) string {
-
-	var strgs []string
-	for i := s; i <= e; i++ {
-		strgs = append(strgs, prsd[i].val)
-	}
-
-	return strings.Join(strgs, "")
-}
-
 // isInsert checks if a insert statement is valid, dct is the "table" to expect
-func (prsd parsed) isInsert(s, e int, table string) bool {
+func (prsd parsed) isInsert(s int, table string) bool {
 	// generic switch, if something fails the statement is not valid
 	switch {
 	case prsd[s].val != "INSERT":
 		return false
 	case prsd[s+2].val != "INTO":
 		return false
-	// case !strings.Contains(prsd[s+4].val, "_DCT"):
-	// 	return false
+	case !strings.Contains(prsd[s+4].val, table):
+		return false
 	case prsd[s+4].val != table:
 		return false
 	case prsd[s+6].val != "VALUES":
@@ -191,10 +289,4 @@ func (prsd parsed) getTable(s int) string {
 	}
 
 	return "ERROR"
-}
-
-// getValues returns an array of string representing the values in a open/close
-func (prsd parsed) getValues(s, e int) []string {
-
-	return []string{}
 }
