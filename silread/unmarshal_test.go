@@ -5,11 +5,11 @@ import (
 	"log"
 	"testing"
 
-	"github.com/kjbreil/go-loc/loc"
+	"github.com/kjbreil/sil/tables"
 )
 
 func TestUnmarshal(t *testing.T) {
-	var obj loc.ObjTab
+	var obj tables.OBJ
 
 	b, _ := ioutil.ReadFile("./examples/single.sil")
 

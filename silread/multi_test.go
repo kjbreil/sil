@@ -4,20 +4,20 @@ import (
 	"log"
 	"testing"
 
-	"github.com/kjbreil/go-loc/loc"
+	"github.com/kjbreil/sil/tables"
 )
 
 func TestMulti(t *testing.T) {
 	filename := "./examples/multi.sil"
 
-	tables := make(map[string]interface{})
+	tbls := make(map[string]interface{})
 
-	var obj loc.ObjTab
-	tables["OBJ"] = &obj
-	var price loc.PriceTab
-	tables["PRICE"] = &price
+	var obj tables.OBJ
+	tbls["OBJ"] = &obj
+	var price tables.PRICE
+	tbls["PRICE"] = &price
 
-	m, err := Multi(filename, tables)
+	m, err := Multi(filename, tbls)
 	if err != nil {
 		t.Fatal(err)
 	}

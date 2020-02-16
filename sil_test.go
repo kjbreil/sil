@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kjbreil/go-loc/loc"
+	"github.com/kjbreil/sil/tables"
 )
 
 // OBJ will probably not work for an actual SIL file, this is for testing
@@ -21,29 +21,27 @@ func TestMake(t *testing.T) {
 	m := make(Multi)
 
 	// m["OBJ"] = Make("OBJ", loc.OBJ{})
-	m.Make("OBJ", loc.ObjTab{})
+	m.Make("OBJ", tables.OBJ{})
 
-	m.AppendView("OBJ", loc.ObjTab{
+	m.AppendView("OBJ", tables.OBJ{
 		UPCCode: "9902",
 	})
 
-	m.AppendView("OBJ", loc.ObjTab{
+	m.AppendView("OBJ", tables.OBJ{
 		UPCCode: "8888",
 	})
-	n := 1
-	m.AppendView("OBJ", loc.ObjTab{
-		UPCCode:      "0000000009087",
-		CategoryCode: &n,
+	m.AppendView("OBJ", tables.OBJ{
+		UPCCode: "0000000009087",
 	})
-	m.AppendView("OBJ", loc.ObjTab{
+	m.AppendView("OBJ", tables.OBJ{
 		UPCCode: "9999",
 	})
 
-	m.Make("PRICE", loc.PriceTab{})
+	m.Make("PRICE", tables.PRICE{})
 	ap := "31.50"
-	m.AppendView("PRICE", loc.PriceTab{
-		UPCCode:     "9087",
-		ActivePrice: &ap,
+	m.AppendView("PRICE", tables.PRICE{
+		UPCCode: "9087",
+		Price:   &ap,
 	})
 
 	b, err := m.Marshal()
@@ -64,7 +62,7 @@ func TestSingle(t *testing.T) {
 	// First test is to make sure you get an error when missing a required non defaulted field
 	var s SIL
 	s.View.Name = "OBJ"
-	s.View.Data = append(s.View.Data, loc.ObjTab{
+	s.View.Data = append(s.View.Data, tables.OBJ{
 		RecordStatus: 1,
 	})
 	_, err := s.Marshal(true)
