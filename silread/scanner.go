@@ -65,6 +65,7 @@ func (s *scanner) scan() *part {
 		if ch != '\n' {
 			log.Fatalf("carrage return without newline\n")
 		}
+
 		return &part{
 			tok: CRLF,
 			val: "\r\n",
@@ -74,6 +75,7 @@ func (s *scanner) scan() *part {
 	}
 
 	s.unread()
+
 	return s.scanIdent()
 }
 
@@ -82,6 +84,7 @@ func (s *scanner) read() rune {
 	if err != nil {
 		return eof
 	}
+
 	return ch
 }
 
@@ -89,6 +92,7 @@ func (s *scanner) scanIdent() *part {
 	// Create a buffer and read the current character into it.
 	var buf bytes.Buffer
 	_, err := buf.WriteRune(s.read())
+
 	if err != nil {
 		log.Panicf("reading the character buffer faild %v", err)
 	}
@@ -117,6 +121,7 @@ func (s *scanner) scanWhitespace() *part {
 	// Create a buffer and read the current character into it.
 	var buf bytes.Buffer
 	_, err := buf.WriteRune(s.read())
+
 	if err != nil {
 		log.Panicf("reading the character buffer faild %v", err)
 	}

@@ -17,7 +17,6 @@ type decoder struct {
 }
 
 func (prsd parsed) decode(s int) (*decoder, int) {
-
 	// make a new decoder, put the parsed into it
 	var d decoder
 	d.p = prsd
@@ -31,9 +30,11 @@ func (prsd parsed) decode(s int) (*decoder, int) {
 		if ni == i {
 			break
 		}
+
 		if ni > len(d.p)-1 {
 			break
 		}
+
 		i = ni
 	}
 
@@ -42,11 +43,6 @@ func (prsd parsed) decode(s int) (*decoder, int) {
 
 // itendifyLine identifys and works on the line returning the i of the next line
 func (d *decoder) identifyLine(s int) int {
-
-	// if s == 164 {
-	// 	log.Println(d.p[s].tok)
-	// }
-
 	// done returns the same s that as passed, breaking the processing
 	if d.done {
 		return s
@@ -57,6 +53,7 @@ func (d *decoder) identifyLine(s int) int {
 		var lineData []string
 		lineData, s = d.readDataLine(s, len(d.fcodes))
 		d.data = append(d.data, lineData)
+
 		return s
 	}
 
@@ -100,6 +97,7 @@ func (d *decoder) readDataLine(s int, columns int) ([]string, int) {
 		} else if d.p[s].tok == COMMA && data != "" {
 			s++
 		}
+
 		lineData = append(lineData, data)
 	}
 
@@ -119,6 +117,7 @@ func (d *decoder) readDataLine(s int, columns int) ([]string, int) {
 		// this might cause an error unless there is a crlf after the semicolin...
 		s++
 		s++
+
 		return lineData, s
 	}
 
@@ -138,31 +137,33 @@ func (d *decoder) readData(s int) (string, int) {
 	var data string
 
 	// if there is a single quote advance one and set single to be true
-	if d.p[s].tok == 8 {
+	if d.p[s].tok == SINGLE {
 		single = true
 		s++
-		// d.err = append(d.err, fmt.Errorf("data does not start with '"))
 	}
 
 	// the data
-	if d.p[s].tok == COMMA {
+	switch {
+	case d.p[s].tok == COMMA:
 		data = ""
 		s++
+
 		return data, s
-	} else if d.p[s].tok != 3 {
+	case d.p[s].tok != IDENT:
 		d.err = append(d.err, fmt.Errorf("data is of another token type"))
 		s++
-	} else {
+	default:
 		// if the next token is whitespace add it
 		for {
 			if d.p[s].tok == SINGLE || d.p[s].tok == COMMA || d.p[s].tok == CLOSE {
 				break
 			}
-			data = data + d.p[s].val
+
+			data += d.p[s].val
 			s++
 		}
-		// data = d.p[s].val
 	}
+
 	// check if its a single quote check if it should be closing here and error if we shouldn't be closing
 	if d.p[s].tok == SINGLE {
 		if single {
@@ -176,12 +177,8 @@ func (d *decoder) readData(s int) (string, int) {
 }
 
 func (d *decoder) readInsertLine(s int) int {
-
-	fmt.Println(d.p[s+1])
-
-	// switch to make
-	switch {
-	case d.p[s+1].tok == SINGLE:
+	// if the token is a single quote
+	if d.p[s+1].tok == SINGLE {
 		return s
 	}
 
@@ -194,7 +191,7 @@ func (d *decoder) checkCreate(s int) int {
 	case "OBJ":
 		d.tableName = "OBJ"
 	default:
-		d.err = append(d.err, fmt.Errorf("table type %s not reconized yet", name))
+		d.err = append(d.err, fmt.Errorf("table type %s not recognized yet", name))
 		return s
 	}
 
@@ -216,22 +213,24 @@ forStart:
 			break forStart
 		}
 	}
+
 	if d.p[fs+4].tok != SEMICOLON {
 		d.err = append(d.err, fmt.Errorf("no semicolin at end of CREATE"))
 		return s
 	}
+
 	if d.p[fs+5].tok == CRLF {
 		return fs + 6
 	}
+
 	return s
 }
 
 func (d *decoder) checkInsert(s int) int {
 	name := d.p.getTable(s)
 	if name == "HEADER" {
-		// we don't care about the HEADER_DCT information so skip those
-		// Still validate them if they exist
-
+		// TODO: should validate
+		// get the heard information
 		if d.p.isInsert(s, "HEADER_DCT") {
 			// header row found so skip to next CRLF + 1
 			s = d.p.nextLine(s)
@@ -258,6 +257,7 @@ func (d *decoder) checkInsert(s int) int {
 	}
 
 	d.err = append(d.err, fmt.Errorf("table type for INSERT does not match CREATE"))
+
 	return s
 }
 
@@ -268,6 +268,7 @@ func (prsd parsed) nextCRLF(s int) int {
 			return i
 		}
 	}
+
 	return s
 }
 
@@ -291,6 +292,7 @@ func (prsd parsed) isInsert(s int, table string) bool {
 	case prsd[s+6].val != "VALUES":
 		return false
 	}
+
 	return true
 }
 
@@ -302,7 +304,6 @@ func (prsd parsed) getTable(s int) string {
 		return strgs[0][0 : len(strgs[0])-1]
 	case "CHG":
 		return strgs[0][0 : len(strgs[0])-1]
-
 	}
 
 	return "ERROR"

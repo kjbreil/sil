@@ -4,7 +4,6 @@ package silread
 type token int
 
 // the tokens to look for
-// TODO: shoudl add in INSERT and CREATE as tokens/types that hold the info on each line within
 const (
 	ILLEGAL token = iota
 	EOF

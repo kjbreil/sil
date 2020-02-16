@@ -26,15 +26,17 @@ func newParser(r io.Reader) *parser {
 }
 
 func (p *parser) parse() *parsed {
-
 	var prsd parsed
+
 	for {
 		pt := p.scan()
 		prsd = append(prsd, *pt)
+
 		if pt.tok == EOF {
 			break
 		}
 	}
+
 	return &prsd
 }
 
