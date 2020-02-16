@@ -39,10 +39,12 @@ func TestMake(t *testing.T) {
 		UPCCode: "9999",
 	})
 
-	// m["PRICE"] = Make("PRICE", loc.PRICE{})
-	// m["PRICE"].View.Data = append(m["PRICE"].View.Data, loc.PRICE{
-	// 	F01: "0000000009902",
-	// })
+	m.Make("PRICE", loc.PriceTab{})
+	ap := "31.50"
+	m.AppendView("PRICE", loc.PriceTab{
+		UPCCode:     "9087",
+		ActivePrice: &ap,
+	})
 
 	b, err := m.Marshal()
 	if err != nil {

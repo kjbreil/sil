@@ -14,7 +14,6 @@ type silTag struct {
 
 // getSilTag takes the StructField and returns a silTag pointer along with bool for padding
 func getSilTag(f *reflect.StructField) (*silTag, bool, error) {
-
 	st := silTag{
 		field: f,
 	}

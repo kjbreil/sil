@@ -22,7 +22,7 @@ const (
 	crlf = "\r\n"
 )
 
-// Make makes a sil file of the definiton (as struct) passed
+// Make makes a sil file of the definition (as struct) passed
 func Make(name string, definition interface{}) *SIL {
 	s := new(SIL)
 	// store the name of the table in the returned sil file
@@ -42,7 +42,6 @@ func (s *SIL) Marshal(include bool) (data []byte, err error) {
 	// get the multiple sections
 	secs, err := split(s.View.Data, include)
 	if err != nil {
-
 		return []byte{}, err
 	}
 	for _, sec := range secs {

@@ -186,14 +186,7 @@ func (d *decoder) readInsertLine(s int) int {
 }
 
 func (d *decoder) checkCreate(s int) int {
-	name := d.p.getTable(s)
-	switch name {
-	case "OBJ":
-		d.tableName = "OBJ"
-	default:
-		d.err = append(d.err, fmt.Errorf("table type %s not recognized yet", name))
-		return s
-	}
+	d.tableName = d.p.getTable(s)
 
 	// TODO: Check validity of CREATE statement
 

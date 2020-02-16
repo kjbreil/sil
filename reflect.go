@@ -12,7 +12,7 @@ type row struct {
 	elems []elem
 }
 
-// elem is the parts of the row containg the name of the field and the data
+// elem is the parts of the row containing the name of the field and the data
 // held within
 type elem struct {
 	name *string

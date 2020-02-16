@@ -37,7 +37,6 @@ func split(rows []interface{}, include bool) (map[string]section, error) {
 	}
 
 	return secs, nil
-
 }
 
 // create makes the sil structure for each section

@@ -82,9 +82,7 @@ func main() {
 			tf.Data = append(tf.Data, elem)
 		}
 		tf.write()
-
 	}
-
 }
 
 func name(n string) string {
@@ -100,7 +98,6 @@ func name(n string) string {
 		n = strings.TrimSuffix(n, "$") + "Dollar"
 	case "%":
 		n = strings.TrimSuffix(n, "%") + "Pct"
-
 	}
 
 	camel := strcase.ToCamel(n)
@@ -110,7 +107,6 @@ func name(n string) string {
 		return strings.ReplaceAll(camel, "Id", "ID")
 	case strings.Contains(camel, "Ttl"):
 		return strings.ReplaceAll(camel, "Ttl", "TTL")
-
 	}
 
 	return camel
@@ -191,10 +187,9 @@ func arguments(silCode string) []string {
 	}
 
 	return []string{}
-
 }
 
-// isRequired is very basic for now, should come from a seperate file
+// isRequired is very basic for now, should come from a separate file
 // really LOC should be using their required tag to make this easier since even
 // F01 does not contain it on a default install
 func isRequired(silCode string) bool {
@@ -229,7 +224,6 @@ func (tf *TypeFile) write() {
 	err := ioutil.WriteFile(filename, tf.marshal(), 0666)
 	if err != nil {
 		log.Fatalf("error writing file: %v", err)
-
 	}
 }
 
@@ -245,6 +239,5 @@ func hasDefault(silCode string) string {
 		return "NOW"
 	default:
 		return ""
-
 	}
 }

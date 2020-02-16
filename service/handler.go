@@ -26,11 +26,9 @@ type sucReturn struct {
 }
 
 func readBody(r *http.Request) []byte {
-
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
 		log.Panicf("error reading body: %v", err)
-
 	}
 	if err = r.Body.Close(); err != nil {
 		log.Panicf("error closing the body: %v", err)

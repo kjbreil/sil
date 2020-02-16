@@ -91,7 +91,7 @@ type PriceTab struct {
 	SalePriceMethod            *string `sil:"F146"`
 	SaleLimitedPriceQty        *string `sil:"F147"`
 	SaleLimitedPrice           *string `sil:"F148"`
-	ItemLinkCode               string  `sil:"F164"`
+	ItemLinkCode               *string `sil:"F164"`
 	AlternatePrice             *string `sil:"F166"`
 	AlternatePriceQuantity     *string `sil:"F167"`
 	SuggestedPrice             *string `sil:"F168"`

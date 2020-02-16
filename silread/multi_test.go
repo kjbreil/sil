@@ -13,8 +13,9 @@ func TestMulti(t *testing.T) {
 	tables := make(map[string]interface{})
 
 	var obj loc.ObjTab
-
 	tables["OBJ"] = &obj
+	var price loc.PriceTab
+	tables["PRICE"] = &price
 
 	m, err := Multi(filename, tables)
 	if err != nil {
