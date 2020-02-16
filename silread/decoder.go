@@ -43,6 +43,10 @@ func (prsd parsed) decode(s int) (*decoder, int) {
 // itendifyLine identifys and works on the line returning the i of the next line
 func (d *decoder) identifyLine(s int) int {
 
+	// if s == 164 {
+	// 	log.Println(d.p[s].tok)
+	// }
+
 	// done returns the same s that as passed, breaking the processing
 	if d.done {
 		return s

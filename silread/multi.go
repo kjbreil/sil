@@ -14,55 +14,64 @@ import (
 // first part of the SIL view table. for example a OBJ_CHG (CHG is hard coded
 // right now) would have a string OBJ_CHG
 func Multi(filename string, tables map[string]interface{}) (*sil.Multi, error) {
-
-	b, _ := ioutil.ReadFile("./examples/single.sil")
-
+	// make the sil multi object, make is used to create the map
 	m := make(sil.Multi)
 
-	// var robj loc.ObjTab
-
-	obj := tables["OBJ"]
-
-	// open a reader using the bytes as the start
-	// this can be improved to read directly from a file
-	r := bytes.NewReader(b)
-
-	// make a new parser with the reader
-	p := newParser(r)
-	// prsd is the parsed file token parts
-	prsd := p.parse()
-
-	d, _ := prsd.decode(0)
-	if len(d.err) > 0 {
-		err := fmt.Errorf("could not decode the parsed sil file: %v", d.err)
+	// #nosec
+	b, err := ioutil.ReadFile(filename)
+	if err != nil {
 		return &m, err
 	}
 
-	var fieldMap []int
+	r := bytes.NewReader(b)
 
-	for _, ef := range d.fcodes {
-		fieldIndex := findFieldIndex(ef, obj)
-		if fieldIndex == -1 {
-			err := fmt.Errorf("field %s does not exist in type definition", ef)
+	// prsd is the parsed file token parts
+	prsd := newParser(r).parse()
+
+	f := 0
+
+	for {
+		var d *decoder
+
+		d, f = prsd.decode(f)
+		if len(d.err) > 0 {
+			err := fmt.Errorf("could not decode the parsed sil file: %v", d.err)
 			return &m, err
 		}
 
-		fieldMap = append(fieldMap, fieldIndex)
+		if d.tableName == "" {
+			break
+		}
+
+		// get the object
+		tbl := tables[d.tableName]
+
+		var fieldMap []int
+
+		for _, ef := range d.fcodes {
+			fieldIndex := findFieldIndex(ef, tbl)
+			if fieldIndex == -1 {
+				err := fmt.Errorf("field %s does not exist in type definition", ef)
+				return &m, err
+			}
+
+			fieldMap = append(fieldMap, fieldIndex)
+		}
+
+		s, err := d.SIL(tbl, fieldMap)
+		if err != nil {
+			log.Println(err)
+		}
+
+		_, ok := m[d.tableName]
+		if !ok {
+			m.Make(d.tableName, tbl)
+		}
+
+		for _, ed := range s.View.Data {
+			m.AppendView(d.tableName, ed)
+		}
 	}
-
-	s, err := d.SIL(obj, fieldMap)
-	if err != nil {
-		log.Println(err)
-	}
-
-	m.Make("OBJ", obj)
-	m["OBJ"] = &s
-
-	// m.Make("TEST", robj)
-	// m["TEST"] = &s
-
-	// m.Make("TEST", &tobj)
-	// m["TEST"] = &s
 
 	return &m, nil
 }

@@ -8,7 +8,7 @@ import (
 )
 
 func TestMulti(t *testing.T) {
-	filename := "./examples/single.sil"
+	filename := "./examples/multi.sil"
 
 	tables := make(map[string]interface{})
 

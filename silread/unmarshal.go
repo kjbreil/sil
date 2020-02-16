@@ -1,3 +1,4 @@
+// silread reads sil files into SIL or Multi objects from the sil module
 package silread
 
 import (
@@ -46,6 +47,12 @@ func Unmarshal(b []byte, v interface{}) (s sil.SIL, err error) {
 }
 
 func (d *decoder) SIL(v interface{}, fieldMap []int) (s sil.SIL, err error) {
+
+	// if the fieldmap is 0 length then no data was read, probably empty lines
+	if len(fieldMap) == 0 {
+		err = fmt.Errorf("fieldMap was 0 when passed to SIL")
+		return
+	}
 
 	s.TableType = d.tableName
 	s.View.Name = d.tableName
