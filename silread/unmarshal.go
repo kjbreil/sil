@@ -177,6 +177,7 @@ func findFieldIndex(fcode string, v interface{}) int {
 	for i := 0; i < tp.NumField(); i++ {
 		field := tp.Field(i)
 		tag := getSilTag(&field)
+
 		if tag == fcode {
 			return i
 		}
