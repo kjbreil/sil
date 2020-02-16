@@ -10,7 +10,6 @@ import (
 func TestMulti(t *testing.T) {
 	filename := "./examples/multi.sil"
 
-	
 	tables := make(map[string]interface{})
 
 	var obj loc.ObjTab

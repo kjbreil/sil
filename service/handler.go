@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/kjbreil/go-loc/loc"
 	"github.com/kjbreil/sil"
-	"github.com/kjbreil/sil/loc"
 )
 
 type errReturn struct {

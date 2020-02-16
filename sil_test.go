@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kjbreil/sil/loc"
+	"github.com/kjbreil/go-loc/loc"
 )
 
 // OBJ will probably not work for an actual SIL file, this is for testing
