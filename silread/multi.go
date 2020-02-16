@@ -44,7 +44,10 @@ func Multi(filename string, tables map[string]interface{}) (*sil.Multi, error) {
 		}
 
 		// get the object
-		tbl := tables[d.tableName]
+		tbl, ok := tables[d.tableName]
+		if !ok {
+			return &m, fmt.Errorf("table not defined in tables %s", d.tableName)
+		}
 
 		var fieldMap []int
 
@@ -63,7 +66,7 @@ func Multi(filename string, tables map[string]interface{}) (*sil.Multi, error) {
 			log.Println(err)
 		}
 
-		_, ok := m[d.tableName]
+		_, ok = m[d.tableName]
 		if !ok {
 			m.Make(d.tableName, tbl)
 		}

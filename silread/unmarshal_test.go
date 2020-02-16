@@ -5,15 +5,13 @@ import (
 	"log"
 	"testing"
 
-	"github.com/kjbreil/sil/loc"
+	"github.com/kjbreil/go-loc/loc"
 )
 
 func TestUnmarshal(t *testing.T) {
 	var obj loc.ObjTab
 
 	b, _ := ioutil.ReadFile("./examples/single.sil")
-
-	// Unmarshal(b, &obj)
 
 	s, err := Unmarshal(b, &obj)
 	if err != nil {

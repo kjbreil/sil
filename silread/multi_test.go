@@ -4,12 +4,13 @@ import (
 	"log"
 	"testing"
 
-	"github.com/kjbreil/sil/loc"
+	"github.com/kjbreil/go-loc/loc"
 )
 
 func TestMulti(t *testing.T) {
 	filename := "./examples/multi.sil"
 
+	
 	tables := make(map[string]interface{})
 
 	var obj loc.ObjTab
