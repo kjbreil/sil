@@ -9,7 +9,6 @@ import (
 )
 
 func TestUnmarshal(t *testing.T) {
-
 	var obj loc.ObjTab
 
 	b, _ := ioutil.ReadFile("./examples/single.sil")

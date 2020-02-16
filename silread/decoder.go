@@ -11,17 +11,19 @@ type decoder struct {
 	fcodes    []string
 	tableName string
 	view      bool // has reached the view data so reading data from now on
+	done      bool // set when done with sil processing
 	header    []string
 	data      [][]string
 }
 
-func (prsd parsed) decode() *decoder {
+func (prsd parsed) decode(s int) (*decoder, int) {
 
 	// make a new decoder, put the parsed into it
 	var d decoder
 	d.p = prsd
 
-	var i int
+	// set i to the value passed as s
+	i := s
 
 	for {
 		ni := d.identifyLine(i)
@@ -35,11 +37,17 @@ func (prsd parsed) decode() *decoder {
 		i = ni
 	}
 
-	return &d
+	return &d, i
 }
 
 // itendifyLine identifys and works on the line returning the i of the next line
 func (d *decoder) identifyLine(s int) int {
+
+	// done returns the same s that as passed, breaking the processing
+	if d.done {
+		return s
+	}
+
 	// view has been reached, reading data
 	if d.view {
 		var lineData []string
@@ -99,7 +107,12 @@ func (d *decoder) readDataLine(s int, columns int) ([]string, int) {
 
 	// end of data grabbing
 	if d.p[s].tok == SEMICOLON {
+		// this set to false might not be needed...
 		d.view = false
+		if d.tableName != "" {
+			d.done = true
+		}
+		// this might cause an error unless there is a crlf after the semicolin...
 		s++
 		s++
 		return lineData, s

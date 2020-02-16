@@ -22,13 +22,11 @@ func Unmarshal(b []byte, v interface{}) (s sil.SIL, err error) {
 	// prsd is the parsed file token parts
 	prsd := p.parse()
 
-	d := prsd.decode()
+	d, _ := prsd.decode(0)
 	if len(d.err) > 0 {
-		err = fmt.Errorf("could not decode the parsed sil file: %v\n", d.err)
+		err = fmt.Errorf("could not decode the parsed sil file: %v", d.err)
 		return
 	}
-
-	// fmt.Println(d.data)
 
 	// fieldMap isn't really a map in the go sense but is where the Fcode is in the type
 	var fieldMap []int
@@ -39,6 +37,7 @@ func Unmarshal(b []byte, v interface{}) (s sil.SIL, err error) {
 			err = fmt.Errorf("field %s does not exist in type definition", ef)
 			return
 		}
+
 		fieldMap = append(fieldMap, fieldIndex)
 	}
 
@@ -53,7 +52,10 @@ func (d *decoder) SIL(v interface{}, fieldMap []int) (s sil.SIL, err error) {
 
 	for i := range d.data {
 
-		values := reflect.ValueOf(v).Elem()
+		values := reflect.ValueOf(v)
+		if values.Kind() == reflect.Ptr {
+			values = values.Elem()
+		}
 
 		for c := range d.data[i] {
 			if !values.Field(fieldMap[c]).CanSet() {
@@ -153,7 +155,12 @@ func (d *decoder) SIL(v interface{}, fieldMap []int) (s sil.SIL, err error) {
 }
 
 func findFieldIndex(fcode string, v interface{}) int {
-	tp := reflect.TypeOf(v).Elem()
+
+	tp := reflect.TypeOf(v)
+	if tp.Kind() == reflect.Ptr {
+		tp = tp.Elem()
+	}
+
 	for i := 0; i < tp.NumField(); i++ {
 		field := tp.Field(i)
 		tag := getSilTag(&field)
