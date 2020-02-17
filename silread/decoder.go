@@ -186,6 +186,11 @@ func (d *decoder) readInsertLine(s int) int {
 }
 
 func (d *decoder) checkCreate(s int) int {
+	// just trying to skip the table dct line
+	if d.p.getTable(s) == "DCT" {
+		return d.p.nextLine(s)
+	}
+
 	d.tableName = d.p.getTable(s)
 
 	// TODO: Check validity of CREATE statement
@@ -230,6 +235,9 @@ func (d *decoder) checkInsert(s int) int {
 			// since there was a header row there should be a single insert row, not doing much validation on it since LOC
 			// doesn't - just needs to be enclosed by () with a ; at the end
 			e := d.p.nextCRLF(s)
+			if d.p[s+2].val == "HC" {
+				return d.p.nextCRLF(s)
+			}
 			// TODO: Properly announce which token is wrong rather than current error
 			if d.p[s].tok != OPEN || d.p[e-2].tok != CLOSE || d.p[e-1].tok != SEMICOLON {
 				d.err = append(d.err, fmt.Errorf("row for HEADER invalid, got %s%s%s want \"();\"", d.p[s].val, d.p[e-2].val, d.p[e-1].val))
@@ -243,7 +251,7 @@ func (d *decoder) checkInsert(s int) int {
 		}
 	}
 
-	if d.p.isInsert(s, fmt.Sprintf("%s_CHG", d.tableName)) {
+	if d.p.isInsert(s, fmt.Sprintf("%s", d.tableName)) {
 		// the insert has been read and validated, time to read the data
 		d.view = true
 		return d.p.nextLine(s)
@@ -296,6 +304,8 @@ func (prsd parsed) getTable(s int) string {
 	case "DCT":
 		return strgs[0][0 : len(strgs[0])-1]
 	case "CHG":
+		return strgs[0][0 : len(strgs[0])-1]
+	case "RSP":
 		return strgs[0][0 : len(strgs[0])-1]
 	}
 

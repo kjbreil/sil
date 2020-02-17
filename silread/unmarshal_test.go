@@ -26,6 +26,24 @@ func TestUnmarshal(t *testing.T) {
 	t.Fail()
 }
 
+func TestUnmarshalHeaders(t *testing.T) {
+	var cll tables.CLL
+
+	b, _ := ioutil.ReadFile("./examples/with_header.sil")
+
+	s, err := Unmarshal(b, &cll)
+	if err != nil {
+		log.Println(err)
+	}
+
+	err = s.Write("test_h.sil", false, false)
+	if err != nil {
+		log.Println(err)
+	}
+
+	t.Fail()
+}
+
 // func TestFolder(t *testing.T) {
 
 // 	silFiles, err := ioutil.ReadDir("./examples")
