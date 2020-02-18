@@ -73,8 +73,12 @@ func (d *decoder) SIL(v interface{}, fieldMap []int) (s sil.SIL, err error) {
 					values.Field(fieldMap[c]).SetString(d.data[i][c])
 				case "int":
 					var dataInt int64
-					dataInt, err = strconv.ParseInt(d.data[i][c], 10, 64)
-
+					// for when the data is empty
+					if len(d.data[i][c]) == 0 {
+						dataInt = 0
+					} else {
+						dataInt, err = strconv.ParseInt(d.data[i][c], 10, 64)
+					}
 					if err != nil {
 						err = fmt.Errorf("conversion of data type int did not convert from %s err: %v", d.data[i][c], err)
 						return
@@ -89,8 +93,11 @@ func (d *decoder) SIL(v interface{}, fieldMap []int) (s sil.SIL, err error) {
 						values.Field(fieldMap[c]).Set(reflect.ValueOf(&data))
 					case "int":
 						var dataInt int
-						dataInt, err = strconv.Atoi(d.data[i][c])
-
+						if len(d.data[i][c]) == 0 {
+							dataInt = 0
+						} else {
+							dataInt, err = strconv.Atoi(d.data[i][c])
+						}
 						if err != nil {
 							err = fmt.Errorf("conversion of data type int did not convert from %s err: %v", d.data[i][c], err)
 							return
@@ -113,30 +120,25 @@ func (d *decoder) SIL(v interface{}, fieldMap []int) (s sil.SIL, err error) {
 	}
 
 	// get ints for ending and active date/times
-	endingDateInt, err := strconv.Atoi(d.header[6])
+	endingDateInt, err := stringToInt(d.header[6])
 	if err != nil {
-		err = fmt.Errorf("header ending date did not convert to int %s", d.header[6])
 		return
 	}
 
-	endingTimeInt, err := strconv.Atoi(d.header[7])
-
+	endingTimeInt, err := stringToInt(d.header[7])
 	if err != nil {
-		err = fmt.Errorf("header ending time did not convert to int %s", d.header[7])
 		return
 	}
 
-	activeDateInt, err := strconv.Atoi(d.header[8])
+	activeDateInt, err := stringToInt(d.header[8])
 
 	if err != nil {
-		err = fmt.Errorf("header active date did not convert to int %s", d.header[8])
 		return
 	}
 
-	activeTimeInt, err := strconv.Atoi(d.header[9])
+	activeTimeInt, err := stringToInt(d.header[9])
 
 	if err != nil {
-		err = fmt.Errorf("header active time did not convert to int %s", d.header[9])
 		return
 	}
 
@@ -197,4 +199,19 @@ func getSilTag(f *reflect.StructField) string {
 	}
 
 	return silTag[0]
+}
+
+func stringToInt(is string) (int, error) {
+
+	if len(is) == 0 {
+		return 0, nil
+	}
+
+	endingDateInt, err := strconv.Atoi(is)
+	if err != nil {
+		err = fmt.Errorf("header ending date did not convert to int %s", is)
+		return 0, err
+	}
+
+	return endingDateInt, nil
 }

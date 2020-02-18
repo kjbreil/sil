@@ -102,7 +102,7 @@ func (s *scanner) scanIdent() *part {
 	for {
 		if ch := s.read(); ch == eof {
 			break
-		} else if !isLetter(ch) && !isDigit(ch) && ch != '_' {
+		} else if !isLetter(ch) && !isDigit(ch) && !isIncludeSpecial(ch) {
 			s.unread()
 			break
 		} else {
@@ -114,6 +114,25 @@ func (s *scanner) scanIdent() *part {
 		tok: IDENT,
 		val: buf.String(),
 	}
+}
+
+func isIncludeSpecial(ch rune) bool {
+
+	switch ch {
+	case '_':
+		return true
+	case '.':
+		return true
+	case '+':
+		return true
+	case '/':
+		return true
+	case ':':
+		return true
+	default:
+		return false
+	}
+
 }
 
 // scanWhitespace consumes the current rune and all contiguous whitespace.

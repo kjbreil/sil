@@ -2,7 +2,6 @@ package silread
 
 import (
 	"io/ioutil"
-	"log"
 	"testing"
 
 	"github.com/kjbreil/sil/tables"
@@ -15,15 +14,14 @@ func TestUnmarshal(t *testing.T) {
 
 	s, err := Unmarshal(b, &obj)
 	if err != nil {
-		log.Println(err)
+		t.Fatal(err)
 	}
 
-	err = s.Write("test.sil", false, false)
+	_, err = s.Marshal(true)
 	if err != nil {
-		log.Println(err)
+		t.Fatal(err)
 	}
 
-	t.Fail()
 }
 
 func TestUnmarshalHeaders(t *testing.T) {
@@ -33,26 +31,11 @@ func TestUnmarshalHeaders(t *testing.T) {
 
 	s, err := Unmarshal(b, &cll)
 	if err != nil {
-		log.Println(err)
+		t.Fatal(err)
 	}
 
-	err = s.Write("test_h.sil", false, false)
+	_, err = s.Marshal(true)
 	if err != nil {
-		log.Println(err)
+		t.Fatal(err)
 	}
-
-	t.Fail()
 }
-
-// func TestFolder(t *testing.T) {
-
-// 	silFiles, err := ioutil.ReadDir("./examples")
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-
-// 	for _, eachFile := range silFiles {
-// 		b, _ := ioutil.ReadFile("./examples/single.sil")
-// 		Unmarshal(b, &obj)
-// 	}
-// }
