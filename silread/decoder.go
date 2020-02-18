@@ -149,6 +149,15 @@ func (d *decoder) readData(s int) (string, int) {
 		s++
 
 		return data, s
+	case d.p[s].tok == CLOSE:
+		return "", s
+	case d.p[s].tok == SINGLE && single:
+		s++
+		// unless the next token is a close then add another to s because there is another entry, if its the last it shouldn't double out
+		if d.p[s+1].tok != CLOSE {
+			s++
+		}
+		return "", s
 	case d.p[s].tok != IDENT:
 		d.err = append(d.err, fmt.Errorf("data is of another token type"))
 		s++
@@ -187,7 +196,7 @@ func (d *decoder) readInsertLine(s int) int {
 
 func (d *decoder) checkCreate(s int) int {
 	// just trying to skip the table dct line
-	if d.p.getTable(s) == "DCT" {
+	if d.p.getAction(s) == "DCT" {
 		return d.p.nextLine(s)
 	}
 
@@ -229,7 +238,7 @@ func (d *decoder) checkInsert(s int) int {
 	if name == "HEADER" {
 		// TODO: should validate
 		// get the heard information
-		if d.p.isInsert(s, "HEADER_DCT") {
+		if d.p.isInsert(s, "HEADER") {
 			// header row found so skip to next CRLF + 1
 			s = d.p.nextLine(s)
 			// since there was a header row there should be a single insert row, not doing much validation on it since LOC
@@ -245,13 +254,13 @@ func (d *decoder) checkInsert(s int) int {
 				return s
 			}
 
-			d.header, s = d.readDataLine(s, 21)
+			d.header, s = d.readDataLine(s, 22)
 
 			return s
 		}
 	}
 
-	if d.p.isInsert(s, fmt.Sprintf("%s", d.tableName)) {
+	if d.p.isInsert(s, name) {
 		// the insert has been read and validated, time to read the data
 		d.view = true
 		return d.p.nextLine(s)
@@ -286,10 +295,10 @@ func (prsd parsed) isInsert(s int, table string) bool {
 		return false
 	case prsd[s+2].val != "INTO":
 		return false
-	case !strings.Contains(prsd[s+4].val, table):
+	case !strings.EqualFold(prsd.getTable(s), table):
 		return false
-	case prsd[s+4].val != table:
-		return false
+	// case prsd[s+4].val != table:
+	// 	return false
 	case prsd[s+6].val != "VALUES":
 		return false
 	}
@@ -310,4 +319,12 @@ func (prsd parsed) getTable(s int) string {
 	}
 
 	return "ERROR"
+}
+
+func (prsd parsed) getAction(s int) (string, error) {
+	strgs := strings.SplitAfter(prsd[s+4].val, "_")
+	if len(strgs) != 2 {
+		return "", fmt.Errorf("table did not match table _ action naming: %s", prsd[s+4].val)
+	}
+	return strgs[1]
 }
