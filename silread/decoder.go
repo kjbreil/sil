@@ -196,7 +196,11 @@ func (d *decoder) readInsertLine(s int) int {
 
 func (d *decoder) checkCreate(s int) int {
 	// just trying to skip the table dct line
-	if d.p.getAction(s) == "DCT" {
+	action, err := d.p.getAction(s)
+	if err != nil {
+		d.err = append(d.err, err)
+	}
+	if action == "DCT" {
 		return d.p.nextLine(s)
 	}
 
@@ -326,5 +330,5 @@ func (prsd parsed) getAction(s int) (string, error) {
 	if len(strgs) != 2 {
 		return "", fmt.Errorf("table did not match table _ action naming: %s", prsd[s+4].val)
 	}
-	return strgs[1]
+	return strgs[1], nil
 }
