@@ -70,3 +70,23 @@ func TestSingle(t *testing.T) {
 		t.Fatalf("sil marshaling did not error when missing a required field")
 	}
 }
+
+func TestDoubleSingleQuote(t *testing.T) {
+	// First test is to make sure you get an error when missing a required non defaulted field
+
+	u := "960000000062"
+	var s SIL
+	s.View.Name = "PRICE"
+	s.View.Data = append(s.View.Data, tables.PRICE{
+		UPCCode: u,
+	})
+	_, err := s.Marshal(true)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = s.Write("test.sil", false, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
