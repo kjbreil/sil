@@ -80,6 +80,10 @@ func value(v reflect.Value, f reflect.StructField) (*string, *string, *bool, err
 		bytes = fmt.Sprintf("'%013v'", bytes[1:len(bytes)-1])
 	}
 
+	if pad && len(bytes) > 13 {
+		return nil, nil, nil, fmt.Errorf("padded field contains more than 13 characters %s", string(bytes))
+	}
+
 	return &bytes, &t.name, &pointer, nil
 }
 
