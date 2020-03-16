@@ -30,8 +30,7 @@ func (r *row) make(rowType interface{}, include bool) error {
 		}
 		switch {
 		case !*ptr && *val == "": // panic if its a required field without any data
-			// log.Panicf("the element %s does not contain any data and is required", *name)
-			return fmt.Errorf("the element %s does not contain any data and is required", *name)
+			return fmt.Errorf("the element %s does not contain any data and is required for table %s", *name, fields.Name())
 		case include && *ptr && *val == "":
 			var v string
 			r.elems = append(r.elems, elem{
