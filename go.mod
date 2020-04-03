@@ -8,4 +8,5 @@ require (
 	github.com/kardianos/service v1.0.0
 	github.com/kjbreil/go-loc v0.0.0-20200216182550-f52748e95e27
 	golang.org/x/sys v0.0.0-20191018095205-727590c5006e // indirect
+	golang.org/x/text v0.3.2
 )
