@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
+
+	"golang.org/x/text/encoding/charmap"
 )
 
 // SIL is the structure of a SIL file
@@ -57,6 +59,11 @@ func (s *SIL) Marshal(include bool) (data []byte, err error) {
 	}
 
 	data = append(data, s.Footer.bytes()...)
+
+	data, err = charmap.Windows1252.NewEncoder().Bytes(data)
+	if err != nil {
+		return []byte{}, fmt.Errorf("conversion to 1252 failed: %v", err)
+	}
 
 	return data, nil
 }
