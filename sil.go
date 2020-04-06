@@ -17,6 +17,7 @@ type SIL struct {
 	prefix int
 
 	TableType interface{}
+	Include   bool
 }
 
 // Some Constants
@@ -40,6 +41,10 @@ func (s *SIL) Marshal(include bool) (data []byte, err error) {
 	// check to make sure the view.Name has been set
 	if s.View.Name == "" {
 		return data, fmt.Errorf("view name not set")
+	}
+	// overwrite passed include with one on SIL object if its true
+	if !include {
+		include = s.Include
 	}
 	// get the multiple sections
 	secs, err := split(s.View.Data, include)
