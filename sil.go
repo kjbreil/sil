@@ -53,7 +53,9 @@ func (s *SIL) Marshal(include bool) (data []byte, err error) {
 	}
 	for _, sec := range secs {
 		// Create the Header insert
-		s.Header.Identifier = batchNum(s.prefix)
+		if s.Header.Identifier == "" {
+			s.Header.Identifier = batchNum(s.prefix)
+		}
 		if s.View.Action != "LOAD" {
 			data = append(data, s.Header.insert()...)
 			data = append(data, s.Header.row()...)
