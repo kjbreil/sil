@@ -75,12 +75,14 @@ func TestDoubleSingleQuote(t *testing.T) {
 	// First test is to make sure you get an error when missing a required non defaulted field
 
 	u := "960000000062"
+	ld := "test's"
 	var s SIL
-	s.View.Name = "PRICE"
-	s.View.Data = append(s.View.Data, tables.PRICE{
-		UPCCode: u,
+	s.View.Name = "OBJ"
+	s.View.Data = append(s.View.Data, tables.OBJ{
+		UPCCode:         u,
+		LongDescription: &ld,
 	})
-	_, err := s.Marshal(true)
+	_, err := s.Marshal(false)
 	if err != nil {
 		t.Fatal(err)
 	}

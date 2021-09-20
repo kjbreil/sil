@@ -132,7 +132,8 @@ func reflectString(v *reflect.Value, dt *string, hd *bool) string {
 		return ""
 
 	default:
-		return fmt.Sprintf("'%s'", v.String())
+		escaped := strings.ReplaceAll(v.String(), "'", "''")
+		return fmt.Sprintf("'%s'", escaped)
 	}
 }
 
