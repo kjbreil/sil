@@ -41,7 +41,7 @@ func (prsd parsed) decode(s int) (*decoder, int) {
 	return &d, i
 }
 
-// itendifyLine identifys and works on the line returning the i of the next line
+// itendifyLine identifies and works on the line returning the i of the next line
 func (d *decoder) identifyLine(s int) int {
 	// done returns the same s that as passed, breaking the processing
 	if d.done {

@@ -39,3 +39,20 @@ func TestUnmarshalHeaders(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestUnmarshalLoad(t *testing.T) {
+	var obj tables.OBJ
+
+	b, _ := ioutil.ReadFile("./examples/dss.sql")
+
+	s, err := Unmarshal(b, &obj)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.Marshal(true)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+}
