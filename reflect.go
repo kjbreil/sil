@@ -132,6 +132,8 @@ func reflectString(v *reflect.Value, dt *string, hd *bool) string {
 		return ""
 
 	default:
+		// escape single quotes.
+		// TODO: this should be a function to handle other escapes
 		escaped := strings.ReplaceAll(v.String(), "'", "''")
 		return fmt.Sprintf("'%s'", escaped)
 	}
