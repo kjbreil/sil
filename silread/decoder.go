@@ -75,6 +75,11 @@ func (d *decoder) identifyLine(s int) int {
 		return d.checkCreate(s)
 	}
 
+	// don't want line so read till CRLF
+	for d.p[s].tok != CRLF {
+		s++
+	}
+
 	return s
 }
 
@@ -121,6 +126,11 @@ func (d *decoder) readDataLine(s int, columns int) ([]string, int) {
 		return lineData, s
 	}
 
+	// advance a comma if it exists (doesn't seem to be strictly needed)
+	if d.p[s].tok == COMMA {
+		s++
+	}
+
 	// endline
 	if d.p[s].tok == CRLF {
 		s++
@@ -149,6 +159,7 @@ func (d *decoder) readData(s int) (string, int) {
 		s++
 
 		return data, s
+
 	case d.p[s].tok == CLOSE:
 		return "", s
 	case d.p[s].tok == SINGLE && single:
@@ -162,14 +173,22 @@ func (d *decoder) readData(s int) (string, int) {
 		d.err = append(d.err, fmt.Errorf("data is of another token type"))
 		s++
 	default:
+		var opens int
+
 		// if the next token is whitespace add it
 		for {
-			if d.p[s].tok == SINGLE || d.p[s].tok == COMMA || d.p[s].tok == CLOSE {
+			if opens == 0 && (d.p[s].tok == SINGLE || d.p[s].tok == COMMA) {
 				break
+			}
+			if d.p[s].tok == OPEN {
+				opens++
 			}
 
 			data += d.p[s].val
 			s++
+			if d.p[s].tok == CLOSE {
+				opens--
+			}
 		}
 	}
 
@@ -313,12 +332,14 @@ func (prsd parsed) isInsert(s int, table string) bool {
 // isInsert checks if a insert statement is valid, dct is the "table" to expect
 func (prsd parsed) getTable(s int) string {
 	strgs := strings.SplitAfter(prsd[s+4].val, "_")
-	switch strgs[1] {
+	switch strings.ToUpper(strgs[1]) {
 	case "DCT":
 		return strgs[0][0 : len(strgs[0])-1]
 	case "CHG":
 		return strgs[0][0 : len(strgs[0])-1]
 	case "RSP":
+		return strgs[0][0 : len(strgs[0])-1]
+	case "LOAD":
 		return strgs[0][0 : len(strgs[0])-1]
 	}
 

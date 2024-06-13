@@ -36,6 +36,14 @@ func Make(name string, definition interface{}) *SIL {
 	return s
 }
 
+func New(definition interface{}) *SIL {
+	s := new(SIL)
+	// store the name of the table in the returned sil file
+	rand.Seed(time.Now().UnixNano())
+	s.prefix = rand.Intn(100)
+	return s
+}
+
 // Marshal creates the SIL structure from the information in the SIL type
 func (s *SIL) Marshal(include bool) (data []byte, err error) {
 	// check to make sure the view.Name has been set

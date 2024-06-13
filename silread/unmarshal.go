@@ -8,12 +8,20 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-
-	"github.com/kjbreil/sil"
 )
 
 // Unmarshal SIL bytes into a interface{}
-func Unmarshal(b []byte, v interface{}) (s sil.SIL, err error) {
+func Unmarshal(b []byte, data any) (err error) {
+	if reflect.TypeOf(data).Kind() != reflect.Ptr {
+		err = fmt.Errorf("data needs to be a pointer to a slice")
+		return
+	}
+	// check if data is a slice
+	if reflect.TypeOf(data).Elem().Kind() != reflect.Slice {
+		err = fmt.Errorf("data is not a slice")
+		return
+	}
+
 	// open a reader using the bytes as the start
 	// this can be improved to read directly from a file
 	r := bytes.NewReader(b)
@@ -33,7 +41,7 @@ func Unmarshal(b []byte, v interface{}) (s sil.SIL, err error) {
 	var fieldMap []int
 
 	for _, ef := range d.fcodes {
-		fieldIndex := findFieldIndex(ef, v)
+		fieldIndex := findFieldIndex(ef, data)
 		if fieldIndex == -1 {
 			err = fmt.Errorf("field %s does not exist in type definition", ef)
 			return
@@ -42,21 +50,34 @@ func Unmarshal(b []byte, v interface{}) (s sil.SIL, err error) {
 		fieldMap = append(fieldMap, fieldIndex)
 	}
 
-	return d.SIL(v, fieldMap)
+	err = d.unmarshal(data, fieldMap)
+	if err != nil {
+		return err
+	}
+
+	return
 }
 
-func (d *decoder) SIL(v interface{}, fieldMap []int) (s sil.SIL, err error) {
+func (d *decoder) unmarshal(data any, fieldMap []int) (err error) {
 	// if the fieldmap is 0 length then no data was read, probably empty lines
 	if len(fieldMap) == 0 {
-		err = fmt.Errorf("fieldMap was 0 when passed to SIL")
+		err = fmt.Errorf("fieldMap is empty")
 		return
 	}
 
-	s.TableType = d.tableName
-	s.View.Name = d.tableName
+	var isPointerValue bool
+	tableType := reflect.TypeOf(data).Elem().Elem()
+	if tableType.Kind() == reflect.Ptr {
+		tableType = tableType.Elem()
+		isPointerValue = true
+	}
+
+	viewDataSlice := reflect.MakeSlice(reflect.TypeOf(data).Elem(), 0, len(d.data))
 
 	for i := range d.data {
-		values := reflect.ValueOf(v)
+		// create then new values of TableType to insert the data into
+		entry := reflect.New(tableType)
+		values := entry
 		if values.Kind() == reflect.Ptr {
 			values = values.Elem()
 		}
@@ -108,70 +129,35 @@ func (d *decoder) SIL(v interface{}, fieldMap []int) (s sil.SIL, err error) {
 				}
 			}
 		}
+		if isPointerValue {
+			viewDataSlice = reflect.Append(viewDataSlice, entry)
 
-		indirect := reflect.Indirect(reflect.ValueOf(v))
-		newIndirect := reflect.New(indirect.Type())
-		// set the value of newIndirect to the value of indirect which is inturn the value of v
-		newIndirect.Elem().Set(reflect.ValueOf(indirect.Interface()))
-		// set data to the elem() of the newIndirect (so direct)
-		data := newIndirect.Elem().Interface()
+		} else {
 
-		s.View.Data = append(s.View.Data, data)
+			viewDataSlice = reflect.Append(viewDataSlice, values)
+		}
 	}
 
-	// get ints for ending and active date/times
-	endingDateInt, err := stringToInt(d.header[6])
-	if err != nil {
-		return
-	}
+	viewDataValue := reflect.Indirect(reflect.ValueOf(data))
 
-	endingTimeInt, err := stringToInt(d.header[7])
-	if err != nil {
-		return
-	}
-
-	activeDateInt, err := stringToInt(d.header[8])
-
-	if err != nil {
-		return
-	}
-
-	activeTimeInt, err := stringToInt(d.header[9])
-
-	if err != nil {
-		return
-	}
-
-	s.Header = sil.Header{
-		Type:              d.header[0],
-		Identifier:        d.header[1],
-		Creator:           d.header[2],
-		Destination:       d.header[3],
-		AuditFile:         d.header[4],
-		ResponseFile:      d.header[5],
-		EndingDate:        endingDateInt,
-		EndingTime:        endingTimeInt,
-		ActiveDate:        activeDateInt,
-		ActiveTime:        activeTimeInt,
-		PurgeDate:         d.header[10],
-		ActionType:        d.header[11],
-		Description:       d.header[12],
-		UserOneState:      d.header[13],
-		MaximumErrorCount: d.header[14],
-		FileVersion:       d.header[15],
-		CreatorVersion:    d.header[16],
-		PrimaryKey:        d.header[17],
-		SpecificCommand:   d.header[18],
-		TagType:           d.header[19],
-		ExecutionPriority: d.header[20],
-		LongDescription:   "",
-	}
+	viewDataValue.Set(viewDataSlice)
+	fmt.Println(viewDataSlice.Interface())
+	fmt.Println(data)
+	fmt.Println("line")
 
 	return
 }
 
 func findFieldIndex(fcode string, v interface{}) int {
 	tp := reflect.TypeOf(v)
+	// walk down the first pointer
+	// TODO: These should return errors
+	if tp.Kind() == reflect.Ptr {
+		tp = tp.Elem()
+	}
+	// look into the slice
+	tp = tp.Elem()
+	// if its a pointer go into the pointer
 	if tp.Kind() == reflect.Ptr {
 		tp = tp.Elem()
 	}
