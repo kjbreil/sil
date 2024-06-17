@@ -24,7 +24,7 @@ func TestUnmarshalReader(t *testing.T) {
 func TestUnmarshalReaderChan(t *testing.T) {
 	priceChan := make(chan tables.PRICE, 100)
 
-	f, err := os.Open("./examples/Price_Load.sql")
+	f, err := os.Open("./examples/Price_Load_sm.sql")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -32,9 +32,11 @@ func TestUnmarshalReaderChan(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	for d := range priceChan {
-		fmt.Println(d)
+	var count int
+	for range priceChan {
+		count++
+		fmt.Println(count)
+		// time.Sleep(time.Millisecond * 1)
 	}
-
+	fmt.Println("here")
 }

@@ -50,6 +50,9 @@ func TestUnmarshalLoad(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if len(dss) != 4 {
+		t.Fatalf("expected dss length 4, got %d", len(dss))
+	}
 }
 
 func TestUnmarshalLocLoad(t *testing.T) {

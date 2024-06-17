@@ -1,14 +1,18 @@
 package silread
 
 import (
+	"context"
 	"io"
 	"reflect"
+	"time"
 )
 
 // parser does the actual parsing of bytes into sil type
 type parser struct {
-	s   *scanner
-	buf struct {
+	s      *scanner
+	ctx    context.Context
+	cancel context.CancelFunc
+	buf    struct {
 		pt part
 		n  int // buffer size (max=1)
 	}
@@ -36,6 +40,10 @@ func (p *parser) decodeChan(dataChan any) *decoder {
 	channel := reflect.ValueOf(dataChan)
 	channelType := reflect.TypeOf(dataChan).Elem()
 
+	defer func() {
+		channel.Close()
+	}()
+
 	for {
 		pt := p.scan()
 
@@ -53,24 +61,25 @@ func (p *parser) decodeChan(dataChan any) *decoder {
 
 			// if the view has been reached pop off anything from d.data and put on channel
 			if d.view {
-
 				for _, data := range d.data {
 					if len(d.fieldMap) == 0 {
 						ctI := reflect.New(channelType).Interface()
 						d.makeFieldMap(ctI)
 					}
 					dataV := reflect.New(channelType).Elem()
-					unmarshalValue(data, dataV, d.fieldMap)
-					channel.Send(dataV)
+					err := unmarshalValue(data, dataV, d.fieldMap)
+					if err != nil {
+						d.err = append(d.err, err)
+					} else {
+						channel.Send(dataV)
+					}
 				}
 				d.data = d.data[:0]
 			}
 		}
-
 		if pt.tok == EOF {
 			break
 		}
-
 	}
 
 	return &d
@@ -84,6 +93,7 @@ func (p *parser) decode() *decoder {
 	var i int
 
 	for {
+
 		pt := p.scan()
 
 		d.p = append(d.p, *pt)
@@ -137,4 +147,32 @@ func (p *parser) scan() (pt *part) {
 	p.buf.pt = *pt
 
 	return
+}
+
+func (p *parser) scanChan() chan *part {
+	ch := make(chan *part, 1000)
+	go func() {
+		ticker := time.NewTicker(time.Microsecond)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-p.ctx.Done():
+				return
+			case <-ticker.C:
+				if p.buf.n != 0 {
+					p.buf.n = 0
+					ch <- &p.buf.pt
+				}
+
+				// Otherwise read the next token from the scanner.
+				pt := p.s.scan()
+
+				// Save it to the buffer in case we unscan later.
+				p.buf.pt = *pt
+				ch <- pt
+			}
+		}
+	}()
+
+	return ch
 }
