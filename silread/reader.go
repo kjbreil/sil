@@ -16,9 +16,28 @@ func UnmarshalReader(r io.Reader, data any) error {
 	}
 
 	// make a new parser with the reader
-	p := newParser(r)
+	dataType := reflect.TypeOf(data).Elem().Elem()
 
-	p.decode()
+	// make a channel of the type for datatype
+	dataChan := reflect.MakeChan(reflect.ChanOf(reflect.BothDir, dataType), 100)
+
+	err := UnmarshalReaderChan(r, dataChan.Interface())
+	if err != nil {
+		return err
+	}
+	viewDataSlice := reflect.MakeSlice(reflect.SliceOf(dataType), 0, 0)
+
+	for {
+		v, ok := dataChan.Recv()
+		if !ok {
+			break
+		}
+		viewDataSlice = reflect.Append(viewDataSlice, v)
+	}
+
+	viewDataValue := reflect.Indirect(reflect.ValueOf(data))
+
+	viewDataValue.Set(viewDataSlice)
 
 	return nil
 }

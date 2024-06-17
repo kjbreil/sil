@@ -1,14 +1,13 @@
 package silread
 
 import (
-	"fmt"
 	"github.com/kjbreil/sil/tables"
 	"os"
 	"testing"
 )
 
 func TestUnmarshalReader(t *testing.T) {
-	var dss []*tables.PRICE
+	var dss []tables.PRICE
 
 	f, err := os.Open("./examples/Price_Load.sql")
 	if err != nil {
@@ -24,7 +23,7 @@ func TestUnmarshalReader(t *testing.T) {
 func TestUnmarshalReaderChan(t *testing.T) {
 	priceChan := make(chan tables.PRICE, 100)
 
-	f, err := os.Open("./examples/Price_Load_sm.sql")
+	f, err := os.Open("./examples/Price_Load.sql")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,8 +34,6 @@ func TestUnmarshalReaderChan(t *testing.T) {
 	var count int
 	for range priceChan {
 		count++
-		fmt.Println(count)
 		// time.Sleep(time.Millisecond * 1)
 	}
-	fmt.Println("here")
 }

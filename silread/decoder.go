@@ -6,15 +6,16 @@ import (
 )
 
 type decoder struct {
-	p         parsed
-	err       []error
-	fcodes    []string
-	fieldMap  []int
-	tableName string
-	view      bool // has reached the view data so reading data from now on
-	done      bool // set when done with sil processing
-	header    []string
-	data      [][]string
+	p            parsed
+	err          []error
+	fcodes       []string
+	fieldMap     []int
+	tableName    string
+	view         bool // has reached the view data so reading data from now on
+	headerInsert bool // has read header so next line is headerinfo
+	done         bool // set when done with sil processing
+	header       []string
+	data         [][]string
 }
 
 func newDecoder(p *parser) *decoder {
@@ -28,35 +29,28 @@ func (d *decoder) makeFieldMap(data any) {
 	}
 }
 
-func (prsd parsed) decode(s int) (*decoder, int) {
-	// make a new decoder, put the parsed into it
-	var d decoder
-	d.p = prsd
-
-	// set i to the value passed as s
-	i := s
-
-	for {
-		ni := d.identifyLine(i)
-		// if the new i matches the old i break out since processing failed
-		if ni == i {
-			break
-		}
-
-		if ni > len(d.p)-1 {
-			break
-		}
-
-		i = ni
-	}
-
-	return &d, i
-}
-
 // itendifyLine identifies and works on the line returning the i of the next line
 func (d *decoder) identifyLine(s int) int {
 	// done returns the same s that as passed, breaking the processing
 	if d.done {
+		return s
+	}
+
+	// if headerInsert has been reached, read the header
+	if d.headerInsert {
+		e := d.p.nextCRLF(s)
+		if d.p[s+2].val == "HC" {
+			return d.p.nextCRLF(s)
+		}
+		// TODO: Properly announce which token is wrong rather than current error
+		if d.p[s].tok != OPEN || d.p[e-2].tok != CLOSE || d.p[e-1].tok != SEMICOLON {
+			d.err = append(d.err, fmt.Errorf("row for HEADER invalid, got %s%s%s want \"();\"", d.p[s].val, d.p[e-2].val, d.p[e-1].val))
+			// since there was an error return s
+			return s
+		}
+
+		d.header, s = d.readDataLine(s, 22)
+		d.headerInsert = false
 		return s
 	}
 
@@ -126,8 +120,6 @@ func (d *decoder) readDataLine(s int, columns int) ([]string, int) {
 
 	// end of data grabbing
 	if d.p[s].tok == SEMICOLON {
-		// this set to false might not be needed...
-		d.view = false
 		if d.tableName != "" {
 			d.done = true
 		}
@@ -272,9 +264,11 @@ func (d *decoder) checkInsert(s int) int {
 	name := d.p.getTable(s)
 	if name == "HEADER" {
 		// TODO: should validate
-		// get the heard information
+		// get the hearder information
 		if d.p.isInsert(s, "HEADER") {
 			// header row found so skip to next CRLF + 1
+			d.headerInsert = true
+			return d.p.nextLine(s)
 			s = d.p.nextLine(s)
 			// since there was a header row there should be a single insert row, not doing much validation on it since LOC
 			// doesn't - just needs to be enclosed by () with a ; at the end

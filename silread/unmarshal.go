@@ -26,28 +26,28 @@ func Unmarshal(b []byte, data any) (err error) {
 	// this can be improved to read directly from a file
 	r := bytes.NewReader(b)
 
-	// make a new parser with the reader
-	p := newParser(r)
-	// prsd is the parsed file token parts
-	prsd := p.parse()
+	dataType := reflect.TypeOf(data).Elem().Elem()
 
-	d, _ := prsd.decode(0)
-	if len(d.err) > 0 {
-		err = fmt.Errorf("could not decode the parsed sil file: %v", d.err)
-		return
-	}
+	// make a channel of the type for datatype
+	dataChan := reflect.MakeChan(reflect.ChanOf(reflect.BothDir, dataType), 100)
 
-	// fieldMap isn't really a map in the go sense but is where the Fcode is in the type
-	var fieldMap []int
-
-	for _, ef := range d.fcodes {
-		fieldMap = append(fieldMap, findFieldIndex(ef, data))
-	}
-
-	err = d.unmarshal(data, fieldMap)
+	err = UnmarshalReaderChan(r, dataChan.Interface())
 	if err != nil {
 		return err
 	}
+	viewDataSlice := reflect.MakeSlice(reflect.SliceOf(dataType), 0, 0)
+
+	for {
+		v, ok := dataChan.Recv()
+		if !ok {
+			break
+		}
+		viewDataSlice = reflect.Append(viewDataSlice, v)
+	}
+
+	viewDataValue := reflect.Indirect(reflect.ValueOf(data))
+
+	viewDataValue.Set(viewDataSlice)
 
 	return
 }
@@ -113,93 +113,6 @@ func unmarshalValue(input []string, result reflect.Value, fieldMap []int) (err e
 			}
 		}
 	}
-
-	return
-}
-
-func (d *decoder) unmarshal(data any, fieldMap []int) (err error) {
-	// if the fieldmap is 0 length then no data was read, probably empty lines
-	if len(fieldMap) == 0 {
-		err = fmt.Errorf("fieldMap is empty")
-		return
-	}
-
-	var isPointerValue bool
-	tableType := reflect.TypeOf(data).Elem().Elem()
-	if tableType.Kind() == reflect.Ptr {
-		tableType = tableType.Elem()
-		isPointerValue = true
-	}
-
-	viewDataSlice := reflect.MakeSlice(reflect.TypeOf(data).Elem(), 0, len(d.data))
-
-	for i := range d.data {
-		// create then new values of TableType to insert the data into
-		entry := reflect.New(tableType)
-		values := entry
-		if values.Kind() == reflect.Ptr {
-			values = values.Elem()
-		}
-
-		for c := range d.data[i] {
-			if !values.Field(fieldMap[c]).CanSet() {
-				err = fmt.Errorf("cannot set field @%d named %s", i, values.Field(fieldMap[c]).Type().Name())
-				return
-			}
-
-			if values.Field(fieldMap[c]).CanSet() {
-				switch values.Field(fieldMap[c]).Type().Name() {
-				case "string":
-					values.Field(fieldMap[c]).SetString(d.data[i][c])
-				case "int":
-					var dataInt int64
-					// for when the data is empty
-					if len(d.data[i][c]) == 0 {
-						dataInt = 0
-					} else {
-						dataInt, err = strconv.ParseInt(d.data[i][c], 10, 64)
-					}
-					if err != nil {
-						err = fmt.Errorf("conversion of data type int did not convert from %s err: %v", d.data[i][c], err)
-						return
-					}
-
-					values.Field(fieldMap[c]).SetInt(dataInt)
-				default:
-					// probably a pointer
-					switch values.Field(fieldMap[c]).Type().Elem().Name() {
-					case "string":
-						data := d.data[i][c]
-						values.Field(fieldMap[c]).Set(reflect.ValueOf(&data))
-					case "int":
-						var dataInt int
-						if len(d.data[i][c]) == 0 {
-							dataInt = 0
-						} else {
-							dataInt, err = strconv.Atoi(d.data[i][c])
-						}
-						if err != nil {
-							err = fmt.Errorf("conversion of data type int did not convert from %s err: %v", d.data[i][c], err)
-							return
-						}
-
-						values.Field(fieldMap[c]).Set(reflect.ValueOf(&dataInt))
-					}
-				}
-			}
-		}
-		if isPointerValue {
-			viewDataSlice = reflect.Append(viewDataSlice, entry)
-
-		} else {
-
-			viewDataSlice = reflect.Append(viewDataSlice, values)
-		}
-	}
-
-	viewDataValue := reflect.Indirect(reflect.ValueOf(data))
-
-	viewDataValue.Set(viewDataSlice)
 
 	return
 }

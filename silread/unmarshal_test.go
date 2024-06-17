@@ -42,7 +42,7 @@ import (
 // }
 
 func TestUnmarshalLoad(t *testing.T) {
-	var dss []*tables.DSS
+	var dss []tables.DSS
 
 	b, _ := ioutil.ReadFile("./examples/dss.sql")
 
