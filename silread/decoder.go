@@ -9,11 +9,23 @@ type decoder struct {
 	p         parsed
 	err       []error
 	fcodes    []string
+	fieldMap  []int
 	tableName string
 	view      bool // has reached the view data so reading data from now on
 	done      bool // set when done with sil processing
 	header    []string
 	data      [][]string
+}
+
+func newDecoder(p *parser) *decoder {
+	return &decoder{}
+}
+
+func (d *decoder) makeFieldMap(data any) {
+	for _, ef := range d.fcodes {
+
+		d.fieldMap = append(d.fieldMap, findFieldIndex(ef, data))
+	}
 }
 
 func (prsd parsed) decode(s int) (*decoder, int) {

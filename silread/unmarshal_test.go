@@ -2,6 +2,7 @@ package silread
 
 import (
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/kjbreil/sil/tables"
@@ -44,6 +45,17 @@ func TestUnmarshalLoad(t *testing.T) {
 	var dss []*tables.DSS
 
 	b, _ := ioutil.ReadFile("./examples/dss.sql")
+
+	err := Unmarshal(b, &dss)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestUnmarshalLocLoad(t *testing.T) {
+	var dss []*tables.DSS
+
+	b, _ := os.ReadFile("./examples/Loc_Load.sql")
 
 	err := Unmarshal(b, &dss)
 	if err != nil {

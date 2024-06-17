@@ -41,18 +41,77 @@ func Unmarshal(b []byte, data any) (err error) {
 	var fieldMap []int
 
 	for _, ef := range d.fcodes {
-		fieldIndex := findFieldIndex(ef, data)
-		if fieldIndex == -1 {
-			err = fmt.Errorf("field %s does not exist in type definition", ef)
-			return
-		}
-
-		fieldMap = append(fieldMap, fieldIndex)
+		fieldMap = append(fieldMap, findFieldIndex(ef, data))
 	}
 
 	err = d.unmarshal(data, fieldMap)
 	if err != nil {
 		return err
+	}
+
+	return
+}
+
+func unmarshalValue(input []string, result reflect.Value, fieldMap []int) (err error) {
+	// if the fieldmap is 0 length then no data was read, probably empty lines
+	if len(fieldMap) == 0 {
+		err = fmt.Errorf("fieldMap is empty")
+		return
+	}
+
+	if result.Kind() == reflect.Ptr {
+		result = result.Elem()
+	}
+
+	for c := range input {
+		if fieldMap[c] == -1 {
+			continue
+		}
+		if !result.Field(fieldMap[c]).CanSet() {
+			err = fmt.Errorf("cannot set field @%d named %s", 1, result.Field(fieldMap[c]).Type().Name())
+			return
+		}
+
+		if result.Field(fieldMap[c]).CanSet() {
+			switch result.Field(fieldMap[c]).Type().Name() {
+			case "string":
+				result.Field(fieldMap[c]).SetString(input[c])
+			case "int":
+				var dataInt int64
+				// for when the data is empty
+				if len(input[c]) == 0 {
+					dataInt = 0
+				} else {
+					dataInt, err = strconv.ParseInt(input[c], 10, 64)
+				}
+				if err != nil {
+					err = fmt.Errorf("conversion of data type int did not convert from %s err: %v", input[c], err)
+					return
+				}
+
+				result.Field(fieldMap[c]).SetInt(dataInt)
+			default:
+				// probably a pointer
+				switch result.Field(fieldMap[c]).Type().Elem().Name() {
+				case "string":
+					data := input[c]
+					result.Field(fieldMap[c]).Set(reflect.ValueOf(&data))
+				case "int":
+					var dataInt int
+					if len(input[c]) == 0 {
+						dataInt = 0
+					} else {
+						dataInt, err = strconv.Atoi(input[c])
+					}
+					if err != nil {
+						err = fmt.Errorf("conversion of data type int did not convert from %s err: %v", input[c], err)
+						return
+					}
+
+					result.Field(fieldMap[c]).Set(reflect.ValueOf(&dataInt))
+				}
+			}
+		}
 	}
 
 	return
@@ -141,9 +200,6 @@ func (d *decoder) unmarshal(data any, fieldMap []int) (err error) {
 	viewDataValue := reflect.Indirect(reflect.ValueOf(data))
 
 	viewDataValue.Set(viewDataSlice)
-	fmt.Println(viewDataSlice.Interface())
-	fmt.Println(data)
-	fmt.Println("line")
 
 	return
 }
@@ -156,7 +212,9 @@ func findFieldIndex(fcode string, v interface{}) int {
 		tp = tp.Elem()
 	}
 	// look into the slice
-	tp = tp.Elem()
+	if tp.Kind() == reflect.Slice {
+		tp = tp.Elem()
+	}
 	// if its a pointer go into the pointer
 	if tp.Kind() == reflect.Ptr {
 		tp = tp.Elem()

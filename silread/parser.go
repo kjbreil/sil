@@ -2,6 +2,7 @@ package silread
 
 import (
 	"io"
+	"reflect"
 )
 
 // parser does the actual parsing of bytes into sil type
@@ -23,6 +24,88 @@ type part struct {
 // NewParser returns a new instance of Parser.
 func newParser(r io.Reader) *parser {
 	return &parser{s: newScanner(r)}
+}
+
+func (p *parser) decodeChan(dataChan any) *decoder {
+	var d decoder
+
+	readLines := int64(0)
+
+	var i int
+
+	channel := reflect.ValueOf(dataChan)
+	channelType := reflect.TypeOf(dataChan).Elem()
+
+	for {
+		pt := p.scan()
+
+		d.p = append(d.p, *pt)
+		if pt.tok == CRLF {
+			readLines++
+
+			ni := d.identifyLine(i)
+			// if the new i matches the old i break out since processing failed
+			if ni == i {
+				break
+			}
+			i = 0
+			d.p = d.p[:0]
+
+			// if the view has been reached pop off anything from d.data and put on channel
+			if d.view {
+
+				for _, data := range d.data {
+					if len(d.fieldMap) == 0 {
+						ctI := reflect.New(channelType).Interface()
+						d.makeFieldMap(ctI)
+					}
+					dataV := reflect.New(channelType).Elem()
+					unmarshalValue(data, dataV, d.fieldMap)
+					channel.Send(dataV)
+				}
+				d.data = d.data[:0]
+			}
+		}
+
+		if pt.tok == EOF {
+			break
+		}
+
+	}
+
+	return &d
+}
+
+func (p *parser) decode() *decoder {
+	var d decoder
+
+	readLines := int64(0)
+
+	var i int
+
+	for {
+		pt := p.scan()
+
+		d.p = append(d.p, *pt)
+		if pt.tok == CRLF {
+			readLines++
+
+			ni := d.identifyLine(i)
+			// if the new i matches the old i break out since processing failed
+			if ni == i {
+				break
+			}
+			i = 0
+			d.p = d.p[:0]
+		}
+
+		if pt.tok == EOF {
+			break
+		}
+
+	}
+
+	return &d
 }
 
 func (p *parser) parse() *parsed {
