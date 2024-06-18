@@ -154,7 +154,7 @@ func (s *scanner) scanWhitespace() *part {
 			s.unread()
 			break
 		} else {
-			_, err := buf.WriteRune(s.read())
+			_, err := buf.WriteRune(ch)
 			if err != nil {
 				log.Panicf("reading the character buffer faild %v", err)
 			}

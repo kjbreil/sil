@@ -150,9 +150,41 @@ func (d *decoder) readData(s int) (string, int) {
 
 	var data string
 
-	// if there is a single quote advance one and set single to be true
-	if d.p[s].tok == SINGLE {
-		single = true
+	var opens int
+
+	for {
+		// if in single just capture the data
+		if d.p[s].tok == SINGLE {
+			single = !single
+			// continue so we don't capture the quote
+			s++
+			continue
+		}
+		if single {
+			data += d.p[s].val
+		} else {
+			switch d.p[s].tok {
+			case OPEN:
+				opens++
+			case CLOSE:
+				opens--
+				if opens < 0 {
+					return data, s
+				}
+			case COMMA:
+				if opens == 0 {
+					// if there is no data built up advance to the next on return
+					if len(data) == 0 {
+						return data, s + 1
+					}
+					return data, s
+				}
+				data += d.p[s].val
+			default:
+				data += d.p[s].val
+			}
+		}
+
 		s++
 	}
 
@@ -184,20 +216,20 @@ func (d *decoder) readData(s int) (string, int) {
 			if opens == 0 && (d.p[s].tok == SINGLE || d.p[s].tok == COMMA) {
 				break
 			}
-			if d.p[s].tok == OPEN {
+			if d.p[s].tok == OPEN && !single {
 				opens++
 			}
 
 			data += d.p[s].val
 			s++
-			if d.p[s].tok == CLOSE {
+			if d.p[s].tok == CLOSE && !single {
 				opens--
 			}
 		}
 	}
 
 	// check if its a single quote check if it should be closing here and error if we shouldn't be closing
-	if d.p[s].tok == SINGLE {
+	if s < len(d.p) && d.p[s].tok == SINGLE {
 		if single {
 			s++
 		} else {
@@ -219,10 +251,8 @@ func (d *decoder) readInsertLine(s int) int {
 
 func (d *decoder) checkCreate(s int) int {
 	// just trying to skip the table dct line
-	action, err := d.p.getAction(s)
-	if err != nil {
-		d.err = append(d.err, err)
-	}
+	action := d.p.getAction(s)
+
 	if action == "DCT" {
 		return d.p.nextLine(s)
 	}
@@ -337,25 +367,22 @@ func (prsd parsed) isInsert(s int, table string) bool {
 
 // isInsert checks if a insert statement is valid, dct is the "table" to expect
 func (prsd parsed) getTable(s int) string {
-	strgs := strings.SplitAfter(prsd[s+4].val, "_")
-	switch strings.ToUpper(strgs[1]) {
-	case "DCT":
-		return strgs[0][0 : len(strgs[0])-1]
-	case "CHG":
-		return strgs[0][0 : len(strgs[0])-1]
-	case "RSP":
-		return strgs[0][0 : len(strgs[0])-1]
-	case "LOAD":
-		return strgs[0][0 : len(strgs[0])-1]
+	table, action := parseTable(prsd[s+4].val)
+	switch action {
+	case "DCT", "CHG", "RSP", "LOAD":
+		return table
+	default:
+		return "ERROR"
 	}
-
-	return "ERROR"
 }
 
-func (prsd parsed) getAction(s int) (string, error) {
-	strgs := strings.SplitAfter(prsd[s+4].val, "_")
-	if len(strgs) != 2 {
-		return "", fmt.Errorf("table did not match table _ action naming: %s", prsd[s+4].val)
-	}
-	return strgs[1], nil
+func parseTable(text string) (name string, action string) {
+	strgs := strings.Split(strings.ToUpper(text), "_")
+	return strings.Join(strgs[0:len(strgs)-1], "_"), strgs[len(strgs)-1]
+
+}
+
+func (prsd parsed) getAction(s int) string {
+	_, action := parseTable(prsd[s+4].val)
+	return action
 }

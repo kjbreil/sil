@@ -49,10 +49,9 @@ func GetStats(filename string) (Stats, error) {
 				s.DataLines++
 				d.data = d.data[:0]
 			}
-
-			if pt.tok == EOF {
-				break
-			}
+		}
+		if pt.tok == EOF {
+			break
 		}
 	}
 

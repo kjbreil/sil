@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Unmarshal SIL bytes into a interface{}
@@ -73,10 +74,11 @@ func unmarshalValue(input []string, result reflect.Value, fieldMap []int) (err e
 		}
 
 		if result.Field(fieldMap[c]).CanSet() {
-			switch result.Field(fieldMap[c]).Type().Name() {
-			case "string":
+			// switch result.Field(fieldMap[c]).Type().Name() {
+			switch result.Field(fieldMap[c]).Interface().(type) {
+			case string:
 				result.Field(fieldMap[c]).SetString(input[c])
-			case "int":
+			case int:
 				var dataInt int64
 				// for when the data is empty
 				if len(input[c]) == 0 {
@@ -90,6 +92,20 @@ func unmarshalValue(input []string, result reflect.Value, fieldMap []int) (err e
 				}
 
 				result.Field(fieldMap[c]).SetInt(dataInt)
+			case time.Time:
+				var err error
+				var t time.Time
+				if len(input[c]) == 0 {
+					continue
+				}
+				if len(input[c]) == 7 {
+					t, err = time.Parse("2006002", input[c][:7])
+				} else {
+					t, err = time.Parse("2006002 15:04:05", input[c][:16])
+				}
+				if err == nil {
+					result.Field(fieldMap[c]).Set(reflect.ValueOf(t))
+				}
 			default:
 				// probably a pointer
 				switch result.Field(fieldMap[c]).Type().Elem().Name() {
