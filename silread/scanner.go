@@ -70,8 +70,11 @@ func (s *scanner) scan() *part {
 			tok: CRLF,
 			val: "\r\n",
 		}
-	case '\n': // this should never be reached, all newlines need to have a carrage return before it
-		log.Fatalf("carrage return without newline\n")
+	case '\n': // reaching here means a newline without carriage return, detect as newline
+		return &part{
+			tok: CRLF,
+			val: "\r\n",
+		}
 	}
 
 	s.unread()
@@ -171,7 +174,7 @@ func (s *scanner) scanWhitespace() *part {
 func (s *scanner) unread() { _ = s.r.UnreadRune() }
 
 // isWhitespace returns true if the rune is a space, tab, or newline.
-func isWhitespace(ch rune) bool { return ch == ' ' || ch == '\t' || ch == '\n' }
+func isWhitespace(ch rune) bool { return ch == ' ' || ch == '\t' }
 
 // isLetter returns true if the rune is a letter.
 func isLetter(ch rune) bool { return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') }

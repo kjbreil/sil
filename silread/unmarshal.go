@@ -108,6 +108,11 @@ func unmarshalValue(input []string, result reflect.Value, fieldMap []int) (err e
 				}
 			default:
 				// probably a pointer
+				// TODO: Make better check for pointer because this freaks if type isn't found above
+				// if input[c] == "" then don't do anything
+				if input[c] == "" {
+					continue
+				}
 				switch result.Field(fieldMap[c]).Type().Elem().Name() {
 				case "string":
 					data := input[c]

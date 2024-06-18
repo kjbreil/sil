@@ -35,6 +35,7 @@ func (d *decoder) identifyLine(s int) int {
 	if d.done {
 		return s
 	}
+	var err error
 
 	// if headerInsert has been reached, read the header
 	if d.headerInsert {
@@ -49,7 +50,10 @@ func (d *decoder) identifyLine(s int) int {
 			return s
 		}
 
-		d.header, s = d.readDataLine(s, 22)
+		d.header, s, err = readDataLine(d.p, s, 22)
+		if err != nil {
+			d.err = append(d.err, err)
+		}
 		d.headerInsert = false
 		return s
 	}
@@ -57,7 +61,10 @@ func (d *decoder) identifyLine(s int) int {
 	// view has been reached, reading data
 	if d.view {
 		var lineData []string
-		lineData, s = d.readDataLine(s, len(d.fcodes))
+		lineData, s, err = readDataLine(d.p, s, len(d.fcodes))
+		if err != nil {
+			d.err = append(d.err, err)
+		}
 		d.data = append(d.data, lineData)
 
 		return s
@@ -89,63 +96,83 @@ func (d *decoder) identifyLine(s int) int {
 	return s
 }
 
-func (d *decoder) readDataLine(s int, columns int) ([]string, int) {
+type rowData []string
+
+func (r rowData) want() string {
+	var sb strings.Builder
+
+	sb.WriteString("[]string{")
+
+	for i := range r {
+		sb.WriteString("\"")
+		sb.WriteString(r[i])
+		sb.WriteString("\"")
+		if i != len(r)-1 {
+			sb.WriteString(", ")
+		}
+	}
+	sb.WriteString("}")
+
+	return sb.String()
+}
+
+func readDataLine(p parsed, s int, columns int) (rowData, int, error) {
 	var lineData []string
 
 	// read the first semicolin
-	if d.p[s].tok != OPEN {
-		d.err = append(d.err, fmt.Errorf("data does not start with ("))
+	if p[s].tok != OPEN {
+		return lineData, s, fmt.Errorf("data does not start with (")
 	}
 	s++
 	// the number of columns should equal the number of fcodes
 
 	for i := 0; i < columns; i++ {
 		var data string
-		data, s = d.readData(s)
+		data, s = readData(p, s)
 
-		if d.p[s].tok != COMMA && i != columns-1 && data != "" {
-			d.err = append(d.err, fmt.Errorf("data does not end with ,"))
-		} else if d.p[s].tok == COMMA && data != "" {
+		if p[s].tok != COMMA && i != columns-1 && data != "" {
+			return lineData, s, fmt.Errorf("data does not end with,")
+		} else if p[s].tok == COMMA && data != "" {
 			s++
 		}
 
 		lineData = append(lineData, data)
 	}
 
-	if d.p[s].tok == CLOSE {
+	if p[s].tok == CLOSE {
 		s++
 	} else {
-		d.err = append(d.err, fmt.Errorf("data does not end with )"))
+		return lineData, s, fmt.Errorf("data does not end with )")
 	}
 
 	// end of data grabbing
-	if d.p[s].tok == SEMICOLON {
-		if d.tableName != "" {
-			d.done = true
-		}
+	if p[s].tok == SEMICOLON {
+		// if d.tableName != "" {
+		// 	d.done = true
+		// }
 		// this might cause an error unless there is a crlf after the semicolin...
 		s++
 		s++
 
-		return lineData, s
+		return lineData, s, nil
 	}
 
 	// advance a comma if it exists (doesn't seem to be strictly needed)
-	if d.p[s].tok == COMMA {
+	if p[s].tok == COMMA {
 		s++
 	}
 
 	// endline
-	if d.p[s].tok == CRLF {
+	if p[s].tok == CRLF {
 		s++
 	} else {
-		d.err = append(d.err, fmt.Errorf("no endline at end of data"))
+		return lineData, s, fmt.Errorf("no endline at end of data")
 	}
 
-	return lineData, s
+	return lineData, s, nil
 }
 
-func (d *decoder) readData(s int) (string, int) {
+func readData(p parsed, s int) (string, int) {
 	var single bool
 
 	var data string
@@ -154,16 +181,23 @@ func (d *decoder) readData(s int) (string, int) {
 
 	for {
 		// if in single just capture the data
-		if d.p[s].tok == SINGLE {
+		if p[s].tok == SINGLE {
 			single = !single
 			// continue so we don't capture the quote
 			s++
+			// check if next is another single quote add the two single quotes
+			// this works for inside a quote and also when just two quotes in a field
+			if p[s].tok == SINGLE {
+				s++
+				single = !single
+				data += "''"
+			}
 			continue
 		}
 		if single {
-			data += d.p[s].val
+			data += p[s].val
 		} else {
-			switch d.p[s].tok {
+			switch p[s].tok {
 			case OPEN:
 				opens++
 			case CLOSE:
@@ -179,65 +213,14 @@ func (d *decoder) readData(s int) (string, int) {
 					}
 					return data, s
 				}
-				data += d.p[s].val
+				data += p[s].val
 			default:
-				data += d.p[s].val
+				data += p[s].val
 			}
 		}
 
 		s++
 	}
-
-	// the data
-	switch {
-	case d.p[s].tok == COMMA:
-		data = ""
-		s++
-
-		return data, s
-
-	case d.p[s].tok == CLOSE:
-		return "", s
-	case d.p[s].tok == SINGLE && single:
-		s++
-		// unless the next token is a close then add another to s because there is another entry, if its the last it shouldn't double out
-		if d.p[s+1].tok != CLOSE {
-			s++
-		}
-		return "", s
-	case d.p[s].tok != IDENT:
-		d.err = append(d.err, fmt.Errorf("data is of another token type"))
-		s++
-	default:
-		var opens int
-
-		// if the next token is whitespace add it
-		for {
-			if opens == 0 && (d.p[s].tok == SINGLE || d.p[s].tok == COMMA) {
-				break
-			}
-			if d.p[s].tok == OPEN && !single {
-				opens++
-			}
-
-			data += d.p[s].val
-			s++
-			if d.p[s].tok == CLOSE && !single {
-				opens--
-			}
-		}
-	}
-
-	// check if its a single quote check if it should be closing here and error if we shouldn't be closing
-	if s < len(d.p) && d.p[s].tok == SINGLE {
-		if single {
-			s++
-		} else {
-			d.err = append(d.err, fmt.Errorf("data ends with ' but did not start with one"))
-		}
-	}
-
-	return data, s
 }
 
 func (d *decoder) readInsertLine(s int) int {
@@ -299,23 +282,6 @@ func (d *decoder) checkInsert(s int) int {
 			// header row found so skip to next CRLF + 1
 			d.headerInsert = true
 			return d.p.nextLine(s)
-			s = d.p.nextLine(s)
-			// since there was a header row there should be a single insert row, not doing much validation on it since LOC
-			// doesn't - just needs to be enclosed by () with a ; at the end
-			e := d.p.nextCRLF(s)
-			if d.p[s+2].val == "HC" {
-				return d.p.nextCRLF(s)
-			}
-			// TODO: Properly announce which token is wrong rather than current error
-			if d.p[s].tok != OPEN || d.p[e-2].tok != CLOSE || d.p[e-1].tok != SEMICOLON {
-				d.err = append(d.err, fmt.Errorf("row for HEADER invalid, got %s%s%s want \"();\"", d.p[s].val, d.p[e-2].val, d.p[e-1].val))
-				// since there was an error return s
-				return s
-			}
-
-			d.header, s = d.readDataLine(s, 22)
-
-			return s
 		}
 	}
 
