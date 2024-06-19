@@ -180,24 +180,31 @@ func readData(p parsed, s int) (string, int) {
 	var opens int
 
 	for {
-		// if in single just capture the data
-		if p[s].tok == SINGLE {
-			single = !single
-			// continue so we don't capture the quote
-			s++
-			// check if next is another single quote add the two single quotes
-			// this works for inside a quote and also when just two quotes in a field
-			if p[s].tok == SINGLE {
-				s++
-				single = !single
-				data += "''"
-			}
-			continue
-		}
 		if single {
-			data += p[s].val
+			if p[s].tok == SINGLE {
+				single = !single
+				// check if the next is another single quote, add a single single quote instead of two (Because it was
+				// escaped)
+				if p[s+1].tok == SINGLE {
+					s++
+					single = !single
+					data += "''"
+				}
+			} else {
+				data += p[s].val
+			}
+
 		} else {
 			switch p[s].tok {
+			case SINGLE:
+				single = !single
+				// check if next is a single quote, and capture a double single quote (since we are not already in
+				// single quotes)
+				if p[s+1].tok == SINGLE {
+					s++
+					single = !single
+					data += "''"
+				}
 			case OPEN:
 				opens++
 			case CLOSE:

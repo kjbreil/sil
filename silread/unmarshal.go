@@ -53,7 +53,7 @@ func Unmarshal(b []byte, data any) (err error) {
 	return
 }
 
-func unmarshalValue(input []string, result reflect.Value, fieldMap []int) (err error) {
+func unmarshalValues(input []string, result reflect.Value, fieldMap []int) (err error) {
 	// if the fieldmap is 0 length then no data was read, probably empty lines
 	if len(fieldMap) == 0 {
 		err = fmt.Errorf("fieldMap is empty")
@@ -73,69 +73,155 @@ func unmarshalValue(input []string, result reflect.Value, fieldMap []int) (err e
 			return
 		}
 
+		if input[c] == "" {
+			continue
+		}
+
 		if result.Field(fieldMap[c]).CanSet() {
-			// switch result.Field(fieldMap[c]).Type().Name() {
-			switch result.Field(fieldMap[c]).Interface().(type) {
-			case string:
-				result.Field(fieldMap[c]).SetString(input[c])
-			case int:
-				var dataInt int64
-				// for when the data is empty
-				if len(input[c]) == 0 {
-					dataInt = 0
-				} else {
-					dataInt, err = strconv.ParseInt(input[c], 10, 64)
-				}
-				if err != nil {
-					err = fmt.Errorf("conversion of data type int did not convert from %s err: %v", input[c], err)
-					return
-				}
-
-				result.Field(fieldMap[c]).SetInt(dataInt)
-			case time.Time:
-				var err error
-				var t time.Time
-				if len(input[c]) == 0 {
-					continue
-				}
-				if len(input[c]) == 7 {
-					t, err = time.Parse("2006002", input[c][:7])
-				} else {
-					t, err = time.Parse("2006002 15:04:05", input[c][:16])
-				}
-				if err == nil {
-					result.Field(fieldMap[c]).Set(reflect.ValueOf(t))
-				}
-			default:
-				// probably a pointer
-				// TODO: Make better check for pointer because this freaks if type isn't found above
-				// if input[c] == "" then don't do anything
-				if input[c] == "" {
-					continue
-				}
-				switch result.Field(fieldMap[c]).Type().Elem().Name() {
-				case "string":
-					data := input[c]
-					result.Field(fieldMap[c]).Set(reflect.ValueOf(&data))
-				case "int":
-					var dataInt int
-					if len(input[c]) == 0 {
-						dataInt = 0
-					} else {
-						dataInt, err = strconv.Atoi(input[c])
-					}
-					if err != nil {
-						err = fmt.Errorf("conversion of data type int did not convert from %s err: %v", input[c], err)
-						return
-					}
-
-					result.Field(fieldMap[c]).Set(reflect.ValueOf(&dataInt))
-				}
+			err = unmarshalValue(result.Field(fieldMap[c]), input[c])
+			if err != nil {
+				return err
 			}
 		}
 	}
 
 	return
+}
+
+func unmarshalValue(value reflect.Value, input string) error {
+	var err error
+	if !value.CanSet() {
+		panic(fmt.Sprintf("cannot set"))
+	}
+	kind := value.Kind()
+	setValue := value
+
+	if kind == reflect.Interface {
+		kind = value.Elem().Kind()
+	}
+
+	if kind == reflect.Ptr {
+		if !value.Elem().IsValid() || value.Elem().IsNil() {
+			var t reflect.Type
+			if value.Kind() != reflect.Interface {
+				t = value.Type().Elem()
+			} else {
+				t = value.Elem().Type().Elem()
+			}
+			setValue.Set(reflect.New(t))
+			kind = t.Kind()
+			if value.Kind() != reflect.Interface {
+				setValue = setValue.Elem()
+			}
+		} else {
+
+			kind = value.Elem().Kind()
+		}
+	}
+
+	if value.Kind() == reflect.Interface {
+		value = value.Elem()
+	}
+
+	switch kind {
+	case reflect.String:
+		setValue.Set(reflect.ValueOf(input))
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		var dataInt int64
+		if len(input) == 0 {
+			dataInt = 0
+		} else {
+			dataInt, err = strconv.ParseInt(input, 10, 64)
+		}
+		if err != nil {
+			return fmt.Errorf("conversion of data type int did not convert from %s err: %v", input, err)
+		}
+		setValue.SetInt(dataInt)
+	case reflect.Struct:
+		switch setValue.Interface().(type) {
+		case time.Time:
+			var err error
+			var t time.Time
+			if len(input) == 0 {
+				return nil
+			}
+			if len(input) == 7 {
+				t, err = time.Parse("2006002", input[:7])
+			} else {
+				t, err = time.Parse("2006002 15:04:05", input[:16])
+			}
+			if err == nil {
+				setValue.Set(reflect.ValueOf(t))
+			}
+		}
+	}
+
+	return nil
+	switch value.Interface().(type) {
+	case string:
+		value.SetString(input)
+	case *string:
+		data := input
+		value.Set(reflect.ValueOf(&data))
+	case int:
+		var dataInt int64
+		// for when the data is empty
+		if len(input) == 0 {
+			dataInt = 0
+		} else {
+			dataInt, err = strconv.ParseInt(input, 10, 64)
+		}
+		if err != nil {
+			return fmt.Errorf("conversion of data type int did not convert from %s err: %v", input, err)
+		}
+
+		value.SetInt(dataInt)
+	case *int:
+		var dataInt int
+		if len(input) == 0 {
+			dataInt = 0
+		} else {
+			dataInt, err = strconv.Atoi(input)
+		}
+		if err != nil {
+			return fmt.Errorf("conversion of data type int did not convert from %s err: %v", input, err)
+		}
+
+		value.Set(reflect.ValueOf(&dataInt))
+	case time.Time:
+		var err error
+		var t time.Time
+		if len(input) == 0 {
+			return nil
+		}
+		if len(input) == 7 {
+			t, err = time.Parse("2006002", input[:7])
+		} else {
+			t, err = time.Parse("2006002 15:04:05", input[:16])
+		}
+		if err == nil {
+			value.Set(reflect.ValueOf(t))
+		}
+	case *time.Time:
+		var err error
+		var t time.Time
+		if len(input) == 0 {
+			return nil
+		}
+		if len(input) == 7 {
+			t, err = time.Parse("2006002", input[:7])
+		} else {
+			t, err = time.Parse("2006002 15:04:05", input[:16])
+		}
+		if err == nil {
+			value.Set(reflect.ValueOf(&t))
+		}
+	default:
+		// default is unhandled situation - error out
+		return fmt.Errorf("unhandled type %s", value.Type().Name())
+	}
+
+	return nil
 }
 
 func findFieldIndex(fcode string, v interface{}) int {
