@@ -189,6 +189,23 @@ func Test_unmarshalValue(t *testing.T) {
 				t:     int(0),
 				input: "123",
 			},
+			want: 123,
+		},
+		{
+			name: "default int",
+			args: args{
+				t:     ptr(0),
+				input: "0",
+			},
+			want: 0,
+		},
+		{
+			name: "unhandled type",
+			args: args{
+				t:     complex(3, -5),
+				input: "123",
+			},
+			wantErr: true,
 		},
 		{
 			name: "ptr string",
@@ -224,8 +241,12 @@ func Test_unmarshalValue(t *testing.T) {
 				ty = v.Elem().Type()
 			}
 			newValue := reflect.New(ty).Elem()
-			if err := unmarshalValue(newValue, tt.args.input); (err != nil) != tt.wantErr {
+			err := unmarshalValue(newValue, tt.args.input)
+			if (err != nil) != tt.wantErr {
 				t.Errorf("unmarshalValue() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if tt.wantErr && err != nil {
+				return
 			}
 			v.Set(newValue)
 			if tt.want != nil {
