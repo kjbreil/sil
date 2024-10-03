@@ -2,9 +2,58 @@ package silread
 
 import (
 	"fmt"
+	"github.com/kjbreil/loc-macro/pkg/script"
 	"io"
 	"reflect"
 )
+
+type Reader struct {
+	r io.ReadSeekCloser
+	Stats
+
+	p      *parser
+	macros script.Script
+}
+
+func NewReader(rs io.ReadSeekCloser) (*Reader, error) {
+	r := &Reader{
+		r: rs,
+	}
+	var err error
+
+	// initialize the parser with the reader
+	r.p = newParser(r.r)
+
+	// get the stats from the file
+	err = r.newStatsFromReader()
+	if err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
+
+func NewReaderOnly(rs io.ReadSeekCloser, validTables []string) (*Reader, error) {
+	r := &Reader{
+		r: rs,
+	}
+	var err error
+
+	// initialize the parser with the reader
+	r.p = newParser(r.r)
+
+	// get the stats from the file
+	err = r.newStatsFromReaderOnly(validTables)
+	if err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
+
+func (r *Reader) ClearReader() {
+	r.r = nil
+}
 
 func UnmarshalReader(r io.Reader, data any) error {
 	if reflect.TypeOf(data).Kind() != reflect.Ptr {
@@ -53,4 +102,29 @@ func UnmarshalReaderChan(r io.Reader, dataChan any) error {
 	go p.decodeChan(dataChan)
 
 	return nil
+}
+
+func (r *Reader) UnmarshalReaderChan(dataChan any) error {
+	if reflect.TypeOf(dataChan).Kind() != reflect.Chan {
+		return fmt.Errorf("data needs to be a channel")
+	}
+	_, err := r.r.Seek(0, 0)
+	if err != nil {
+		return err
+	}
+
+	// make a new parser with the reader
+	p := newParser(r.r)
+
+	go p.decodeChan(dataChan)
+
+	return nil
+}
+
+func (r *Reader) Type() io.ReadSeeker {
+	return r.r
+}
+
+func (r *Reader) Close() error {
+	return r.r.Close()
 }

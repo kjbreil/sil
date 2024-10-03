@@ -3,6 +3,7 @@ package silread
 import (
 	"io"
 	"reflect"
+	"strings"
 )
 
 // parser does the actual parsing of bytes into sil type
@@ -15,6 +16,13 @@ type parser struct {
 }
 
 type parsed []part
+
+func (prsd parsed) stringBuilder(sb *strings.Builder, s int, end int) {
+	for i := s; i < end; i++ {
+		sb.WriteString(prsd[i].val)
+	}
+	return
+}
 
 type part struct {
 	tok token
@@ -108,4 +116,9 @@ func (p *parser) scan() (pt *part) {
 	p.buf.pt = *pt
 
 	return
+}
+
+func (p *parser) advanceTo(tok token) {
+	for p.scan().tok != tok {
+	}
 }

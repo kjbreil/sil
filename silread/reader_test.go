@@ -37,3 +37,14 @@ func TestUnmarshalReaderChan(t *testing.T) {
 		// time.Sleep(time.Millisecond * 1)
 	}
 }
+
+func TestNewReader(t *testing.T) {
+	r, err := NewReader("./examples/price_load.sql")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if r.DataLines != 4 {
+		t.Fatalf("expected 4 data lines, got %d", r.DataLines)
+	}
+}

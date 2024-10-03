@@ -1,6 +1,7 @@
 package silread
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -13,13 +14,16 @@ type decoder struct {
 	tableName    string
 	view         bool // has reached the view data so reading data from now on
 	headerInsert bool // has read header so next line is headerinfo
-	done         bool // set when done with sil processing
 	header       []string
 	data         [][]string
+
+	macroStrings *strings.Builder
 }
 
-func newDecoder(p *parser) *decoder {
-	return &decoder{}
+func newDecoder() *decoder {
+	return &decoder{
+		macroStrings: &strings.Builder{},
+	}
 }
 
 func (d *decoder) makeFieldMap(data any) {
@@ -31,10 +35,6 @@ func (d *decoder) makeFieldMap(data any) {
 
 // itendifyLine identifies and works on the line returning the i of the next line
 func (d *decoder) identifyLine(s int) int {
-	// done returns the same s that as passed, breaking the processing
-	if d.done {
-		return s
-	}
 	var err error
 
 	// if headerInsert has been reached, read the header
@@ -303,6 +303,14 @@ func (d *decoder) checkInsert(s int) int {
 	return s
 }
 
+func (d *decoder) processMacro(s int) int {
+	// capture line to see if macro comes back without an error
+	lineEnd := d.p.nextCRLF(s)
+	d.p.stringBuilder(d.macroStrings, s, lineEnd)
+
+	return lineEnd
+}
+
 // nextCRLF returns the the i of the next CRLF
 func (prsd parsed) nextCRLF(s int) int {
 	for i := s; i <= len(prsd); i++ {
@@ -358,4 +366,34 @@ func parseTable(text string) (name string, action string) {
 func (prsd parsed) getAction(s int) string {
 	_, action := parseTable(prsd[s+4].val)
 	return action
+}
+
+func (prsd parsed) getCreate(s int) (action, tableName string, fcodes []string, err error) {
+	// just trying to skip the table dct line
+	action = prsd.getAction(s)
+
+	tableName = prsd.getTable(s)
+
+	fs := s + 10
+	// loop until a whitespace record is found
+forStart:
+	for {
+		fcodes = append(fcodes, prsd[fs].val)
+		fs++
+		switch prsd[fs].tok {
+		case WS:
+			break forStart
+		case COMMA:
+			fs++
+		default:
+			err = errors.Join(err, fmt.Errorf("f code parsing error"))
+			break forStart
+		}
+	}
+
+	if prsd[fs+4].tok != SEMICOLON {
+		err = errors.Join(err, fmt.Errorf("no semicolin at end of CREATE"))
+
+	}
+	return
 }

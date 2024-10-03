@@ -5,7 +5,7 @@ import (
 )
 
 func TestGetStats(t *testing.T) {
-	s, err := GetStats("./examples/dss.sql")
+	s, err := GetStats("./examples/price_load.sql")
 	if err != nil {
 		t.Fatal(err)
 	}
