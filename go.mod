@@ -17,9 +17,9 @@ require (
 )
 
 replace (
-	github.com/kjbreil/glsp => /Users/kjell/dev/glsp
-	github.com/kjbreil/go-smb2 => /Users/kjell/dev/go-smb2
-	github.com/kjbreil/go-sqlfmt => /Users/kjell/dev/go-sqlfmt
-	github.com/kjbreil/loc-macro => /Users/kjell/dev/loc-macro
-	github.com/kjbreil/ziploc => /Users/kjell/dev/ziploc
+	github.com/kjbreil/glsp => ../glsp
+	github.com/kjbreil/go-smb2 => ../go-smb2
+	github.com/kjbreil/go-sqlfmt => ../go-sqlfmt
+	github.com/kjbreil/loc-macro => ../loc-macro
+	github.com/kjbreil/ziploc => ../ziploc
 )
