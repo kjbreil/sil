@@ -28,7 +28,6 @@ func newDecoder() *decoder {
 
 func (d *decoder) makeFieldMap(data any) {
 	for _, ef := range d.fcodes {
-
 		d.fieldMap = append(d.fieldMap, findFieldIndex(ef, data))
 	}
 }

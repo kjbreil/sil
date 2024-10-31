@@ -31,7 +31,6 @@ func Unmarshal(b []byte, data any) (err error) {
 
 	// make a channel of the type for datatype
 	dataChan := reflect.MakeChan(reflect.ChanOf(reflect.BothDir, dataType), 100)
-
 	err = UnmarshalReaderChan(r, dataChan.Interface())
 	if err != nil {
 		return err

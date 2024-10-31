@@ -84,6 +84,7 @@ func (p *parser) decodeChan(dataChan any) *decoder {
 						d.makeFieldMap(ctI)
 					}
 					dataV := reflect.New(channelType).Elem()
+
 					err := unmarshalValues(data, dataV, d.fieldMap)
 					if err != nil {
 						d.err = append(d.err, err)
