@@ -1,6 +1,7 @@
 package sil
 
 import (
+	"context"
 	"fmt"
 	"strings"
 )
@@ -8,35 +9,10 @@ import (
 // section is a view
 type section []row
 
-// spit needs to be reworked it currently will combine two parts as the same because its based on number of
-// elements instead of what elements are contained.
+// split processes rows sequentially. It uses context.Background() internally.
+// For context-aware splitting, use splitWithContext from concurrent.go
 func split(rows []interface{}, include bool) (map[string]section, error) {
-	var ssec section
-
-	// take every row and reflect it
-	for i := range rows {
-		var r row
-		// TODO: Handle this error but split needs to return an error then
-		err := r.make(rows[i], include)
-		if err != nil {
-			return nil, err
-		}
-		ssec = append(ssec, r)
-	}
-
-	secs := make(map[string]section)
-
-	for i := range ssec {
-		// make the name of the section for the map based on the fields
-		var key string
-		for x := range ssec[i].elems {
-			key = key + *ssec[i].elems[x].name
-		}
-
-		secs[key] = append(secs[key], ssec[i])
-	}
-
-	return secs, nil
+	return splitWithContext(context.Background(), rows, include)
 }
 
 // create makes the sil structure for each section

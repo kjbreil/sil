@@ -1,6 +1,7 @@
 package sil
 
 import (
+	"context"
 	"strings"
 	"sync"
 	"testing"
@@ -25,7 +26,7 @@ func TestSplitConcurrent_SmallDataset(t *testing.T) {
 		rows[i] = ConcurrentTestStruct{ID: "id"}
 	}
 
-	secs, err := splitConcurrent(rows, false)
+	secs, err := splitConcurrent(context.Background(), rows, false)
 	if err != nil {
 		t.Fatalf("splitConcurrent returned error: %v", err)
 	}
@@ -49,7 +50,7 @@ func TestSplitConcurrent_LargeDataset(t *testing.T) {
 		rows[i] = ConcurrentTestStruct{ID: "id"}
 	}
 
-	secs, err := splitConcurrent(rows, false)
+	secs, err := splitConcurrent(context.Background(), rows, false)
 	if err != nil {
 		t.Fatalf("splitConcurrent returned error: %v", err)
 	}
@@ -77,7 +78,7 @@ func TestSplitConcurrent_MixedFieldCompositions(t *testing.T) {
 		}
 	}
 
-	secs, err := splitConcurrent(rows, false)
+	secs, err := splitConcurrent(context.Background(), rows, false)
 	if err != nil {
 		t.Fatalf("splitConcurrent returned error: %v", err)
 	}
@@ -99,7 +100,7 @@ func TestSplitConcurrent_MixedFieldCompositions(t *testing.T) {
 func TestSplitConcurrent_Empty(t *testing.T) {
 	rows := []interface{}{}
 
-	secs, err := splitConcurrent(rows, false)
+	secs, err := splitConcurrent(context.Background(), rows, false)
 	if err != nil {
 		t.Fatalf("splitConcurrent returned error: %v", err)
 	}
@@ -114,7 +115,7 @@ func TestSplitConcurrent_Error(t *testing.T) {
 		RequiredFieldStruct{}, // Missing required field
 	}
 
-	_, err := splitConcurrent(rows, false)
+	_, err := splitConcurrent(context.Background(), rows, false)
 	if err == nil {
 		t.Fatal("expected error for missing required field")
 	}
@@ -130,7 +131,7 @@ func TestSplitConcurrent_PreservesOrder(t *testing.T) {
 
 	// Run multiple times to catch race conditions
 	for run := 0; run < 10; run++ {
-		secs, err := splitConcurrent(rows, false)
+		secs, err := splitConcurrent(context.Background(), rows, false)
 		if err != nil {
 			t.Fatalf("run %d: splitConcurrent returned error: %v", run, err)
 		}
@@ -163,7 +164,7 @@ func TestSplitConcurrent_PreservesOrder(t *testing.T) {
 func TestMultiMarshalConcurrent_Empty(t *testing.T) {
 	m := make(Multi)
 
-	data, err := m.MarshalConcurrent()
+	data, err := m.MarshalConcurrent(context.Background())
 	if err != nil {
 		t.Fatalf("MarshalConcurrent returned error: %v", err)
 	}
@@ -178,7 +179,7 @@ func TestMultiMarshalConcurrent_SingleTable(t *testing.T) {
 	m.Make("TEST", ConcurrentTestStruct{})
 	m.AppendView("TEST", ConcurrentTestStruct{ID: "001"})
 
-	data, err := m.MarshalConcurrent()
+	data, err := m.MarshalConcurrent(context.Background())
 	if err != nil {
 		t.Fatalf("MarshalConcurrent returned error: %v", err)
 	}
@@ -201,7 +202,7 @@ func TestMultiMarshalConcurrent_MultipleTables(t *testing.T) {
 		}
 	}
 
-	data, err := m.MarshalConcurrent()
+	data, err := m.MarshalConcurrent(context.Background())
 	if err != nil {
 		t.Fatalf("MarshalConcurrent returned error: %v", err)
 	}
@@ -228,7 +229,7 @@ func TestMultiMarshalConcurrent_Error(t *testing.T) {
 	m.Make("TEST", RequiredFieldStruct{})
 	m.AppendView("TEST", RequiredFieldStruct{}) // Missing required field
 
-	_, err := m.MarshalConcurrent()
+	_, err := m.MarshalConcurrent(context.Background())
 	if err == nil {
 		t.Fatal("expected error for missing required field")
 	}
@@ -299,7 +300,7 @@ func TestConcurrentSafety(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			_, err := splitConcurrent(rows, false)
+			_, err := splitConcurrent(context.Background(), rows, false)
 			if err != nil {
 				errors <- err
 			}
@@ -328,6 +329,7 @@ func BenchmarkSplit_100Rows(b *testing.B) {
 }
 
 func BenchmarkSplitConcurrent_100Rows(b *testing.B) {
+	ctx := context.Background()
 	rows := make([]interface{}, 100)
 	for i := range rows {
 		rows[i] = ConcurrentTestStruct{ID: "id"}
@@ -335,7 +337,7 @@ func BenchmarkSplitConcurrent_100Rows(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = splitConcurrent(rows, false)
+		_, _ = splitConcurrent(ctx, rows, false)
 	}
 }
 
@@ -352,6 +354,7 @@ func BenchmarkSplit_500Rows(b *testing.B) {
 }
 
 func BenchmarkSplitConcurrent_500Rows(b *testing.B) {
+	ctx := context.Background()
 	rows := make([]interface{}, 500)
 	for i := range rows {
 		rows[i] = ConcurrentTestStruct{ID: "id"}
@@ -359,7 +362,7 @@ func BenchmarkSplitConcurrent_500Rows(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = splitConcurrent(rows, false)
+		_, _ = splitConcurrent(ctx, rows, false)
 	}
 }
 
@@ -376,6 +379,7 @@ func BenchmarkSplit_1000Rows(b *testing.B) {
 }
 
 func BenchmarkSplitConcurrent_1000Rows(b *testing.B) {
+	ctx := context.Background()
 	rows := make([]interface{}, 1000)
 	for i := range rows {
 		rows[i] = ConcurrentTestStruct{ID: "id"}
@@ -383,7 +387,7 @@ func BenchmarkSplitConcurrent_1000Rows(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = splitConcurrent(rows, false)
+		_, _ = splitConcurrent(ctx, rows, false)
 	}
 }
 
@@ -400,6 +404,7 @@ func BenchmarkSplit_5000Rows(b *testing.B) {
 }
 
 func BenchmarkSplitConcurrent_5000Rows(b *testing.B) {
+	ctx := context.Background()
 	rows := make([]interface{}, 5000)
 	for i := range rows {
 		rows[i] = ConcurrentTestStruct{ID: "id"}
@@ -407,7 +412,7 @@ func BenchmarkSplitConcurrent_5000Rows(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = splitConcurrent(rows, false)
+		_, _ = splitConcurrent(ctx, rows, false)
 	}
 }
 
@@ -428,6 +433,7 @@ func BenchmarkMultiMarshal_5Tables(b *testing.B) {
 }
 
 func BenchmarkMultiMarshalConcurrent_5Tables(b *testing.B) {
+	ctx := context.Background()
 	m := make(Multi)
 	for i := 0; i < 5; i++ {
 		tableName := string(rune('A' + i))
@@ -439,7 +445,7 @@ func BenchmarkMultiMarshalConcurrent_5Tables(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = m.MarshalConcurrent()
+		_, _ = m.MarshalConcurrent(ctx)
 	}
 }
 
@@ -460,6 +466,7 @@ func BenchmarkMultiMarshal_10Tables(b *testing.B) {
 }
 
 func BenchmarkMultiMarshalConcurrent_10Tables(b *testing.B) {
+	ctx := context.Background()
 	m := make(Multi)
 	for i := 0; i < 10; i++ {
 		tableName := string(rune('A' + i))
@@ -471,7 +478,7 @@ func BenchmarkMultiMarshalConcurrent_10Tables(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = m.MarshalConcurrent()
+		_, _ = m.MarshalConcurrent(ctx)
 	}
 }
 

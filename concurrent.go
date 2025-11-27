@@ -1,6 +1,7 @@
 package sil
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"runtime"
@@ -16,14 +17,20 @@ type rowResult struct {
 
 // splitConcurrent processes rows concurrently using a worker pool
 // It maintains order by using indexed results
-func splitConcurrent(rows []interface{}, include bool) (map[string]section, error) {
+// The context can be used to cancel the operation
+func splitConcurrent(ctx context.Context, rows []interface{}, include bool) (map[string]section, error) {
 	if len(rows) == 0 {
 		return make(map[string]section), nil
 	}
 
+	// Check context before starting
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
 	// For small datasets, use sequential processing (overhead not worth it)
 	if len(rows) < 100 {
-		return split(rows, include)
+		return splitWithContext(ctx, rows, include)
 	}
 
 	numWorkers := runtime.GOMAXPROCS(0)
@@ -35,6 +42,8 @@ func splitConcurrent(rows []interface{}, include bool) (map[string]section, erro
 	workChan := make(chan int, len(rows))
 	// Channel for results
 	resultChan := make(chan rowResult, len(rows))
+	// Channel to signal workers to stop
+	doneChan := make(chan struct{})
 
 	// Start workers
 	var wg sync.WaitGroup
@@ -42,23 +51,41 @@ func splitConcurrent(rows []interface{}, include bool) (map[string]section, erro
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for idx := range workChan {
-				var r row
-				err := r.make(rows[idx], include)
-				resultChan <- rowResult{
-					index: idx,
-					row:   r,
-					err:   err,
+			for {
+				select {
+				case <-doneChan:
+					return
+				case idx, ok := <-workChan:
+					if !ok {
+						return
+					}
+					var r row
+					err := r.make(rows[idx], include)
+					select {
+					case resultChan <- rowResult{
+						index: idx,
+						row:   r,
+						err:   err,
+					}:
+					case <-doneChan:
+						return
+					}
 				}
 			}
 		}()
 	}
 
-	// Send work
-	for i := range rows {
-		workChan <- i
-	}
-	close(workChan)
+	// Send work (with context cancellation support)
+	go func() {
+		defer close(workChan)
+		for i := range rows {
+			select {
+			case <-ctx.Done():
+				return
+			case workChan <- i:
+			}
+		}
+	}()
 
 	// Wait for workers to finish
 	go func() {
@@ -68,11 +95,30 @@ func splitConcurrent(rows []interface{}, include bool) (map[string]section, erro
 
 	// Collect results in order
 	processedRows := make([]row, len(rows))
-	for result := range resultChan {
-		if result.err != nil {
-			return nil, result.err
+	var firstErr error
+	collected := 0
+
+	for {
+		select {
+		case <-ctx.Done():
+			close(doneChan)
+			return nil, ctx.Err()
+		case result, ok := <-resultChan:
+			if !ok {
+				// Channel closed, all results collected
+				goto buildSections
+			}
+			if result.err != nil && firstErr == nil {
+				firstErr = result.err
+			}
+			processedRows[result.index] = result.row
+			collected++
 		}
-		processedRows[result.index] = result.row
+	}
+
+buildSections:
+	if firstErr != nil {
+		return nil, firstErr
 	}
 
 	// Build sections from processed rows
@@ -88,6 +134,39 @@ func splitConcurrent(rows []interface{}, include bool) (map[string]section, erro
 	return secs, nil
 }
 
+// splitWithContext is a context-aware version of split for small datasets
+func splitWithContext(ctx context.Context, rows []interface{}, include bool) (map[string]section, error) {
+	var ssec section
+
+	// take every row and reflect it
+	for i := range rows {
+		// Check context periodically (every row for small datasets)
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+		var r row
+		err := r.make(rows[i], include)
+		if err != nil {
+			return nil, err
+		}
+		ssec = append(ssec, r)
+	}
+
+	secs := make(map[string]section)
+
+	for i := range ssec {
+		// make the name of the section for the map based on the fields
+		var key string
+		for x := range ssec[i].elems {
+			key = key + *ssec[i].elems[x].name
+		}
+
+		secs[key] = append(secs[key], ssec[i])
+	}
+
+	return secs, nil
+}
+
 // marshalResult holds the result of marshaling a single SIL
 type marshalResult struct {
 	name string
@@ -97,14 +176,20 @@ type marshalResult struct {
 
 // MarshalConcurrent creates the SIL structure from the information in the Multi
 // using concurrent processing for multiple tables
-func (m Multi) MarshalConcurrent() (data []byte, err error) {
+// The context can be used to cancel the operation
+func (m Multi) MarshalConcurrent(ctx context.Context) (data []byte, err error) {
 	if len(m) == 0 {
 		return data, nil
 	}
 
+	// Check context before starting
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
 	// For single table, use sequential
 	if len(m) == 1 {
-		return m.Marshal()
+		return m.MarshalWithContext(ctx)
 	}
 
 	// Assign prefix to all SILs (must be done sequentially first)
@@ -115,6 +200,8 @@ func (m Multi) MarshalConcurrent() (data []byte, err error) {
 
 	// Create channel for results
 	resultChan := make(chan marshalResult, len(m))
+	// Channel to signal workers to stop
+	doneChan := make(chan struct{})
 
 	// Start goroutine for each table
 	var wg sync.WaitGroup
@@ -122,11 +209,21 @@ func (m Multi) MarshalConcurrent() (data []byte, err error) {
 		wg.Add(1)
 		go func(name string, s *SIL) {
 			defer wg.Done()
-			b, err := s.Marshal(false)
-			resultChan <- marshalResult{
+			// Check context before marshaling
+			select {
+			case <-doneChan:
+				return
+			default:
+			}
+			b, err := s.MarshalWithContext(ctx)
+			select {
+			case resultChan <- marshalResult{
 				name: name,
 				data: b,
 				err:  err,
+			}:
+			case <-doneChan:
+				return
 			}
 		}(name, s)
 	}
@@ -140,14 +237,28 @@ func (m Multi) MarshalConcurrent() (data []byte, err error) {
 	// Collect results - order doesn't matter for Multi since
 	// each batch has its own header
 	var allData []byte
-	for result := range resultChan {
-		if result.err != nil {
-			return nil, result.err
+	var firstErr error
+	for {
+		select {
+		case <-ctx.Done():
+			close(doneChan)
+			return nil, ctx.Err()
+		case result, ok := <-resultChan:
+			if !ok {
+				// Channel closed, all results collected
+				if firstErr != nil {
+					return nil, firstErr
+				}
+				return allData, nil
+			}
+			if result.err != nil && firstErr == nil {
+				firstErr = result.err
+			}
+			if result.err == nil {
+				allData = append(allData, result.data...)
+			}
 		}
-		allData = append(allData, result.data...)
 	}
-
-	return allData, nil
 }
 
 // MarshalWithOptions provides options for marshaling
@@ -157,17 +268,28 @@ type MarshalOptions struct {
 }
 
 // MarshalWithOpts marshals with specified options
+// Uses context.Background() for backwards compatibility
 func (s *SIL) MarshalWithOpts(opts MarshalOptions) ([]byte, error) {
+	return s.MarshalWithOptsContext(context.Background(), opts)
+}
+
+// MarshalWithOptsContext marshals with specified options and context support
+func (s *SIL) MarshalWithOptsContext(ctx context.Context, opts MarshalOptions) ([]byte, error) {
 	if opts.Concurrent {
-		return s.marshalConcurrent(opts.Include)
+		return s.marshalConcurrent(ctx, opts.Include)
 	}
-	return s.Marshal(opts.Include)
+	return s.MarshalWithContext(ctx)
 }
 
 // marshalConcurrent uses concurrent processing for large datasets
-func (s *SIL) marshalConcurrent(include bool) (data []byte, err error) {
+func (s *SIL) marshalConcurrent(ctx context.Context, include bool) (data []byte, err error) {
 	if s.View.Name == "" {
 		return data, errViewNameNotSet
+	}
+
+	// Check context before starting
+	if err := ctx.Err(); err != nil {
+		return nil, err
 	}
 
 	if !include {
@@ -175,9 +297,14 @@ func (s *SIL) marshalConcurrent(include bool) (data []byte, err error) {
 	}
 
 	// Use concurrent split for large datasets
-	secs, err := splitConcurrent(s.View.Data, include)
+	secs, err := splitConcurrent(ctx, s.View.Data, include)
 	if err != nil {
 		return []byte{}, err
+	}
+
+	// Check context after split
+	if err := ctx.Err(); err != nil {
+		return nil, err
 	}
 
 	for _, sec := range secs {
@@ -225,24 +352,49 @@ type WriteResult struct {
 
 // WriteSeparateConcurrent writes each table in Multi to separate files concurrently
 // The filenames are generated using the provided pattern function
+// Uses context.Background() for backwards compatibility
 func (m Multi) WriteSeparateConcurrent(filenameFunc func(tableName string) string, archive bool) []WriteResult {
+	return m.WriteSeparateConcurrentContext(context.Background(), filenameFunc, archive)
+}
+
+// WriteSeparateConcurrentContext writes each table in Multi to separate files concurrently
+// The filenames are generated using the provided pattern function
+// The context can be used to cancel the operation
+func (m Multi) WriteSeparateConcurrentContext(ctx context.Context, filenameFunc func(tableName string) string, archive bool) []WriteResult {
 	if len(m) == 0 {
 		return nil
 	}
 
+	// Check context before starting
+	if err := ctx.Err(); err != nil {
+		return []WriteResult{{Err: err}}
+	}
+
 	results := make(chan WriteResult, len(m))
+	// Channel to signal workers to stop
+	doneChan := make(chan struct{})
 	var wg sync.WaitGroup
 
 	for name, s := range m {
 		wg.Add(1)
 		go func(name string, s *SIL) {
 			defer wg.Done()
+			// Check if we should stop
+			select {
+			case <-doneChan:
+				return
+			default:
+			}
 			filename := filenameFunc(name)
-			err := s.Write(filename, false, archive)
-			results <- WriteResult{
+			err := s.WriteContext(ctx, filename, false, archive)
+			select {
+			case results <- WriteResult{
 				Name:     name,
 				Filename: filename,
 				Err:      err,
+			}:
+			case <-doneChan:
+				return
 			}
 		}(name, s)
 	}
@@ -253,25 +405,52 @@ func (m Multi) WriteSeparateConcurrent(filenameFunc func(tableName string) strin
 	}()
 
 	var allResults []WriteResult
-	for result := range results {
-		allResults = append(allResults, result)
+	for {
+		select {
+		case <-ctx.Done():
+			close(doneChan)
+			allResults = append(allResults, WriteResult{Err: ctx.Err()})
+			return allResults
+		case result, ok := <-results:
+			if !ok {
+				return allResults
+			}
+			allResults = append(allResults, result)
+		}
 	}
-
-	return allResults
 }
 
 // WriteConcurrent writes Multi to a single file using concurrent marshaling
+// Uses context.Background() for backwards compatibility
 func (m *Multi) WriteConcurrent(filename string, archive bool) error {
-	d, err := m.MarshalConcurrent()
+	return m.WriteConcurrentContext(context.Background(), filename, archive)
+}
+
+// WriteConcurrentContext writes Multi to a single file using concurrent marshaling
+// The context can be used to cancel the operation
+func (m *Multi) WriteConcurrentContext(ctx context.Context, filename string, archive bool) error {
+	d, err := m.MarshalConcurrent(ctx)
 	if err != nil {
 		return fmt.Errorf("sil bytes conversion error: %w", err)
 	}
 
-	return writeFile(filename, d, archive)
+	return writeFileContext(ctx, filename, d, archive)
 }
 
 // writeFile is a helper function for writing data to a file with optional archive bit manipulation
+// Uses context.Background() for backwards compatibility
 func writeFile(filename string, data []byte, archive bool) error {
+	return writeFileContext(context.Background(), filename, data, archive)
+}
+
+// writeFileContext is a helper function for writing data to a file with optional archive bit manipulation
+// The context can be used to cancel the operation
+func writeFileContext(ctx context.Context, filename string, data []byte, archive bool) error {
+	// Check context before starting
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+
 	f, err := os.Create(filename)
 	if err != nil {
 		return fmt.Errorf("could not create file %s with err: %w", filename, err)
@@ -283,6 +462,12 @@ func writeFile(filename string, data []byte, archive bool) error {
 			f.Close()
 			return fmt.Errorf("error trying to set archive bit for %s with err: %w", filename, err)
 		}
+	}
+
+	// Check context before writing
+	if err := ctx.Err(); err != nil {
+		f.Close()
+		return err
 	}
 
 	i, err := f.Write(data)

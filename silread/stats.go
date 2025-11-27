@@ -1,12 +1,14 @@
 package silread
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"github.com/kjbreil/loc-macro/pkg/macro"
-	"github.com/kjbreil/loc-macro/pkg/script"
 	"os"
 	"strings"
+
+	"github.com/kjbreil/loc-macro/pkg/macro"
+	"github.com/kjbreil/loc-macro/pkg/script"
 )
 
 type Stats struct {
@@ -19,19 +21,40 @@ type Stats struct {
 	HasCreate bool
 }
 
+// GetStats retrieves statistics from a SIL file
+// Uses context.Background() for backwards compatibility
 func GetStats(filename string) (Stats, error) {
+	return GetStatsContext(context.Background(), filename)
+}
+
+// GetStatsContext retrieves statistics from a SIL file with context support
+// The context can be used to cancel the operation
+func GetStatsContext(ctx context.Context, filename string) (Stats, error) {
 	s := Stats{}
+
+	// Check context before starting
+	if err := ctx.Err(); err != nil {
+		return s, err
+	}
 
 	f, err := os.Open(filename)
 	if err != nil {
 		return s, err
 	}
+	defer f.Close()
 
 	p := newParser(f)
 	var d decoder
 
 	var i int
 	for {
+		// Check context periodically
+		select {
+		case <-ctx.Done():
+			return s, ctx.Err()
+		default:
+		}
+
 		pt := p.scan()
 		d.p = append(d.p, *pt)
 		if pt.tok == CRLF {
@@ -69,7 +92,20 @@ func GetStats(filename string) (Stats, error) {
 
 var ErrInvalidTable = errors.New("invalid table name")
 
+// newStatsFromReaderOnly reads stats from the reader, only allowing specific tables
+// Uses context.Background() for backwards compatibility
 func (r *Reader) newStatsFromReaderOnly(validTables []string) error {
+	return r.newStatsFromReaderOnlyWithContext(context.Background(), validTables)
+}
+
+// newStatsFromReaderOnlyWithContext reads stats from the reader with context support
+// The context can be used to cancel the operation
+func (r *Reader) newStatsFromReaderOnlyWithContext(ctx context.Context, validTables []string) error {
+	// Check context before starting
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+
 	// initialize a decoder for getting the stats
 	var err error
 	macrosSB := &strings.Builder{}
@@ -77,6 +113,13 @@ func (r *Reader) newStatsFromReaderOnly(validTables []string) error {
 
 mainLoop:
 	for {
+		// Check context periodically
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
 		// clear prsd
 		prsd = prsd[:0]
 		// capture a line into prsd
@@ -160,7 +203,20 @@ func isValidTable(tableName string, validTables []string) bool {
 	return false
 }
 
+// newStatsFromReader reads stats from the reader
+// Uses context.Background() for backwards compatibility
 func (r *Reader) newStatsFromReader() error {
+	return r.newStatsFromReaderWithContext(context.Background())
+}
+
+// newStatsFromReaderWithContext reads stats from the reader with context support
+// The context can be used to cancel the operation
+func (r *Reader) newStatsFromReaderWithContext(ctx context.Context) error {
+	// Check context before starting
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+
 	// initialize a decoder for getting the stats
 	var err error
 	macrosSB := &strings.Builder{}
@@ -168,6 +224,13 @@ func (r *Reader) newStatsFromReader() error {
 
 mainLoop:
 	for {
+		// Check context periodically
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
 		// clear prsd
 		prsd = prsd[:0]
 		// capture a line into prsd

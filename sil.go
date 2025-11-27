@@ -1,6 +1,7 @@
 package sil
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math/rand"
@@ -52,19 +53,49 @@ func New(definition interface{}) *SIL {
 
 // Marshal creates the SIL structure from the information in the SIL type
 func (s *SIL) Marshal(include bool) (data []byte, err error) {
+	return s.marshalInternal(context.Background(), include)
+}
+
+// MarshalWithContext creates the SIL structure from the information in the SIL type
+// The context can be used to cancel the operation
+// Uses s.Include for include behavior
+func (s *SIL) MarshalWithContext(ctx context.Context) (data []byte, err error) {
+	return s.marshalInternal(ctx, s.Include)
+}
+
+// MarshalContextInclude creates the SIL structure with both context and include parameter
+func (s *SIL) MarshalContextInclude(ctx context.Context, include bool) (data []byte, err error) {
+	return s.marshalInternal(ctx, include)
+}
+
+// marshalInternal is the internal implementation of Marshal with context support
+func (s *SIL) marshalInternal(ctx context.Context, include bool) (data []byte, err error) {
+	// Check context before starting
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
 	// check to make sure the view.Name has been set
 	if s.View.Name == "" {
 		return data, fmt.Errorf("view name not set")
 	}
+
 	// overwrite passed include with one on SIL object if its true
 	if !include {
 		include = s.Include
 	}
+
 	// get the multiple sections
-	secs, err := split(s.View.Data, include)
+	secs, err := splitWithContext(ctx, s.View.Data, include)
 	if err != nil {
 		return []byte{}, err
 	}
+
+	// Check context after split
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
 	for _, sec := range secs {
 		// Create the Header insert
 		if s.Header.Identifier == "" {

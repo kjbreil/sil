@@ -1,6 +1,7 @@
 package silread
 
 import (
+	"context"
 	"io"
 	"reflect"
 	"strings"
@@ -47,7 +48,15 @@ func (p *parser) parse() parsed {
 	return prsd
 }
 
+// decodeChan decodes data from the parser and sends it to a channel
+// Uses context.Background() for backwards compatibility
 func (p *parser) decodeChan(dataChan any) *decoder {
+	return p.decodeChanWithContext(context.Background(), dataChan)
+}
+
+// decodeChanWithContext decodes data from the parser and sends it to a channel with context support
+// The context can be used to cancel the operation
+func (p *parser) decodeChanWithContext(ctx context.Context, dataChan any) *decoder {
 	var d decoder
 
 	readLines := int64(0)
@@ -62,6 +71,14 @@ func (p *parser) decodeChan(dataChan any) *decoder {
 	}()
 
 	for {
+		// Check context at the start of each iteration
+		select {
+		case <-ctx.Done():
+			d.err = append(d.err, ctx.Err())
+			return &d
+		default:
+		}
+
 		pt := p.scan()
 
 		d.p = append(d.p, *pt)
@@ -79,6 +96,14 @@ func (p *parser) decodeChan(dataChan any) *decoder {
 			// if the view has been reached pop off anything from d.data and put on channel
 			if d.view {
 				for _, data := range d.data {
+					// Check context before processing each data item
+					select {
+					case <-ctx.Done():
+						d.err = append(d.err, ctx.Err())
+						return &d
+					default:
+					}
+
 					if len(d.fieldMap) == 0 {
 						ctI := reflect.New(channelType).Interface()
 						d.makeFieldMap(ctI)
@@ -89,7 +114,14 @@ func (p *parser) decodeChan(dataChan any) *decoder {
 					if err != nil {
 						d.err = append(d.err, err)
 					} else {
-						channel.Send(dataV)
+						// Use select for sending to allow context cancellation
+						select {
+						case <-ctx.Done():
+							d.err = append(d.err, ctx.Err())
+							return &d
+						default:
+							channel.Send(dataV)
+						}
 					}
 				}
 				d.data = d.data[:0]

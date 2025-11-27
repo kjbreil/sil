@@ -1,6 +1,7 @@
 package sil
 
 import (
+	"context"
 	"math/rand"
 	"time"
 )
@@ -9,16 +10,33 @@ import (
 type Multi map[string]*SIL
 
 // Marshal creates the SIL structure from the information in the Multi
+// Uses context.Background() for backwards compatibility
 func (m Multi) Marshal() (data []byte, err error) {
+	return m.MarshalWithContext(context.Background())
+}
+
+// MarshalWithContext creates the SIL structure from the information in the Multi
+// The context can be used to cancel the operation
+func (m Multi) MarshalWithContext(ctx context.Context) (data []byte, err error) {
+	// Check context before starting
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
 	// assign a local prefix to the Multi to group all the batches
 	rand.Seed(time.Now().UnixNano())
 	prefix := rand.Intn(100)
 
 	for _, s := range m {
+		// Check context in each iteration
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+
 		// assign that prefix to the local SIL
 		s.prefix = prefix
 
-		b, err := s.Marshal(false)
+		b, err := s.MarshalWithContext(ctx)
 		if err != nil {
 			return data, err
 		}
