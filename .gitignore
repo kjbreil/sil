@@ -22,3 +22,6 @@ loc/generate/RB_FIELDS.csv
 .idea/**
 .vscode/**
 test.sil
+
+# Generated test files
+[0-9]*.sil
