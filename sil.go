@@ -1,6 +1,7 @@
 package sil
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"time"
@@ -23,6 +24,11 @@ type SIL struct {
 // Some Constants
 const (
 	crlf = "\r\n"
+)
+
+// Errors
+var (
+	errViewNameNotSet = errors.New("view name not set")
 )
 
 // Make makes a sil file of the definition (as struct) passed
@@ -93,4 +99,18 @@ func batchNum(prefix int) string {
 	t := time.Now()
 	rand.Seed(t.UnixNano())
 	return fmt.Sprintf("%02d%06d", prefix, rand.Intn(1000000))
+}
+
+// encodeWindows1252 encodes data to Windows-1252 charset
+func encodeWindows1252(data []byte) ([]byte, error) {
+	result, err := charmap.Windows1252.NewEncoder().Bytes(data)
+	if err != nil {
+		return nil, fmt.Errorf("conversion to 1252 failed: %v", err)
+	}
+	return result, nil
+}
+
+// internalRandIntn is used for random number generation
+func internalRandIntn(n int) int {
+	return rand.Intn(n)
 }
